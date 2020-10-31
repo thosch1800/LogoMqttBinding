@@ -22,7 +22,6 @@ jobs:
       run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u thosch1800 --password-stdin
       
     - name: build image
-      run: docker build . --tag ${{ env.TAG }}
-      
-    - name: push image
-      run: docker push ${{ env.TAG }}
+      run: | 
+        docker build . --tag ${{ env.TAG }}
+        docker push ${{ env.TAG }}
