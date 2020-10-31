@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
@@ -42,7 +43,7 @@ namespace LogoMqttBinding
         });
     }
 
-    internal static async Task<AppContext> Initialize(ILoggerFactory loggerFactory, Config config)
+    internal static async Task<ProgramContext> Initialize(ILoggerFactory loggerFactory, Config config)
     {
       var logos = new List<Logo>();
       var mqttClients = new List<Mqtt>();
@@ -72,48 +73,26 @@ namespace LogoMqttBinding
         }
       }
 
-      foreach (var logo in logos)
-      {
-        logo.Connect();
-        foreach (var mqttClient in mqttClients)
-          await mqttClient.ConnectAsync();
-      }
+      var programContext = new ProgramContext(logos.ToImmutableArray(), mqttClients.ToImmutableArray());
 
-      return new AppContext(logos, mqttClients);
+      await Connect(programContext);
+
+      return new ProgramContext(logos.ToImmutableArray(), mqttClients.ToImmutableArray());
     }
 
-    public class AppContext : IAsyncDisposable
+    private static async Task Connect(ProgramContext ctx)
     {
-      internal AppContext(IEnumerable<Logo> logos, IEnumerable<Mqtt> mqttClients)
-      {
-        this.logos = logos;
-        this.mqttClients = mqttClients;
-      }
-
-      public async ValueTask DisposeAsync()
-      {
-        // ReSharper disable once HeapView.ObjectAllocation.Possible
-        foreach (var logo in logos) await logo.DisposeAsync();
-
-        // ReSharper disable once HeapView.ObjectAllocation.Possible
-        foreach (var mqttClient in mqttClients) await mqttClient.DisposeAsync();
-      }
-
-      private readonly IEnumerable<Logo> logos;
-      private readonly IEnumerable<Mqtt> mqttClients;
+      foreach (var logo in ctx.Logos) logo.Connect();
+      foreach (var mqttClient in ctx.MqttClients) await mqttClient.ConnectAsync();
     }
 
     private static async Task WaitForCtrlCAsync(CancellationToken ct)
     {
       using var lockObject = new SemaphoreSlim(1, 1);
       await lockObject.WaitAsync(ct); // take lock
-
       // ReSharper disable once AccessToDisposedClosure
-      Console.CancelKeyPress += (s, e) => lockObject.Release(); // release lock on CTRL+C
-      Console.WriteLine("Press CTRL+C to exit");
-
+      Console.CancelKeyPress += (_, _) => lockObject.Release(); // release lock on CTRL+C
       await lockObject.WaitAsync(ct); // wait until lock is released
-      Console.WriteLine("Exiting...");
     }
   }
 }

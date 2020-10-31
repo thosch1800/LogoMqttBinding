@@ -89,6 +89,6 @@ namespace LogoMqttBindingTests.Infrastructure
     public event EventHandler<MqttApplicationMessageReceivedEventArgs>? MqttMessageReceived;
 
     private IMqttServer? mqttServer;
-    private Program.AppContext? appContext;
+    private ProgramContext? appContext;
   }
 }

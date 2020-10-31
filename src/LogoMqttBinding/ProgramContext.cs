@@ -6,9 +6,9 @@ using LogoMqttBinding.MqttAdapter;
 
 namespace LogoMqttBinding
 {
-  internal class AppContext : IAsyncDisposable
+  internal class ProgramContext : IAsyncDisposable
   {
-    internal AppContext(ImmutableArray<Logo> logos, ImmutableArray<Mqtt> mqttClients)
+    internal ProgramContext(ImmutableArray<Logo> logos, ImmutableArray<Mqtt> mqttClients)
     {
       Logos = logos;
       MqttClients = mqttClients;
