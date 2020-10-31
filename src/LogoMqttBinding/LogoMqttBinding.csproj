@@ -1,20 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <RootNamespace>LogoMqttBinding</RootNamespace>
+        
         <!-- C# -->
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <LangVersion>9</LangVersion>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
-        <!-- build for reaspberry pi (32bit OS) -->
-        <PlatformTarget>x86</PlatformTarget>
-        <Prefer32bit>true</Prefer32bit>
-
         <!-- Console app -->
         <OutputType>Exe</OutputType>
         <IsPackable>false</IsPackable>
-        <RootNamespace>LogoMqttBinding</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
