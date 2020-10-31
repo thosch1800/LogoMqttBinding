@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29418.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogoMqttBinding", "LogoMqttBinding\LogoMqttBinding.csproj", "{B7431104-367F-477B-BB58-DEF001EE663B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogoMqttBinding.Tests", "LogoMqttBinding.Tests\LogoMqttBinding.Tests.csproj", "{CD814314-6FEE-429D-B078-0530103F3829}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{508C7AE7-B3DC-462D-ADCD-AB91D1D26530}"
+ProjectSection(SolutionItems) = preProject
+	..\.gitignore = ..\.gitignore
+	..\README.md = ..\README.md
+EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B7431104-367F-477B-BB58-DEF001EE663B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7431104-367F-477B-BB58-DEF001EE663B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7431104-367F-477B-BB58-DEF001EE663B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7431104-367F-477B-BB58-DEF001EE663B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD814314-6FEE-429D-B078-0530103F3829}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD814314-6FEE-429D-B078-0530103F3829}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD814314-6FEE-429D-B078-0530103F3829}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD814314-6FEE-429D-B078-0530103F3829}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8410008B-0240-4287-B572-659FF1F6DE97}
+	EndGlobalSection
+EndGlobal

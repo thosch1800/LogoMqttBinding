@@ -1,0 +1,149 @@
+﻿{
+  "MqttBrokerIpAddress": "test.mosquitto.org",
+  "Logos": [
+    {
+      "IpAddress": "10.1.1.230",
+      "MemoryRanges": [
+        {
+          "LocalVariableMemoryPollingCycleMilliseconds": 100,
+          "LocalVariableMemoryStart": 0,
+          "LocalVariableMemoryEnd": 49
+        },
+        {
+          "LocalVariableMemoryPollingCycleMilliseconds": 100,
+          "LocalVariableMemoryStart": 50,
+          "LocalVariableMemoryEnd": 200
+        }
+      ],
+      "Mqtt": [
+        {
+          "ClientId": "logo_230",
+          "Subscribed": [
+            {
+              "Topic": "map/20/30/set",
+              "LogoAddress": 20,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/21/31/set",
+              "LogoAddress": 21,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/22/32/set",
+              "LogoAddress": 22,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/23/33/set",
+              "LogoAddress": 23,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/24/34/set",
+              "LogoAddress": 24,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/25/35/set",
+              "LogoAddress": 25,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/26/36/set",
+              "LogoAddress": 26,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/27/37/set",
+              "LogoAddress": 27,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/50/150/set",
+              "LogoAddress": 50,
+              "Type": "float"
+            },
+            {
+              "Topic": "map/55/155/set",
+              "LogoAddress": 55,
+              "Type": "float"
+            },
+            {
+              "Topic": "map/60/160/set",
+              "LogoAddress": 60,
+              "Type": "float"
+            },
+            {
+              "Topic": "map/65/165/set",
+              "LogoAddress": 65,
+              "Type": "float"
+            }
+          ],
+          "Published": [
+            {
+              "Topic": "map/20/30/get",
+              "LogoAddress": 30,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/21/31/get",
+              "LogoAddress": 31,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/22/32/get",
+              "LogoAddress": 32,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/23/33/get",
+              "LogoAddress": 33,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/24/34/get",
+              "LogoAddress": 34,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/25/35/get",
+              "LogoAddress": 35,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/26/36/get",
+              "LogoAddress": 36,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/27/37/get",
+              "LogoAddress": 37,
+              "Type": "byte"
+            },
+            {
+              "Topic": "map/50/150/get",
+              "LogoAddress": 150,
+              "Type": "float"
+            },
+            {
+              "Topic": "map/55/155/get",
+              "LogoAddress": 155,
+              "Type": "float"
+            },
+            {
+              "Topic": "map/60/160/get",
+              "LogoAddress": 160,
+              "Type": "float"
+            },
+            {
+              "Topic": "map/65/165/get",
+              "LogoAddress": 165,
+              "Type": "float"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <!-- C# -->
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <LangVersion>9</LangVersion>
+        <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+        <!-- build for reaspberry pi (32bit OS) -->
+        <PlatformTarget>x86</PlatformTarget>
+        <Prefer32bit>true</Prefer32bit>
+
+        <!-- Console app -->
+        <OutputType>Exe</OutputType>
+        <IsPackable>false</IsPackable>
+        <RootNamespace>LogoMqttBinding</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Allow internals access to test project -->
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>LogoMqttBinding.Tests</_Parameter1>
+        </AssemblyAttribute>
+
+        <!-- copy config to output directory -->
+        <None Update="config\logoCommunicator.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- project dependencies  -->
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.9" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.9" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.9" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.9" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.9" />
+        <PackageReference Include="MQTTnet" Version="3.0.13" />
+        <PackageReference Include="thosch.Logging" Version="1.1.1" />
+        <PackageReference Include="Sharp7" Version="1.1.75" />
+    </ItemGroup>
+
+</Project>
