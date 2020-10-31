@@ -6,7 +6,7 @@ on:
       - v*
         
 env: 
-  IMAGE: ghcr.io/${{ GITHUB_REPOSITORY }}:$(echo ${{ github.event.release.tag_name }} | sed -e 's/^v//')
+  IMAGE: ghcr.io/${{ GITHUB.REPOSITORY }}:$(echo ${{ github.event.release.tag_name }} | sed -e 's/^v//')
 
 jobs:
   build:
