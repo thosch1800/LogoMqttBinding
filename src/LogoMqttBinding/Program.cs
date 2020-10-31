@@ -22,7 +22,10 @@ namespace LogoMqttBinding
         var configuration = ReadConfiguration();
 
         Console.WriteLine("Initializing...");
-        await using var appContext = await Initialize(loggerFactory, configuration).ConfigureAwait(false);
+        await using var appContext = Initialize(loggerFactory, configuration);
+
+        Console.WriteLine("Connecting...");
+        await Connect(appContext);
 
         Console.WriteLine("Press CTRL+C to exit");
         await WaitForCtrlCAsync(CancellationToken.None).ConfigureAwait(false);
@@ -57,7 +60,7 @@ namespace LogoMqttBinding
         });
     }
 
-    internal static async Task<ProgramContext> Initialize(ILoggerFactory loggerFactory, Config config)
+    internal static ProgramContext Initialize(ILoggerFactory loggerFactory, Config config)
     {
       var logos = new List<Logo>();
       var mqttClients = new List<Mqtt>();
@@ -87,14 +90,10 @@ namespace LogoMqttBinding
         }
       }
 
-      var programContext = new ProgramContext(logos.ToImmutableArray(), mqttClients.ToImmutableArray());
-
-      await Connect(programContext);
-
       return new ProgramContext(logos.ToImmutableArray(), mqttClients.ToImmutableArray());
     }
 
-    private static async Task Connect(ProgramContext ctx)
+    internal static async Task Connect(ProgramContext ctx)
     {
       foreach (var logo in ctx.Logos) logo.Connect();
       foreach (var mqttClient in ctx.MqttClients) await mqttClient.ConnectAsync();

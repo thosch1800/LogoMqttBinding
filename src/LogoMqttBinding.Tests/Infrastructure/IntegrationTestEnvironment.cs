@@ -57,9 +57,8 @@ namespace LogoMqttBindingTests.Infrastructure
         .ConfigureAwait(false);
 
       var config = IntegrationTests.GetConfig(brokerIpAddress.ToString(), brokerPort);
-      appContext = await Program
-        .Initialize(LoggerFactory, config)
-        .ConfigureAwait(false);
+      appContext = Program.Initialize(LoggerFactory, config);
+      await Program.Connect(appContext);
     }
 
     public async Task DisposeAsync()
