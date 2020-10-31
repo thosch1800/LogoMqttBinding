@@ -6,7 +6,7 @@ namespace LogoMqttBinding.Configuration
 {
   public static class ConfigExtensionMethods
   {
-    public static void Read(this Config config, string path = "./config/logoCommunicator.json")
+    public static void Read(this Config config, string path = "./config/logo-mqtt.json")
     {
       new ConfigurationBuilder()
         .AddJsonFile(path, false)
