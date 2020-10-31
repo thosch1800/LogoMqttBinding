@@ -17,13 +17,13 @@ jobs:
       run: TAG='ghcr.io/thosch1800/logo-mqtt:'"$(date +%s)"
       
     - name: print tag
-      run: echo $TAG
+      run: echo ${{ TAG }}
       
     - name: login
       run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u thosch1800 --password-stdin
       
     - name: build image
-      run: docker build . --tag $TAG
+      run: docker build . --tag ${{ TAG }}
       
     - name: push image
-      run: docker push $TAG
+      run: docker push ${{ TAG }}
