@@ -14,13 +14,27 @@ namespace LogoMqttBinding
   {
     public static async Task Main()
     {
-      await using var appContext =
-        await Initialize(
-            ConfigureLogging(),
-            ReadConfiguration())
-          .ConfigureAwait(false);
-      await WaitForCtrlCAsync(CancellationToken.None)
-        .ConfigureAwait(false);
+      Console.WriteLine("Configuring logger...");
+      var loggerFactory = ConfigureLogging();
+      try
+      {
+        Console.WriteLine("Reading configuration...");
+        var configuration = ReadConfiguration();
+
+        Console.WriteLine("Initializing...");
+        await using var appContext = await Initialize(loggerFactory, configuration).ConfigureAwait(false);
+
+        Console.WriteLine("Press CTRL+C to exit");
+        await WaitForCtrlCAsync(CancellationToken.None).ConfigureAwait(false);
+        Console.WriteLine("Exiting...");
+      }
+      catch (Exception ex)
+      {
+        loggerFactory
+          .CreateLogger(nameof(Program))
+          .LogException(ex);
+        throw;
+      }
     }
 
     private static Config ReadConfiguration()
