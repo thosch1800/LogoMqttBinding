@@ -21,7 +21,7 @@
         </AssemblyAttribute>
 
         <!-- copy config to output directory -->
-        <None Update="config\logoCommunicator.json">
+        <None Update="config\logo-mqtt.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
