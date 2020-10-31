@@ -1,13 +1,12 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
+  label:
+    types: [created, deleted]
+    
 env: 
-  TAG: "ghcr.io/thosch1800/logo-mqtt:$(date +%s)"
+  IMAGE: ghcr.io/thosch1800/logo-mqtt
+  TAG: ${{ github.event.release.tag_name }}
 
 jobs:
   build:
@@ -15,18 +14,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: print tag
-      run: echo ${{ env.TAG }}
-
-    - name: print tag again
-      run: |
-        sleep 1
-        echo ${{ env.TAG }}
+    - name: print image and tag
+      run: echo ${{ env.IMAGE }}:${{ env.TAG }}
 
     - name: login
       run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u thosch1800 --password-stdin
       
     - name: build image
-      run: | 
-        docker build . --tag ${{ env.TAG }}
-        docker push ${{ env.TAG }}
+      run: docker build . --tag ${{ env.IMAGE }}:${{ env.TAG }}
+      
+    - name: push image
+      run: docker push ${{ env.IMAGE }}:${{ env.TAG }}
