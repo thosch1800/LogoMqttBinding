@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env: 
-  TAG: ghcr.io/thosch1800/logo-mqtt:$(date +%s)
+  TAG: "ghcr.io/thosch1800/logo-mqtt:$(date +%s)"
 
 jobs:
   build:
@@ -17,6 +17,11 @@ jobs:
     
     - name: print tag
       run: echo ${{ env.TAG }}
+
+    - name: print tag again
+      run: |
+        sleep 1
+        echo ${{ env.TAG }}
 
     - name: login
       run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u thosch1800 --password-stdin
