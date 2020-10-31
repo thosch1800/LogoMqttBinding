@@ -12,7 +12,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    - name: generate image tag
+      run: TAG=$(ghcr.io/$GITHUB_ACTOR/logo-mqtt:$(date +%s))
+      
     - name: login
       run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-    - name: build docker image
-      run: docker build . --file Dockerfile --tag logo-mqtt:$(date +%s)
+      
+    - name: build image
+      run: docker build . --tag $TAG
+      
+    - name: push image
+      run: docker push $TAG
