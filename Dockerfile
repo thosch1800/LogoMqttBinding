@@ -1,4 +1,4 @@
-﻿FROM thosch-dotnet-sdk:3.1 AS build-env
+﻿FROM ghcr.io/thosch1800/thosch-dotnet-sdk:3.1 AS build-env
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
