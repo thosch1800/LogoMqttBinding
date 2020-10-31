@@ -1,0 +1,11 @@
+version: '3.3'
+
+services:
+  logo-mqtt-binding:
+    image: ghcr.io/thosch1800/logo-mqtt:latest
+    volumes:
+      - smarthome_config:/app/config
+    restart: always
+
+volumes:
+  smarthome_config: {}
