@@ -103,10 +103,13 @@ namespace LogoMqttBinding
     private static async Task WaitForCtrlCAsync(CancellationToken ct)
     {
       using var lockObject = new SemaphoreSlim(1, 1);
-      await lockObject.WaitAsync(ct); // take lock
-      // ReSharper disable once AccessToDisposedClosure
-      Console.CancelKeyPress += (_, _) => lockObject.Release(); // release lock on CTRL+C
-      await lockObject.WaitAsync(ct); // wait until lock is released
+      await lockObject.WaitAsync(ct);
+      Console.CancelKeyPress += (_, e) =>
+      { // ReSharper disable once AccessToDisposedClosure
+        lockObject.Release();
+        e.Cancel = true;
+      };
+      await lockObject.WaitAsync(ct);
     }
   }
 }
