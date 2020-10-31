@@ -11,8 +11,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    
 
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag logo-mqtt:$(date +%s)
+      run:  echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+            docker build . --file Dockerfile --tag logo-mqtt:$(date +%s)
