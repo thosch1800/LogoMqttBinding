@@ -6,20 +6,18 @@ on:
   pull_request:
     branches: [ main ]
 
+env: 
+  TAG: ghcr.io/thosch1800/logo-mqtt:$(date +%s)
+
 jobs:
-    
-  
   build:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
-      env: 
-        TAG: ghcr.io/thosch1800/logo-mqtt:$(date +%s)
     
     - name: print tag
       run: echo ${{ env.TAG }}
-      
+
     - name: login
       run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u thosch1800 --password-stdin
       
