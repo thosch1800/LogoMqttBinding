@@ -10,12 +10,4 @@ namespace LogoMqttBinding.Configuration
     public MqttChannel[] Subscribed { get; set; } = Array.Empty<MqttChannel>();
     public MqttChannel[] Published { get; set; } = Array.Empty<MqttChannel>();
   }
-
-  [DebuggerDisplay("{Topic} -> {Type}@{LogoAddress}")]
-  public class MqttChannel
-  {
-    public string Topic { get; set; } = "";
-    public int LogoAddress { get; set; } = -1;
-    public string Type { get; set; } = "";
-  }
 }

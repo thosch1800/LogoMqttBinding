@@ -20,11 +20,11 @@ namespace LogoMqttBinding.Configuration
 
     public static void Validate(this Config config)
     {
-      if (!Uri.IsWellFormedUriString(config.MqttBrokerIpAddress, UriKind.RelativeOrAbsolute))
+      if (!Uri.IsWellFormedUriString(config.MqttBrokerUri, UriKind.RelativeOrAbsolute))
         throw new ArgumentOutOfRangeException(
-          nameof(config.MqttBrokerIpAddress),
-          config.MqttBrokerIpAddress,
-          $"'{config.MqttBrokerIpAddress}' should be a valid URI");
+          nameof(config.MqttBrokerUri),
+          config.MqttBrokerUri,
+          $"'{config.MqttBrokerUri}' should be a valid URI");
 
       if (config.MqttBrokerPort is < 0 or > 65535)
         throw new ArgumentOutOfRangeException(

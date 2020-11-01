@@ -21,7 +21,7 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""some\\where"",
+  ""MqttBrokerUri"": ""some\\where"",
   ""MqttBrokerPort"": ""6667"",
   ""Logos"": [
     {
@@ -40,7 +40,7 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(Config.MqttBrokerIpAddress));
+      ex.ParamName.Should().Be(nameof(Config.MqttBrokerUri));
       ex.ActualValue.Should().Be("some\\where");
       ex.Message.Should().Contain("'some\\where' should be a valid URI");
     }
@@ -419,8 +419,10 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""5.6.7.8"",
+  ""MqttBrokerUri"": ""5.6.7.8"",
   ""MqttBrokerPort"": ""6667"",
+  ""MqttBrokerUsername"": ""mqttUsername"",
+  ""MqttBrokerPassword"": ""mqttPasswd"",
   ""Logos"": [
     {
       ""IpAddress"": ""1.2.3.4"",
@@ -487,8 +489,10 @@ namespace LogoMqttBinding.Tests
       var config = new Config();
       config.Read(configFile.Path);
 
-      config.MqttBrokerIpAddress.Should().Be("5.6.7.8");
+      config.MqttBrokerUri.Should().Be("5.6.7.8");
       config.MqttBrokerPort.Should().Be(6667);
+      config.MqttBrokerUsername.Should().Be("mqttUsername");
+      config.MqttBrokerPassword.Should().Be("mqttPasswd");
 
       config.Logos.Length.Should().Be(1);
       var logo = config.Logos.First();

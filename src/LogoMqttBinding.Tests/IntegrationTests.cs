@@ -69,7 +69,7 @@ namespace LogoMqttBindingTests
     {
       return new Config
       {
-        MqttBrokerIpAddress = brokerUri,
+        MqttBrokerUri = brokerUri,
         MqttBrokerPort = brokerPort,
         Logos = new[]
         {

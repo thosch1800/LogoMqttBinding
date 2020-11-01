@@ -77,9 +77,15 @@ namespace LogoMqttBinding
 
         foreach (var mqttConfig in logoConfig.Mqtt)
         {
-          Console.WriteLine($"MQTT {mqttConfig.ClientId} -> {config.MqttBrokerIpAddress}");
+          Console.WriteLine($"MQTT {mqttConfig.ClientId} -> {config.MqttBrokerUri} {config.MqttBrokerPort}");
 
-          var mqttClient = new Mqtt(loggerFactory.CreateLogger<Mqtt>(), mqttConfig.ClientId, config.MqttBrokerIpAddress, config.MqttBrokerPort);
+          var mqttClient = new Mqtt(
+            loggerFactory.CreateLogger<Mqtt>(),
+            mqttConfig.ClientId,
+            config.MqttBrokerUri,
+            config.MqttBrokerPort,
+            config.MqttBrokerUsername,
+            config.MqttBrokerPassword);
           mqttClients.Add(mqttClient);
 
           foreach (var chConfig in mqttConfig.Subscribed)

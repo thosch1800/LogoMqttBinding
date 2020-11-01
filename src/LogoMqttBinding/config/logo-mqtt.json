@@ -1,5 +1,5 @@
 ﻿{
-  "MqttBrokerIpAddress": "test.mosquitto.org",
+  "MqttBrokerUri": "test.mosquitto.org",
   "Logos": [
     {
       "IpAddress": "10.1.1.230",

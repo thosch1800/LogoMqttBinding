@@ -14,7 +14,7 @@ namespace LogoMqttBinding.MqttAdapter
 {
   public class Mqtt : IAsyncDisposable
   {
-    public Mqtt(ILogger<Mqtt> logger, string clientId, string serverUri, int port)
+    public Mqtt(ILogger<Mqtt> logger, string clientId, string serverUri, int port, string? brokerUsername, string? brokerPassword)
     {
       this.logger = logger;
       this.serverUri = serverUri;
@@ -26,10 +26,15 @@ namespace LogoMqttBinding.MqttAdapter
       client.ConnectedHandler = new MqttClientConnectedHandlerDelegate(ConnectedHandler);
       client.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(MessageReceivedHandler);
 
-      clientOptions = new MqttClientOptionsBuilder()
+      var clientOptionsBuilder = new MqttClientOptionsBuilder()
         .WithTcpServer(serverUri, port)
-        .WithClientId(clientId)
-        .Build();
+        .WithClientId(clientId);
+
+      if (brokerUsername is not null &&
+          brokerPassword is not null)
+        clientOptionsBuilder.WithCredentials(brokerUsername, brokerPassword);
+
+      clientOptions = clientOptionsBuilder.Build();
     }
 
     public async ValueTask DisposeAsync()

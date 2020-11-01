@@ -83,7 +83,7 @@ namespace LogoMqttBinding.LogoAdapter
           if (errorCount > 3)
           {
             logo.Connect();
-            await Task.Delay(3000).ConfigureAwait(false);
+            await Task.Delay(3000, cts.Token).ConfigureAwait(false);
           }
         }
     }
