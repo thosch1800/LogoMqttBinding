@@ -34,7 +34,7 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.9" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.9" />
         <PackageReference Include="MQTTnet" Version="3.0.13" />
-        <PackageReference Include="thosch.Logging" Version="1.1.1" />
+        <PackageReference Include="thosch.Logging" Version="1.1.3" />
         <PackageReference Include="Sharp7" Version="1.1.75" />
     </ItemGroup>
 
