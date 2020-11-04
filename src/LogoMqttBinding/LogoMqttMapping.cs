@@ -13,6 +13,7 @@ namespace LogoMqttBinding
 {
   internal static class LogoMqttMapping
   {
+    //TODO: refactor to instance class (also featuring a logger)
     public static void AddMessageHandler(this Mqtt.Subscription subscription, Logo logo, string chType, int chLogoAddress)
     {
       subscription.MessageReceived += (sender, args) => LogoSetValue(logo, chType, chLogoAddress, args.ApplicationMessage);
@@ -45,8 +46,6 @@ namespace LogoMqttBinding
       if (FromPayload(payload, out float value))
         logo.FloatAt(address).Set(value);
     }
-
-
 
 
 
@@ -94,26 +93,29 @@ namespace LogoMqttBinding
       }
     }
 
-    
-    
-    
-    
+
+
     private static bool FromPayload(byte[] payload, out float result)
     {
       var s = Encoding.UTF8.GetString(payload);
-      return float.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+      var succeeded = float.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+      //if (!succeeded) logger.Log();
+      return succeeded;
     }
 
     private static bool FromPayload(byte[] payload, out byte result)
     {
       var s = Encoding.UTF8.GetString(payload);
-      return byte.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+      var succeeded = byte.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+      return succeeded;
     }
 
     private static bool FromPayload(byte[] payload, out short result)
     {
       var s = Encoding.UTF8.GetString(payload);
-      return short.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+      var succeeded = short.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+      //if (!succeeded) logger.Log();
+      return succeeded;
     }
 
     private static byte[] ToPayload(float value)
