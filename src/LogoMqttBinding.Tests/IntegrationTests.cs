@@ -109,7 +109,53 @@ namespace LogoMqttBindingTests
     }
 
     
+
     
+    
+    
+    
+    [Theory]
+    [InlineData(200, "get/byte/at/200", 42)]
+    [InlineData(205, "get/byte/at/205", 128)]
+    public async Task ChangedValueInLogo_Byte_TriggersMqttWithCorrectValue(int logoAddress, string mqttTopic, byte value)
+    {
+      MqttApplicationMessageReceivedEventArgs? receivedMessage = null;
+      testEnvironment.MqttMessageReceived += (s, e) => receivedMessage = e;
+
+      await testEnvironment.MqttClient!.SubscribeAsync(new MqttClientSubscribeOptionsBuilder().WithTopicFilter(mqttTopic).Build(), CancellationToken.None);
+
+      testEnvironment.LogoHardwareMock!.WriteByte(logoAddress, value);
+      await Task.Delay(250).ConfigureAwait(false); // let cache update, detect change and publish
+
+      await testEnvironment.MqttClient.UnsubscribeAsync(new MqttClientUnsubscribeOptionsBuilder().WithTopicFilter(mqttTopic).Build(), CancellationToken.None);
+
+      receivedMessage.Should().NotBeNull();
+      var receivedString = Encoding.UTF8.GetString(receivedMessage!.ApplicationMessage.Payload);
+      var actualValue = byte.Parse(receivedString);
+      actualValue.Should().Be(value);
+    }
+
+    [Theory]
+    [InlineData(200, "set/byte/at/200", 23)]
+    [InlineData(205, "set/byte/at/205", 222)]
+    public async Task SetValueFromMqtt_Byte_UpdatesLogoWithCorrectValue(int logoAddress, string mqttTopic, byte value)
+    {
+      var payload = Encoding.UTF8.GetBytes(value.ToString(CultureInfo.InvariantCulture));
+
+      await testEnvironment.MqttClient!.PublishAsync(
+        new MqttApplicationMessageBuilder()
+          .WithTopic(mqttTopic)
+          .WithPayload(payload)
+          .Build(),
+        CancellationToken.None);
+
+      await Task.Delay(100).ConfigureAwait(false);
+
+      var actualValue = testEnvironment.LogoHardwareMock!.ReadByte(logoAddress);
+
+      actualValue.Should().Be(value);
+    }
+
     
     
     
@@ -177,6 +223,18 @@ namespace LogoMqttBindingTests
                     Type = "float",
                   },
                   
+                  new MqttChannel
+                  {
+                    Topic = "set/byte/at/200",
+                    LogoAddress = 200,
+                    Type = "byte",
+                  },
+                  new MqttChannel
+                  {
+                    Topic = "set/byte/at/205",
+                    LogoAddress = 205,
+                    Type = "byte",
+                  },
                 },
 
                 Published = new[]
@@ -207,6 +265,18 @@ namespace LogoMqttBindingTests
                     Type = "float",
                   },
 
+                  new MqttChannel
+                  {
+                    Topic = "get/byte/at/200",
+                    LogoAddress = 200,
+                    Type = "byte",
+                  },
+                  new MqttChannel
+                  {
+                    Topic = "get/byte/at/205",
+                    LogoAddress = 205,
+                    Type = "byte",
+                  },
                 },
               },
             },
