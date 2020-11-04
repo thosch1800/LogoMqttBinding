@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -37,7 +39,8 @@ namespace LogoMqttBindingTests
       await testEnvironment.MqttClient.UnsubscribeAsync(new MqttClientUnsubscribeOptionsBuilder().WithTopicFilter(mqttTopic).Build(), CancellationToken.None);
 
       receivedMessage.Should().NotBeNull();
-      var actualValue = BitConverter.ToInt16(receivedMessage!.ApplicationMessage.Payload);
+      var receivedString = Encoding.UTF8.GetString(receivedMessage!.ApplicationMessage.Payload);
+      var actualValue = short.Parse(receivedString);
       actualValue.Should().Be(value);
     }
 
@@ -47,7 +50,7 @@ namespace LogoMqttBindingTests
     [InlineData(25, "set/integer/at/25", 1337)]
     public async Task SetValueFromMqtt_Integer_UpdatesLogoWithCorrectValue(int logoAddress, string mqttTopic, short value)
     {
-      var payload = BitConverter.GetBytes(value);
+      var payload = Encoding.UTF8.GetBytes(value.ToString(CultureInfo.InvariantCulture));
 
       await testEnvironment.MqttClient!.PublishAsync(
         new MqttApplicationMessageBuilder()

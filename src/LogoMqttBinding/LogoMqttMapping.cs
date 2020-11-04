@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using LogoMqttBinding.LogoAdapter;
 using LogoMqttBinding.MqttAdapter;
@@ -18,24 +20,6 @@ namespace LogoMqttBinding
 
     private static void LogoSetValue(Logo logo, string type, int address, MqttApplicationMessage msg) => LogoSetValueFor[type].Invoke(logo, address, msg.Payload);
 
-    private static void LogoSetInteger(Logo logo, int address, byte[] payload)
-    {
-      var value = BitConverter.ToInt16(payload);
-      logo.IntegerAt(address).Set(value);
-    }
-
-    private static void LogoSetByte(Logo logo, int address, byte[] payload)
-    {
-      var value = payload.First();
-      logo.ByteAt(address).Set(value);
-    }
-
-    private static void LogoSetFloat(Logo logo, int address, byte[] payload)
-    {
-      var value = BitConverter.ToSingle(payload);
-      logo.FloatAt(address).Set(value);
-    }
-
     private static readonly ImmutableDictionary<string, Action<Logo, int, byte[]>> LogoSetValueFor =
       new Dictionary<string, Action<Logo, int, byte[]>>
       {
@@ -43,6 +27,26 @@ namespace LogoMqttBinding
         { "byte", LogoSetByte },
         { "float", LogoSetFloat },
       }.ToImmutableDictionary();
+
+    private static void LogoSetInteger(Logo logo, int address, byte[] payload)
+    {
+      if (FromPayload(payload, out short value))
+        logo.IntegerAt(address).Set(value);
+    }
+
+    private static void LogoSetByte(Logo logo, int address, byte[] payload)
+    {
+      if (FromPayload(payload, out byte value))
+        logo.ByteAt(address).Set(value);
+    }
+
+    private static void LogoSetFloat(Logo logo, int address, byte[] payload)
+    {
+      if (FromPayload(payload, out float value))
+        logo.FloatAt(address).Set(value);
+    }
+
+
 
 
 
@@ -55,7 +59,7 @@ namespace LogoMqttBinding
           intVariableReference.SubscribeToChangeNotification(async () =>
           {
             var value = intVariableReference.Get();
-            var payload = BitConverter.GetBytes(value);
+            var payload = ToPayload(value);
             await MqttPublish(payload).ConfigureAwait(false);
           });
           break;
@@ -65,7 +69,7 @@ namespace LogoMqttBinding
           byteVariableReference.SubscribeToChangeNotification(async () =>
           {
             var value = byteVariableReference.Get();
-            var payload = BitConverter.GetBytes(value);
+            var payload = ToPayload(value);
             await MqttPublish(payload).ConfigureAwait(false);
           });
           break;
@@ -75,7 +79,7 @@ namespace LogoMqttBinding
           floatVariableReference.SubscribeToChangeNotification(async () =>
           {
             var value = floatVariableReference.Get();
-            var payload = BitConverter.GetBytes(value);
+            var payload = ToPayload(value);
             await MqttPublish(payload).ConfigureAwait(false);
           });
           break;
@@ -88,6 +92,46 @@ namespace LogoMqttBinding
               .Build());
           }
       }
+    }
+
+    
+    
+    
+    
+    private static bool FromPayload(byte[] payload, out float result)
+    {
+      var s = Encoding.UTF8.GetString(payload);
+      return float.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+    }
+
+    private static bool FromPayload(byte[] payload, out byte result)
+    {
+      var s = Encoding.UTF8.GetString(payload);
+      return byte.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+    }
+
+    private static bool FromPayload(byte[] payload, out short result)
+    {
+      var s = Encoding.UTF8.GetString(payload);
+      return short.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+    }
+
+    private static byte[] ToPayload(float value)
+    {
+      var s = value.ToString(CultureInfo.InvariantCulture);
+      return Encoding.UTF8.GetBytes(s);
+    }
+
+    private static byte[] ToPayload(byte value)
+    {
+      var s = value.ToString(CultureInfo.InvariantCulture);
+      return Encoding.UTF8.GetBytes(s);
+    }
+
+    private static byte[] ToPayload(short value)
+    {
+      var s = value.ToString(CultureInfo.InvariantCulture);
+      return Encoding.UTF8.GetBytes(s);
     }
   }
 }

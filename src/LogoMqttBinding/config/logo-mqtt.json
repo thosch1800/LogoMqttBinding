@@ -1,5 +1,5 @@
 ﻿{
-  "MqttBrokerUri": "test.mosquitto.org",
+  "MqttBrokerUri": "127.0.0.1",
   "Logos": [
     {
       "IpAddress": "10.1.1.230",
@@ -19,6 +19,27 @@
         {
           "ClientId": "logo_230",
           "Subscribed": [
+            {
+              "Topic": "output/q1/set",
+              "LogoAddress": 11,
+              "Type": "byte"
+            },
+            {
+              "Topic": "output/q2/set",
+              "LogoAddress": 12,
+              "Type": "byte"
+            },
+            {
+              "Topic": "output/q3/set",
+              "LogoAddress": 13,
+              "Type": "byte"
+            },
+            {
+              "Topic": "output/q4/set",
+              "LogoAddress": 14,
+              "Type": "byte"
+            },
+
             {
               "Topic": "map/20/30/set",
               "LogoAddress": 20,
@@ -81,6 +102,68 @@
             }
           ],
           "Published": [
+            {
+              "Topic": "output/q1/get",
+              "LogoAddress": 111,
+              "Type": "byte"
+            },
+            {
+              "Topic": "output/q2/get",
+              "LogoAddress": 112,
+              "Type": "byte"
+            },
+            {
+              "Topic": "output/q3/get",
+              "LogoAddress": 113,
+              "Type": "byte"
+            },
+            {
+              "Topic": "output/q4/get",
+              "LogoAddress": 114,
+              "Type": "byte"
+            },
+
+            {
+              "Topic": "input/i1/get",
+              "LogoAddress": 1,
+              "Type": "byte"
+            },
+            {
+              "Topic": "input/i2/get",
+              "LogoAddress": 2,
+              "Type": "byte"
+            },
+            {
+              "Topic": "input/i3/get",
+              "LogoAddress": 3,
+              "Type": "byte"
+            },
+            {
+              "Topic": "input/i4/get",
+              "LogoAddress": 4,
+              "Type": "byte"
+            },
+            {
+              "Topic": "input/i5/get",
+              "LogoAddress": 5,
+              "Type": "byte"
+            },
+            {
+              "Topic": "input/i6/get",
+              "LogoAddress": 6,
+              "Type": "byte"
+            },
+            {
+              "Topic": "input/i7/get",
+              "LogoAddress": 7,
+              "Type": "byte"
+            },
+            {
+              "Topic": "input/i8/get",
+              "LogoAddress": 8,
+              "Type": "byte"
+            },
+
             {
               "Topic": "map/20/30/get",
               "LogoAddress": 30,
