@@ -24,7 +24,6 @@ namespace LogoMqttBindingTests
 
     [Theory]
     [InlineData(0, "get/integer/at/0", 7)]
-    [InlineData(0, "get/integer/at/0", 42)]
     [InlineData(17, "get/integer/at/17", 1337)]
     public async Task ChangedValueInLogo_Integer_TriggersMqttWithCorrectValue(int logoAddress, string mqttTopic, short value)
     {
@@ -46,7 +45,6 @@ namespace LogoMqttBindingTests
 
     [Theory]
     [InlineData(5, "set/integer/at/5", 7)]
-    [InlineData(5, "set/integer/at/5", 42)]
     [InlineData(25, "set/integer/at/25", 1337)]
     public async Task SetValueFromMqtt_Integer_UpdatesLogoWithCorrectValue(int logoAddress, string mqttTopic, short value)
     {
@@ -66,6 +64,63 @@ namespace LogoMqttBindingTests
       actualValue.Should().Be(value);
     }
 
+    
+    
+    [Theory]
+    [InlineData(100, "get/float/at/100", 42)]
+    [InlineData(105, "get/float/at/105", 13.3f)]
+    public async Task ChangedValueInLogo_Float_TriggersMqttWithCorrectValue(int logoAddress, string mqttTopic, short value)
+    {
+      MqttApplicationMessageReceivedEventArgs? receivedMessage = null;
+      testEnvironment.MqttMessageReceived += (s, e) => receivedMessage = e;
+
+      await testEnvironment.MqttClient!.SubscribeAsync(new MqttClientSubscribeOptionsBuilder().WithTopicFilter(mqttTopic).Build(), CancellationToken.None);
+
+      testEnvironment.LogoHardwareMock!.WriteFloat(logoAddress, value);
+      await Task.Delay(250).ConfigureAwait(false); // let cache update, detect change and publish
+
+      await testEnvironment.MqttClient.UnsubscribeAsync(new MqttClientUnsubscribeOptionsBuilder().WithTopicFilter(mqttTopic).Build(), CancellationToken.None);
+
+      receivedMessage.Should().NotBeNull();
+      var receivedString = Encoding.UTF8.GetString(receivedMessage!.ApplicationMessage.Payload);
+      var actualValue = float.Parse(receivedString);
+      actualValue.Should().Be(value);
+    }
+
+    [Theory]
+    [InlineData(100, "set/float/at/100", 23)]
+    [InlineData(105, "set/float/at/105", 123.0f)]
+    public async Task SetValueFromMqtt_Float_UpdatesLogoWithCorrectValue(int logoAddress, string mqttTopic, float value)
+    {
+      var payload = Encoding.UTF8.GetBytes(value.ToString(CultureInfo.InvariantCulture));
+
+      await testEnvironment.MqttClient!.PublishAsync(
+        new MqttApplicationMessageBuilder()
+          .WithTopic(mqttTopic)
+          .WithPayload(payload)
+          .Build(),
+        CancellationToken.None);
+
+      await Task.Delay(100).ConfigureAwait(false);
+
+      var actualValue = testEnvironment.LogoHardwareMock!.ReadFloat(logoAddress);
+
+      actualValue.Should().Be(value);
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     //TODO: test: subscribe / connect / enforce reconnect -> change value should only notify once
 
     internal static Config GetConfig(string brokerUri, int brokerPort)
@@ -108,6 +163,20 @@ namespace LogoMqttBindingTests
                     LogoAddress = 25,
                     Type = "integer",
                   },
+                  
+                  new MqttChannel
+                  {
+                    Topic = "set/float/at/100",
+                    LogoAddress = 100,
+                    Type = "float",
+                  },
+                  new MqttChannel
+                  {
+                    Topic = "set/float/at/105",
+                    LogoAddress = 105,
+                    Type = "float",
+                  },
+                  
                 },
 
                 Published = new[]
@@ -124,6 +193,20 @@ namespace LogoMqttBindingTests
                     LogoAddress = 17,
                     Type = "integer",
                   },
+                  
+                  new MqttChannel
+                  {
+                    Topic = "get/float/at/100",
+                    LogoAddress = 100,
+                    Type = "float",
+                  },
+                  new MqttChannel
+                  {
+                    Topic = "get/float/at/105",
+                    LogoAddress = 105,
+                    Type = "float",
+                  },
+
                 },
               },
             },
