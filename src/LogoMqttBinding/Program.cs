@@ -18,8 +18,9 @@ namespace LogoMqttBinding
       var loggerFactory = ConfigureLogging();
       try
       {
-        Console.WriteLine("Reading configuration...");
-        var configuration = ReadConfiguration();
+        var configFile = "./config/logo-mqtt.json";
+        Console.WriteLine($"Reading configuration from {configFile}...");
+        var configuration = ReadConfiguration(configFile);
 
         Console.WriteLine("Initializing...");
         await using var appContext = Initialize(loggerFactory, configuration);
@@ -40,10 +41,10 @@ namespace LogoMqttBinding
       }
     }
 
-    private static Config ReadConfiguration()
+    private static Config ReadConfiguration(string path )
     {
       var configuration = new Config();
-      configuration.Read();
+      configuration.Read(path);
       configuration.Validate();
       return configuration;
     }
