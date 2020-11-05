@@ -66,9 +66,11 @@ namespace LogoMqttBinding
       var logos = new List<Logo>();
       var mqttClients = new List<Mqtt>();
 
+      Console.WriteLine($"MQTT broker {config.MqttBrokerUri}:{config.MqttBrokerPort}");
+
       foreach (var logoConfig in config.Logos)
       {
-        Console.WriteLine($"Logo {logoConfig.IpAddress}");
+        Console.WriteLine($"Logo at {logoConfig.IpAddress}");
 
         var logo = new Logo(
           loggerFactory.CreateLogger<Logo>(),
@@ -78,7 +80,7 @@ namespace LogoMqttBinding
 
         foreach (var mqttConfig in logoConfig.Mqtt)
         {
-          Console.WriteLine($"MQTT {mqttConfig.ClientId} -> {config.MqttBrokerUri} {config.MqttBrokerPort}");
+          Console.WriteLine($"| MQTT client {mqttConfig.ClientId}");
 
           var mqttClient = new Mqtt(
             loggerFactory.CreateLogger<Mqtt>(),
@@ -90,10 +92,16 @@ namespace LogoMqttBinding
           mqttClients.Add(mqttClient);
 
           foreach (var chConfig in mqttConfig.Subscribed)
+          {
+            Console.WriteLine($"| | subscribe {chConfig.Topic} {chConfig.LogoAddress}/{chConfig.Type}");
             mqttClient.Subscribe(chConfig.Topic).AddMessageHandler(logo, chConfig.Type, chConfig.LogoAddress);
+          }
 
           foreach (var chConfig in mqttConfig.Published)
+          {
+            Console.WriteLine($"| | publish {chConfig.Topic} {chConfig.LogoAddress}/{chConfig.Type}");
             LogoMqttMapping.LogoNotifyOnChange(chConfig.Type, mqttClient, chConfig.Topic, logo, chConfig.LogoAddress);
+          }
         }
       }
 
