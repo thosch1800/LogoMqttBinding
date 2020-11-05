@@ -10,3 +10,5 @@ is mapped to
 ```C:\Users\<username>\smarthome\config```
 when using windows
 
+## Run MQTT broker locally
+```docker run -d -it --name mosquitto -p 1883:1883 eclipse-mosquitto```
