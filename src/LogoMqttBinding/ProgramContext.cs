@@ -18,7 +18,8 @@ namespace LogoMqttBinding
     public ImmutableArray<Mqtt> MqttClients { get; }
 
     public async ValueTask DisposeAsync()
-    { Console.WriteLine("Disposing...");
+    {
+      Console.WriteLine("Disposing...");
       foreach (var logo in Logos) await logo.DisposeAsync();
       foreach (var mqttClient in MqttClients) await mqttClient.DisposeAsync();
       Console.WriteLine("Disposed...");

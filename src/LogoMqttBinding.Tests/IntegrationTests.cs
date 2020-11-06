@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -64,8 +63,8 @@ namespace LogoMqttBindingTests
       actualValue.Should().Be(value);
     }
 
-    
-    
+
+
     [Theory]
     [InlineData(100, "get/float/at/100", 42)]
     [InlineData(105, "get/float/at/105", 13.3f)]
@@ -108,12 +107,8 @@ namespace LogoMqttBindingTests
       actualValue.Should().Be(value);
     }
 
-    
 
-    
-    
-    
-    
+
     [Theory]
     [InlineData(200, "get/byte/at/200", 42)]
     [InlineData(205, "get/byte/at/205", 128)]
@@ -156,17 +151,8 @@ namespace LogoMqttBindingTests
       actualValue.Should().Be(value);
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
     //TODO: test: subscribe / connect / enforce reconnect -> change value should only notify once
 
     internal static Config GetConfig(string brokerUri, int brokerPort)
@@ -209,7 +195,7 @@ namespace LogoMqttBindingTests
                     LogoAddress = 25,
                     Type = "integer",
                   },
-                  
+
                   new MqttChannel
                   {
                     Topic = "set/float/at/100",
@@ -222,7 +208,7 @@ namespace LogoMqttBindingTests
                     LogoAddress = 105,
                     Type = "float",
                   },
-                  
+
                   new MqttChannel
                   {
                     Topic = "set/byte/at/200",
@@ -251,7 +237,7 @@ namespace LogoMqttBindingTests
                     LogoAddress = 17,
                     Type = "integer",
                   },
-                  
+
                   new MqttChannel
                   {
                     Topic = "get/float/at/100",
