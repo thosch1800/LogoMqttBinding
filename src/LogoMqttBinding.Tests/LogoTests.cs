@@ -149,7 +149,7 @@ namespace LogoMqttBinding.Tests
 
       var notificationContext = logo
         .ByteAt(address)
-        .SubscribeToChangeNotification(() => 
+        .SubscribeToChangeNotification(() =>
           notifiedValues.Add(logo.ByteAt(address).Get()));
 
       logoHardwareMock.WriteByte(address, firstValueUpdate);

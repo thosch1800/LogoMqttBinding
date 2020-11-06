@@ -1,153 +1,78 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
-using LogoMqttBinding.LogoAdapter;
-using LogoMqttBinding.MqttAdapter;
 using Microsoft.Extensions.Logging;
 
 namespace LogoMqttBinding
 {
-  public static class Program
+  public class Program
   {
-    private const string ConfigPath = "./config/logo-mqtt.json";
-    private const string DefaultConfigPath = "./configDefaults/logo-mqtt.json";
+    public static async Task Main() => await new Program().Run();
 
-    public static async Task Main()
+    private Program()
     {
-      Console.WriteLine("Configuring logger...");
-      var loggerFactory = ConfigureLogging();
+      loggerFactory = LoggerFactory.Create(c => c.AddConsole());
+      logger = loggerFactory.CreateLogger<Program>();
+    }
+
+    private async Task Run()
+    {
       try
       {
-        EnsureDefaultConfig();
+        logger.LogInformation("Configuring...");
+        await using var context = Configure();
 
-        Console.WriteLine($"Reading configuration from {ConfigPath}...");
-        var configuration = ReadConfiguration();
+        logger.LogInformation("Connecting...");
+        await Logic.Connect(context).ConfigureAwait(false);
 
-        Console.WriteLine("Initializing...");
-        await using var appContext = Initialize(loggerFactory, configuration);
-
-        Console.WriteLine("Connecting...");
-        await Connect(appContext);
-
-        Console.WriteLine("Press CTRL+C to exit");
+        logger.LogInformation("Press CTRL+C to exit");
         await WaitForCtrlCAsync(CancellationToken.None).ConfigureAwait(false);
-        Console.WriteLine("Exiting...");
+        logger.LogInformation("Exiting...");
       }
       catch (Exception ex)
       {
-        loggerFactory
-          .CreateLogger(nameof(Program))
-          .LogException(ex);
+        logger.LogException(ex);
         throw;
       }
     }
 
-    internal static ProgramContext Initialize(ILoggerFactory loggerFactory, Config config)
-    {
-      var logos = new List<Logo>();
-      var mqttClients = new List<Mqtt>();
-
-      Console.WriteLine($"MQTT broker {config.MqttBrokerUri}:{config.MqttBrokerPort}");
-
-      foreach (var logoConfig in config.Logos)
-      {
-        Console.WriteLine($"Logo at {logoConfig.IpAddress}");
-
-        var logo = new Logo(
-          loggerFactory.CreateLogger<Logo>(),
-          logoConfig.IpAddress,
-          logoConfig.MemoryRanges);
-        logos.Add(logo);
-
-        foreach (var mqttClientConfig in logoConfig.Mqtt)
-        {
-          Console.WriteLine($"| MQTT client {mqttClientConfig.ClientId}");
-
-          var mqttClient = new Mqtt(
-            loggerFactory.CreateLogger<Mqtt>(),
-            mqttClientConfig.ClientId,
-            config.MqttBrokerUri,
-            config.MqttBrokerPort,
-            config.MqttBrokerUsername,
-            config.MqttBrokerPassword);
-          mqttClients.Add(mqttClient);
-
-          foreach (var subscribed in mqttClientConfig.Subscribe)
-          {
-            Console.WriteLine($"| | subscribe {subscribed.Topic} {subscribed.LogoAddress}/{subscribed.Type}");
-
-            mqttClient
-              .Subscribe(subscribed.Topic)
-              .AddLogoSetValueHandler(logo, subscribed.Type, subscribed.LogoAddress);
-          }
-
-          foreach (var published in mqttClientConfig.Publish)
-          {
-            Console.WriteLine($"| | publish {published.Topic} {published.LogoAddress}/{published.Type}");
-            
-            LogoMqttMapping
-              .LogoNotifyOnChange(logo, mqttClient, published.Type, published.Topic, published.LogoAddress);
-            /*
-            mqttClient
-              .Subscribe(published.Topic)
-              .AddLogoGetValueHandler(logo, mqttClient, published.Type, published.Topic, published.LogoAddress);
-          */
-          }
-        }
-      }
-
-      return new ProgramContext(logos.ToImmutableArray(), mqttClients.ToImmutableArray());
-    }
-
-    private static void EnsureDefaultConfig()
-    {
-      if (!File.Exists(ConfigPath))
-      {
-        Console.WriteLine($"Copy default configuration to {ConfigPath}...");
-        File.Copy(DefaultConfigPath, ConfigPath);
-      }
-    }
-
-    private static Config ReadConfiguration()
+    private ProgramContext Configure()
     {
       var configuration = new Config();
+      
+      if (!File.Exists(ConfigPath))
+      {
+        logger.LogInformation($"Creating default configuration...");
+        File.Copy(DefaultConfigPath, ConfigPath);
+      }
+
+      logger.LogInformation($"Reading configuration from {ConfigPath}...");
       configuration.Read(ConfigPath);
+
+      logger.LogInformation($"Validating configuration...");
       configuration.Validate();
-      return configuration;
+
+      logger.LogInformation("Initializing...");
+      return Logic.Initialize(loggerFactory, configuration);
     }
 
-    private static ILoggerFactory ConfigureLogging()
+    private async Task WaitForCtrlCAsync(CancellationToken ct)
     {
-      return LoggerFactory.Create(
-        c =>
-        {
-          c.AddConsole();
-#if DEBUG
-          c.SetMinimumLevel(LogLevel.Debug);
-#endif
-        });
-    }
-
-    internal static async Task Connect(ProgramContext ctx)
-    {
-      foreach (var logo in ctx.Logos) logo.Connect();
-      foreach (var mqttClient in ctx.MqttClients) await mqttClient.ConnectAsync();
-    }
-
-    private static async Task WaitForCtrlCAsync(CancellationToken ct)
-    {
-      using var lockObject = new SemaphoreSlim(1, 1);
-      await lockObject.WaitAsync(ct);
+      using var semaphore = new SemaphoreSlim(1, 1);
+      await semaphore.WaitAsync(ct).ConfigureAwait(false);
       Console.CancelKeyPress += (_, e) =>
       { // ReSharper disable once AccessToDisposedClosure
-        lockObject.Release();
+        semaphore.Release();
         e.Cancel = true;
       };
-      await lockObject.WaitAsync(ct);
+      await semaphore.WaitAsync(ct).ConfigureAwait(false);
     }
+
+    private readonly ILogger<Program> logger;
+    private readonly ILoggerFactory loggerFactory;
+    private const string ConfigPath = "./config/logo-mqtt.json";
+    private const string DefaultConfigPath = "./configDefaults/logo-mqtt.json";
   }
 }
