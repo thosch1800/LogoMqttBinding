@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using LogoMqttBinding.Configuration;
 using LogoMqttBinding.LogoAdapter;
 using LogoMqttBinding.MqttAdapter;
 using Microsoft.Extensions.Logging;
@@ -15,44 +16,44 @@ namespace LogoMqttBinding
       mapping = new Mapping(loggerFactory, mqttClient);
     }
 
-    public void WriteLogoVariable(Mqtt.Subscription subscription, int address, string type)
+    public void WriteLogoVariable(Mqtt.Subscription subscription, int address, MqttChannelConfig.Types type)
     {
       subscription.MessageReceived += (sender, args) =>
       {
         switch (type)
         {
-          case "integer":
+          case MqttChannelConfig.Types.Integer:
             mapping.ReceivedInteger(logo.IntegerAt(address), args.ApplicationMessage.Payload);
             break;
 
-          case "byte":
+          case MqttChannelConfig.Types.Byte:
             mapping.ReceivedByte(logo.ByteAt(address), args.ApplicationMessage.Payload);
             break;
 
-          case "float":
+          case MqttChannelConfig.Types.Float:
             mapping.ReceivedFloat(logo.FloatAt(address), args.ApplicationMessage.Payload);
             break;
         }
       };
     }
 
-    public NotificationContext PublishOnChange(string topic, int address, string type)
+    public NotificationContext PublishOnChange(string topic, int address, MqttChannelConfig.Types type)
     {
       switch (type)
       {
-        case "integer":
+        case MqttChannelConfig.Types.Integer:
           return logo
             .IntegerAt(address)
             .SubscribeToChangeNotification(async logoVariable =>
               await mapping.PublishInteger(topic, logoVariable).ConfigureAwait(false));
 
-        case "byte":
+        case MqttChannelConfig.Types.Byte:
           return logo
             .ByteAt(address)
             .SubscribeToChangeNotification(async logoVariable =>
               await mapping.PublishByte(topic, logoVariable).ConfigureAwait(false));
 
-        case "float":
+        case MqttChannelConfig.Types.Float:
           return logo
             .FloatAt(address)
             .SubscribeToChangeNotification(async logoVariable =>

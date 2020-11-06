@@ -52,11 +52,11 @@ namespace LogoMqttBinding
             switch(action)
             {
               case MqttChannelConfig.Actions.Publish:
-                mapper.PublishOnChange(channel.Topic, channel.LogoAddress, channel.Type);
+                mapper.PublishOnChange(channel.Topic, channel.LogoAddress, channel.GetTypeAsEnum());
                 break;
               
               case MqttChannelConfig.Actions.Subscribe:
-                mapper.WriteLogoVariable(mqttClient.Subscribe(channel.Topic), channel.LogoAddress, channel.Type);
+                mapper.WriteLogoVariable(mqttClient.Subscribe(channel.Topic), channel.LogoAddress, channel.GetTypeAsEnum());
                 break;
               
               case MqttChannelConfig.Actions.SubscribePulse:
