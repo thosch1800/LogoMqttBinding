@@ -45,16 +45,13 @@ namespace LogoMqttBinding
           foreach (var subscribed in mqttClientConfig.Subscribe)
           {
             logger.LogInformation($"-- subscribe {subscribed.Topic} (@{subscribed.LogoAddress}[{subscribed.Type}])");
-
-            var subscription = mqttClient.Subscribe(subscribed.Topic);
-            mapper.AddLogoSetValueHandler(subscription, subscribed.Type, subscribed.LogoAddress);
+            mapper.MapLogoVariable(mqttClient.Subscribe(subscribed.Topic), subscribed.LogoAddress, subscribed.Type);
           }
 
           foreach (var published in mqttClientConfig.Publish)
           {
             logger.LogInformation($"-- publish {published.Topic} (@{published.LogoAddress}[{published.Type}])");
-
-            mapper.LogoNotifyOnChange(published.Type, published.Topic, published.LogoAddress);
+            mapper.NotifyOnChange(published.Topic, published.LogoAddress, published.Type);
 
             /*
             mqttClient
