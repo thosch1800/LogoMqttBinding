@@ -2,11 +2,11 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 
-namespace LogoMqttBinding
+namespace LogoMqttBinding.MqttAdapter
 {
-  internal class Converter
+  internal class MqttFormat
   {
-    public Converter(ILogger logger) => this.logger = logger;
+    public MqttFormat(ILogger logger) => this.logger = logger;
 
 
 
