@@ -54,7 +54,7 @@ namespace LogoMqttBinding
             logger.LogInformation($"-- publish {published.Topic} (@{published.LogoAddress}[{published.Type}])");
 
             mapper.LogoNotifyOnChange(logo, mqttClient, published.Type, published.Topic, published.LogoAddress);
-            
+
             /*
             mqttClient
               .Subscribe(published.Topic)

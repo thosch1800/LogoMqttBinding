@@ -42,17 +42,17 @@ namespace LogoMqttBinding
     private ProgramContext Configure()
     {
       var configuration = new Config();
-      
+
       if (!File.Exists(ConfigPath))
       {
-        logger.LogInformation($"Creating default configuration...");
+        logger.LogInformation("Creating default configuration...");
         File.Copy(DefaultConfigPath, ConfigPath);
       }
 
       logger.LogInformation($"Reading configuration from {ConfigPath}...");
       configuration.Read(ConfigPath);
 
-      logger.LogInformation($"Validating configuration...");
+      logger.LogInformation("Validating configuration...");
       configuration.Validate();
 
       logger.LogInformation("Initializing...");

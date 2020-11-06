@@ -19,13 +19,13 @@ namespace LogoMqttBinding
     public async ValueTask DisposeAsync()
     {
       logger.LogInformation("Disposing...");
-      
-      foreach (var logo in logos) 
+
+      foreach (var logo in logos)
         await logo.DisposeAsync().ConfigureAwait(false);
-      
-      foreach (var mqttClient in mqttClients) 
+
+      foreach (var mqttClient in mqttClients)
         await mqttClient.DisposeAsync().ConfigureAwait(false);
-      
+
       logger.LogInformation("Disposed...");
     }
 
