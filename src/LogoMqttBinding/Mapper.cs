@@ -15,6 +15,7 @@ namespace LogoMqttBinding
     public Mapper(ILoggerFactory loggerFactory)
     {
       converter = new Converter(loggerFactory.CreateLogger<Converter>());
+      
       logoSetValueFor = new Dictionary<string, Action<Logo, int, byte[]>>
       {
         { "integer", SetInteger },
