@@ -27,9 +27,10 @@ namespace LogoMqttBinding
         logger.LogInformation("Connecting...");
         await context.Connect().ConfigureAwait(false);
 
-        logger.LogInformation("Press CTRL+C to exit");
+        logger.LogInformation("Up and running, press CTRL+C to exit...");
         await WaitForCtrlCAsync(CancellationToken.None).ConfigureAwait(false);
-        logger.LogInformation("Exiting...");
+
+        logger.LogInformation("Closing...");
       }
       catch (Exception ex)
       {

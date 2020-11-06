@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
 using LogoMqttBinding.LogoAdapter;
 using LogoMqttBinding.MqttAdapter;
@@ -65,7 +64,10 @@ namespace LogoMqttBinding
         }
       }
 
-      return new ProgramContext(logos.ToImmutableArray(), mqttClients.ToImmutableArray());
+      return new ProgramContext(
+        loggerFactory.CreateLogger<ProgramContext>(),
+        logos.ToImmutableArray(),
+        mqttClients.ToImmutableArray());
     }
   }
 }

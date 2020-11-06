@@ -3,35 +3,43 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using LogoMqttBinding.LogoAdapter;
 using LogoMqttBinding.MqttAdapter;
+using Microsoft.Extensions.Logging;
 
 namespace LogoMqttBinding
 {
   internal class ProgramContext : IAsyncDisposable
   {
-    internal ProgramContext(ImmutableArray<Logo> logos, ImmutableArray<Mqtt> mqttClients)
+    internal ProgramContext(ILogger<ProgramContext> logger, ImmutableArray<Logo> logos, ImmutableArray<Mqtt> mqttClients)
     {
-      Logos = logos;
-      MqttClients = mqttClients;
+      this.logger = logger;
+      this.logos = logos;
+      this.mqttClients = mqttClients;
     }
-
-    public ImmutableArray<Logo> Logos { get; }
-    public ImmutableArray<Mqtt> MqttClients { get; }
 
     public async ValueTask DisposeAsync()
     {
-      Console.WriteLine("Disposing...");
-      foreach (var logo in Logos) await logo.DisposeAsync();
-      foreach (var mqttClient in MqttClients) await mqttClient.DisposeAsync();
-      Console.WriteLine("Disposed...");
+      logger.LogInformation("Disposing...");
+      
+      foreach (var logo in logos) 
+        await logo.DisposeAsync().ConfigureAwait(false);
+      
+      foreach (var mqttClient in mqttClients) 
+        await mqttClient.DisposeAsync().ConfigureAwait(false);
+      
+      logger.LogInformation("Disposed...");
     }
-    
+
     internal async Task Connect()
     {
-      foreach (var logo in Logos)
+      foreach (var logo in logos)
         logo.Connect();
 
-      foreach (var mqttClient in MqttClients)
+      foreach (var mqttClient in mqttClients)
         await mqttClient.ConnectAsync().ConfigureAwait(false);
     }
+
+    private ImmutableArray<Logo> logos;
+    private ImmutableArray<Mqtt> mqttClients;
+    private readonly ILogger<ProgramContext> logger;
   }
 }
