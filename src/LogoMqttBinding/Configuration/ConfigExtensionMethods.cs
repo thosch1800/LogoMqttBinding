@@ -75,13 +75,13 @@ namespace LogoMqttBinding.Configuration
     {
       foreach (var mqttChannelConfig in mqttClientConfig.Channels)
       {
-        if (!Enum.IsDefined(typeof(MqttChannelConfig.Actions), mqttChannelConfig.Action))
+        if (!EnumIsDefined(typeof(MqttChannelConfig.Actions), mqttChannelConfig.Action))
           throw new ArgumentOutOfRangeException(
             nameof(mqttChannelConfig.Action),
             mqttChannelConfig.Action,
             $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfig.Actions)))}");
 
-        if (!Enum.IsDefined(typeof(MqttChannelConfig.Types), mqttChannelConfig.Type))
+        if (!EnumIsDefined(typeof(MqttChannelConfig.Types), mqttChannelConfig.Type))
           throw new ArgumentOutOfRangeException(
             nameof(mqttChannelConfig.Type),
             mqttChannelConfig.Type,
@@ -93,6 +93,11 @@ namespace LogoMqttBinding.Configuration
             mqttChannelConfig.LogoAddress,
             $"The range should be {MemoryRangeMinimum}..{MemoryRangeMaximum}");
       }
+
+      bool EnumIsDefined(Type type, string value) 
+        => Enum.TryParse(type, value,true, out var action) && 
+           Enum.IsDefined(type, action!)
+      ;
     }
 
     private const int MemoryRangeMinimum = 0;

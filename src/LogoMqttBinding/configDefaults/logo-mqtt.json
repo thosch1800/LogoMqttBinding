@@ -13,7 +13,7 @@
       "Mqtt": [
         {
           "ClientId": "logo_230",
-          "Subscribe": [
+          "Channels": [
             {
               "Action": "subscribe",
               "Topic": "output/q1/set",
@@ -37,9 +37,7 @@
               "Topic": "output/q4/set",
               "LogoAddress": 14,
               "Type": "byte"
-            }
-          ],
-          "Publish": [
+            },
             {
               "Action": "publish",
               "Topic": "output/q1/get",

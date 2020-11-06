@@ -394,19 +394,19 @@ namespace LogoMqttBinding.Tests
           ""ClientId"": ""mqtt-client-id"",
           ""Channels"": [
             {
-              ""Action"": ""subscribeSet"",
+              ""Action"": ""subscribe"",
               ""Topic"": ""map/21/31/set"",
               ""LogoAddress"": 21,
               ""Type"": ""byte""
             },
             {
-              ""Action"": ""subscribeSet"",
+              ""Action"": ""subscribe"",
               ""Topic"": ""map/22/32/set"",
               ""LogoAddress"": 22,
               ""Type"": ""integer""
             },
             {
-              ""Action"": ""subscribeSet"",
+              ""Action"": ""subscribe"",
               ""Topic"": ""map/26/36/set"",
               ""LogoAddress"": 26,
               ""Type"": ""float""
@@ -415,10 +415,10 @@ namespace LogoMqttBinding.Tests
               ""Action"": ""publish"",
               ""Topic"": ""map/121/131/get"",
               ""LogoAddress"": 121,
-              ""Type"": ""byte""
+              ""Type"": ""ByTe""
             },
             {
-              ""Action"": ""publish"",
+              ""Action"": ""PUBlish"",
               ""Topic"": ""map/122/132/get"",
               ""LogoAddress"": 122,
               ""Type"": ""integer""
@@ -438,6 +438,7 @@ namespace LogoMqttBinding.Tests
 
       var config = new Config();
       config.Read(configFile.Path);
+      config.Validate();
 
       config.MqttBrokerUri.Should().Be("5.6.7.8");
       config.MqttBrokerPort.Should().Be(6667);
@@ -459,35 +460,35 @@ namespace LogoMqttBinding.Tests
 
       logo.Mqtt[0].ClientId.Should().Be("mqtt-client-id");
 
-      logo.Mqtt[0].Channels[0].Action.Should().Be("subscribeSet");
+      logo.Mqtt[0].Channels[0].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Subscribe);
       logo.Mqtt[0].Channels[0].Topic.Should().Be("map/21/31/set");
       logo.Mqtt[0].Channels[0].LogoAddress.Should().Be(21);
-      logo.Mqtt[0].Channels[0].Type.Should().Be("byte");
+      logo.Mqtt[0].Channels[0].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Byte);
 
-      logo.Mqtt[0].Channels[1].Action.Should().Be("subscribeSet");
+      logo.Mqtt[0].Channels[1].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Subscribe);
       logo.Mqtt[0].Channels[1].Topic.Should().Be("map/22/32/set");
       logo.Mqtt[0].Channels[1].LogoAddress.Should().Be(22);
-      logo.Mqtt[0].Channels[1].Type.Should().Be("integer");
+      logo.Mqtt[0].Channels[1].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Integer);
 
-      logo.Mqtt[0].Channels[2].Action.Should().Be("subscribeSet");
+      logo.Mqtt[0].Channels[2].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Subscribe);
       logo.Mqtt[0].Channels[2].Topic.Should().Be("map/26/36/set");
       logo.Mqtt[0].Channels[2].LogoAddress.Should().Be(26);
-      logo.Mqtt[0].Channels[2].Type.Should().Be("float");
+      logo.Mqtt[0].Channels[2].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Float);
 
-      logo.Mqtt[0].Channels[3].Action.Should().Be("publish");
+      logo.Mqtt[0].Channels[3].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Publish);
       logo.Mqtt[0].Channels[3].Topic.Should().Be("map/121/131/get");
       logo.Mqtt[0].Channels[3].LogoAddress.Should().Be(121);
-      logo.Mqtt[0].Channels[3].Type.Should().Be("byte");
+      logo.Mqtt[0].Channels[3].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Byte);
 
-      logo.Mqtt[0].Channels[4].Action.Should().Be("publish");
+      logo.Mqtt[0].Channels[4].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Publish);
       logo.Mqtt[0].Channels[4].Topic.Should().Be("map/122/132/get");
       logo.Mqtt[0].Channels[4].LogoAddress.Should().Be(122);
-      logo.Mqtt[0].Channels[4].Type.Should().Be("integer");
+      logo.Mqtt[0].Channels[4].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Integer);
 
-      logo.Mqtt[0].Channels[5].Action.Should().Be("publish");
+      logo.Mqtt[0].Channels[5].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Publish);
       logo.Mqtt[0].Channels[5].Topic.Should().Be("map/126/136/get");
       logo.Mqtt[0].Channels[5].LogoAddress.Should().Be(126);
-      logo.Mqtt[0].Channels[5].Type.Should().Be("float");
+      logo.Mqtt[0].Channels[5].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Float);
     }
   }
 
