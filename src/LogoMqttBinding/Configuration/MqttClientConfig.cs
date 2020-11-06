@@ -4,10 +4,9 @@ using System.Diagnostics;
 namespace LogoMqttBinding.Configuration
 {
   [DebuggerDisplay("{" + nameof(ClientId) + "}")]
-  public class MqttClient
+  public class MqttClientConfig
   {
     public string ClientId { get; set; } = "";
-    public MqttChannel[] Publish { get; set; } = Array.Empty<MqttChannel>();
-    public MqttChannel[] Subscribe { get; set; } = Array.Empty<MqttChannel>();
+    public MqttChannelConfig[] Channels { get; set; } = Array.Empty<MqttChannelConfig>();
   }
 }

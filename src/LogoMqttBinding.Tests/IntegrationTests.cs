@@ -177,91 +177,101 @@ namespace LogoMqttBinding.Tests
             },
             Mqtt = new[]
             {
-              new MqttClient
+              new MqttClientConfig
               {
                 ClientId = "mqttClient",
 
-                Subscribe = new[]
+                Channels = new[]
                 {
-                  new MqttChannel
+                  new MqttChannelConfig
                   {
+                    Action = MqttChannelConfig.Actions.SubscribeSet.ToString(),
                     Topic = "set/integer/at/5",
                     LogoAddress = 5,
-                    Type = "integer",
+                    Type = MqttChannelConfig.Types.Integer.ToString(),
                   },
-                  new MqttChannel
+                  new MqttChannelConfig
                   {
+                    Action = MqttChannelConfig.Actions.SubscribeSet.ToString(),
                     Topic = "set/integer/at/25",
                     LogoAddress = 25,
-                    Type = "integer",
+                    Type = MqttChannelConfig.Types.Integer.ToString(),
                   },
 
-                  new MqttChannel
+                  new MqttChannelConfig
                   {
+                    Action = MqttChannelConfig.Actions.SubscribeSet.ToString(),
                     Topic = "set/float/at/100",
                     LogoAddress = 100,
-                    Type = "float",
+                    Type = MqttChannelConfig.Types.Float.ToString(),
                   },
-                  new MqttChannel
+                  new MqttChannelConfig
                   {
+                    Action = MqttChannelConfig.Actions.SubscribeSet.ToString(),
                     Topic = "set/float/at/105",
                     LogoAddress = 105,
-                    Type = "float",
+                    Type = MqttChannelConfig.Types.Float.ToString(),
                   },
 
-                  new MqttChannel
+                  new MqttChannelConfig
                   {
+                    Action = MqttChannelConfig.Actions.SubscribeSet.ToString(),
                     Topic = "set/byte/at/200",
                     LogoAddress = 200,
-                    Type = "byte",
+                    Type = MqttChannelConfig.Types.Byte.ToString(),
                   },
-                  new MqttChannel
+                  new MqttChannelConfig
                   {
+                    Action = MqttChannelConfig.Actions.SubscribeSet.ToString(),
                     Topic = "set/byte/at/205",
                     LogoAddress = 205,
-                    Type = "byte",
+                    Type = MqttChannelConfig.Types.Byte.ToString(),
                   },
-                },
 
-                Publish = new[]
-                {
-                  new MqttChannel
+                  
+                  new MqttChannelConfig
                   {
+                    Action = MqttChannelConfig.Actions.Publish.ToString(),
                     Topic = "get/integer/at/0",
                     LogoAddress = 0,
-                    Type = "integer",
+                    Type = MqttChannelConfig.Types.Integer.ToString(),
                   },
-                  new MqttChannel
+                  new MqttChannelConfig
                   {
+                    Action = MqttChannelConfig.Actions.Publish.ToString(),
                     Topic = "get/integer/at/17",
                     LogoAddress = 17,
-                    Type = "integer",
+                    Type = MqttChannelConfig.Types.Integer.ToString(),
                   },
 
-                  new MqttChannel
+                  new MqttChannelConfig
                   {
+                    Action = MqttChannelConfig.Actions.Publish.ToString(),
                     Topic = "get/float/at/100",
                     LogoAddress = 100,
-                    Type = "float",
+                    Type = MqttChannelConfig.Types.Float.ToString(),
                   },
-                  new MqttChannel
+                  new MqttChannelConfig
                   {
+                    Action = MqttChannelConfig.Actions.Publish.ToString(),
                     Topic = "get/float/at/105",
                     LogoAddress = 105,
-                    Type = "float",
+                    Type = MqttChannelConfig.Types.Float.ToString(),
                   },
 
-                  new MqttChannel
+                  new MqttChannelConfig
                   {
+                    Action = MqttChannelConfig.Actions.Publish.ToString(),
                     Topic = "get/byte/at/200",
                     LogoAddress = 200,
-                    Type = "byte",
+                    Type = MqttChannelConfig.Types.Byte.ToString(),
                   },
-                  new MqttChannel
+                  new MqttChannelConfig
                   {
+                    Action = MqttChannelConfig.Actions.Publish.ToString(),
                     Topic = "get/byte/at/205",
                     LogoAddress = 205,
-                    Type = "byte",
+                    Type = MqttChannelConfig.Types.Byte.ToString(),
                   },
                 },
               },

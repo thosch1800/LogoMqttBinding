@@ -42,16 +42,14 @@ namespace LogoMqttBinding
 
           var mapper = new Mapper(loggerFactory, logo, mqttClient);
 
-          foreach (var subscribed in mqttClientConfig.Subscribe)
+          foreach (var channel in mqttClientConfig.Channels)
           {
-            logger.LogInformation($"-- subscribe {subscribed.Topic} (@{subscribed.LogoAddress}[{subscribed.Type}])");
-            mapper.WriteLogoVariable(mqttClient.Subscribe(subscribed.Topic), subscribed.LogoAddress, subscribed.Type);
-          }
-
-          foreach (var published in mqttClientConfig.Publish)
-          {
-            logger.LogInformation($"-- publish {published.Topic} (@{published.LogoAddress}[{published.Type}])");
-            mapper.PublishOnChange(published.Topic, published.LogoAddress, published.Type);
+            logger.LogInformation($"-- {channel.Action} {channel.Topic} (@{channel.LogoAddress}[{channel.Type}])");
+            
+            /*
+            mapper.WriteLogoVariable(mqttClient.Subscribe(channel.Topic), channel.LogoAddress, channel.Type);
+            mapper.PublishOnChange(channel.Topic, channel.LogoAddress, channel.Type);
+          */
           }
         }
       }

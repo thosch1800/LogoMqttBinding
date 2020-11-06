@@ -28,63 +28,69 @@ namespace LogoMqttBinding.Configuration
           config.MqttBrokerPort,
           $"'{config.MqttBrokerPort}' should be a valid port");
 
-      foreach (var logo in config.Logos)
+      foreach (var logoConfig in config.Logos)
       {
-        if (!IPAddress.TryParse(logo.IpAddress, out _))
+        if (!IPAddress.TryParse(logoConfig.IpAddress, out _))
           throw new ArgumentOutOfRangeException(
-            nameof(logo.IpAddress),
-            logo.IpAddress,
-            $"'{logo.IpAddress}' should be a valid IP address");
+            nameof(logoConfig.IpAddress),
+            logoConfig.IpAddress,
+            $"'{logoConfig.IpAddress}' should be a valid IP address");
 
-        foreach (var memoryRange in logo.MemoryRanges)
-          ValidateMemoryRange(memoryRange);
+        foreach (var memoryRangeConfig in logoConfig.MemoryRanges)
+          ValidateMemoryRangeConfig(memoryRangeConfig);
 
-        foreach (var mqtt in logo.Mqtt)
-          ValidateMqtt(mqtt);
+        foreach (var mqttClientConfig in logoConfig.Mqtt)
+          ValidateMqttClientConfig(mqttClientConfig);
       }
     }
 
-    private static void ValidateMemoryRange(MemoryRangeConfig memoryRange)
+    private static void ValidateMemoryRangeConfig(MemoryRangeConfig memoryRangeConfig)
     {
-      if (memoryRange.LocalVariableMemoryStart is < MemoryRangeMinimum)
+      if (memoryRangeConfig.LocalVariableMemoryStart is < MemoryRangeMinimum)
         throw new ArgumentOutOfRangeException(
-          nameof(memoryRange.LocalVariableMemoryStart),
-          memoryRange.LocalVariableMemoryStart,
+          nameof(memoryRangeConfig.LocalVariableMemoryStart),
+          memoryRangeConfig.LocalVariableMemoryStart,
           $"The range should be {MemoryRangeMinimum}..{MemoryRangeMaximum}");
 
-      if (memoryRange.LocalVariableMemoryEnd is > MemoryRangeMaximum)
+      if (memoryRangeConfig.LocalVariableMemoryEnd is > MemoryRangeMaximum)
         throw new ArgumentOutOfRangeException(
-          nameof(memoryRange.LocalVariableMemoryEnd),
-          memoryRange.LocalVariableMemoryEnd,
+          nameof(memoryRangeConfig.LocalVariableMemoryEnd),
+          memoryRangeConfig.LocalVariableMemoryEnd,
           $"The range should be {MemoryRangeMinimum}..{MemoryRangeMaximum}");
 
-      if (memoryRange.LocalVariableMemorySize is < 1 or > MemoryRangeMaximum)
+      if (memoryRangeConfig.LocalVariableMemorySize is < 1 or > MemoryRangeMaximum)
         throw new ArgumentOutOfRangeException(
-          nameof(memoryRange.LocalVariableMemorySize),
-          memoryRange.LocalVariableMemorySize,
+          nameof(memoryRangeConfig.LocalVariableMemorySize),
+          memoryRangeConfig.LocalVariableMemorySize,
           $"Size should be 1..{MemoryRangeMaximum}");
 
-      if (memoryRange.LocalVariableMemoryPollingCycleMilliseconds is < PollingCycleMillisecondsMinimum)
+      if (memoryRangeConfig.LocalVariableMemoryPollingCycleMilliseconds is < PollingCycleMillisecondsMinimum)
         throw new ArgumentOutOfRangeException(
-          nameof(memoryRange.LocalVariableMemoryPollingCycleMilliseconds),
-          memoryRange.LocalVariableMemoryPollingCycleMilliseconds,
+          nameof(memoryRangeConfig.LocalVariableMemoryPollingCycleMilliseconds),
+          memoryRangeConfig.LocalVariableMemoryPollingCycleMilliseconds,
           $"Polling cycle should be greater than {PollingCycleMillisecondsMinimum}");
     }
 
-    private static void ValidateMqtt(MqttClient mqtt)
+    private static void ValidateMqttClientConfig(MqttClientConfig mqttClientConfig)
     {
-      foreach (var published in mqtt.Publish)
-        ValidateLogoAddress(published);
-
-      foreach (var subscribed in mqtt.Subscribe)
-        ValidateLogoAddress(subscribed);
-
-      static void ValidateLogoAddress(MqttChannel mqttChannel)
+      foreach (var mqttChannelConfig in mqttClientConfig.Channels)
       {
-        if (mqttChannel.LogoAddress is < MemoryRangeMinimum or > MemoryRangeMaximum)
+        if (!Enum.IsDefined(typeof(MqttChannelConfig.Actions), mqttChannelConfig.Action))
           throw new ArgumentOutOfRangeException(
-            nameof(mqttChannel.LogoAddress),
-            mqttChannel.LogoAddress,
+            nameof(mqttChannelConfig.Action),
+            mqttChannelConfig.Action,
+            $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfig.Actions)))}");
+
+        if (!Enum.IsDefined(typeof(MqttChannelConfig.Types), mqttChannelConfig.Type))
+          throw new ArgumentOutOfRangeException(
+            nameof(mqttChannelConfig.Type),
+            mqttChannelConfig.Type,
+            $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfig.Types)))}");
+
+        if (mqttChannelConfig.LogoAddress is < MemoryRangeMinimum or > MemoryRangeMaximum)
+          throw new ArgumentOutOfRangeException(
+            nameof(mqttChannelConfig.LogoAddress),
+            mqttChannelConfig.LogoAddress,
             $"The range should be {MemoryRangeMinimum}..{MemoryRangeMaximum}");
       }
     }

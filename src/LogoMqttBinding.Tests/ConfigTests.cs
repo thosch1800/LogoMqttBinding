@@ -22,19 +22,6 @@ namespace LogoMqttBinding.Tests
       using var configFile = new TempFile(@"
 {
   ""MqttBrokerUri"": ""some\\where"",
-  ""MqttBrokerPort"": ""6667"",
-  ""Logos"": [
-    {
-      ""IpAddress"": ""1.2.3.4"",
-      ""MemoryRanges"": [
-        {
-          ""LocalVariableMemoryPollingCycleMilliseconds"": 100,
-          ""LocalVariableMemoryStart"": 0,
-          ""LocalVariableMemoryEnd"": 850
-        }
-      ]
-    }
-  ]
 }");
       var config = new Config();
       config.Read(configFile.Path);
@@ -50,20 +37,7 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""some.where"",
   ""MqttBrokerPort"": ""-1"",
-  ""Logos"": [
-    {
-      ""IpAddress"": ""1.2.3.4"",
-      ""MemoryRanges"": [
-        {
-          ""LocalVariableMemoryPollingCycleMilliseconds"": 100,
-          ""LocalVariableMemoryStart"": 0,
-          ""LocalVariableMemoryEnd"": 850
-        }
-      ]
-    }
-  ]
 }");
       var config = new Config();
       config.Read(configFile.Path);
@@ -79,20 +53,7 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""some.where"",
   ""MqttBrokerPort"": ""65536"",
-  ""Logos"": [
-    {
-      ""IpAddress"": ""1.2.3.4"",
-      ""MemoryRanges"": [
-        {
-          ""LocalVariableMemoryPollingCycleMilliseconds"": 100,
-          ""LocalVariableMemoryStart"": 0,
-          ""LocalVariableMemoryEnd"": 850
-        }
-      ]
-    }
-  ]
 }");
       var config = new Config();
       config.Read(configFile.Path);
@@ -108,18 +69,9 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""5.6.7.8"",
-  ""MqttBrokerPort"": ""6667"",
   ""Logos"": [
     {
       ""IpAddress"": ""1.2.3.4.5"",
-      ""MemoryRanges"": [
-        {
-          ""LocalVariableMemoryPollingCycleMilliseconds"": 100,
-          ""LocalVariableMemoryStart"": 0,
-          ""LocalVariableMemoryEnd"": 850
-        }
-      ]
     }
   ]
 }");
@@ -137,16 +89,11 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""5.6.7.8"",
-  ""MqttBrokerPort"": ""6667"",
   ""Logos"": [
     {
-      ""IpAddress"": ""1.2.3.4"",
       ""MemoryRanges"": [
         {
-          ""LocalVariableMemoryPollingCycleMilliseconds"": 10000,
           ""LocalVariableMemoryStart"": -1,
-          ""LocalVariableMemoryEnd"": 850
         }
       ]
     }
@@ -166,15 +113,10 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""5.6.7.8"",
-  ""MqttBrokerPort"": ""6667"",
   ""Logos"": [
     {
-      ""IpAddress"": ""1.2.3.4"",
       ""MemoryRanges"": [
         {
-          ""LocalVariableMemoryPollingCycleMilliseconds"": 10000,
-          ""LocalVariableMemoryStart"": 0,
           ""LocalVariableMemoryEnd"": 851
         }
       ]
@@ -195,14 +137,10 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""5.6.7.8"",
-  ""MqttBrokerPort"": ""6667"",
   ""Logos"": [
     {
-      ""IpAddress"": ""1.2.3.4"",
       ""MemoryRanges"": [
         {
-          ""LocalVariableMemoryPollingCycleMilliseconds"": 10000,
           ""LocalVariableMemoryStart"": 0,
           ""LocalVariableMemoryEnd"": 0
         }
@@ -224,16 +162,11 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""5.6.7.8"",
-  ""MqttBrokerPort"": ""6667"",
   ""Logos"": [
     {
-      ""IpAddress"": ""1.2.3.4"",
       ""MemoryRanges"": [
         {
           ""LocalVariableMemoryPollingCycleMilliseconds"": 99,
-          ""LocalVariableMemoryStart"": 0,
-          ""LocalVariableMemoryEnd"": 850
         }
       ]
     }
@@ -253,26 +186,16 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""some.where"",
-  ""MqttBrokerPort"": ""6667"",
   ""Logos"": [
     {
-      ""IpAddress"": ""1.2.3.4"",
       ""Mqtt"": [
         {
-          ""ClientId"": ""mqtt-client-id"",
-          ""Subscribe"": [
+          ""Channels"": [
             {
-              ""Topic"": ""map/20/30/set"",
               ""LogoAddress"": 0,
-              ""Type"": ""byte""
-            }
-          ],
-          ""Publish"": [
+            },
             {
-              ""Topic"": ""map/20/30/get"",
               ""LogoAddress"": 851,
-              ""Type"": ""byte""
             }
           ]
         }
@@ -284,7 +207,7 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttChannel.LogoAddress));
+      ex.ParamName.Should().Be(nameof(MqttChannelConfig.LogoAddress));
       ex.ActualValue.Should().Be(851);
       ex.Message.Should().Contain("should be 0..850");
     }
@@ -294,26 +217,16 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""some.where"",
-  ""MqttBrokerPort"": ""6667"",
   ""Logos"": [
     {
-      ""IpAddress"": ""1.2.3.4"",
       ""Mqtt"": [
         {
-          ""ClientId"": ""mqtt-client-id"",
-          ""Subscribe"": [
+          ""Channels"": [
             {
-              ""Topic"": ""map/20/30/set"",
               ""LogoAddress"": 0,
-              ""Type"": ""byte""
-            }
-          ],
-          ""Publish"": [
+            },
             {
-              ""Topic"": ""map/20/30/get"",
               ""LogoAddress"": -1,
-              ""Type"": ""byte""
             }
           ]
         }
@@ -325,7 +238,7 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttChannel.LogoAddress));
+      ex.ParamName.Should().Be(nameof(MqttChannelConfig.LogoAddress));
       ex.ActualValue.Should().Be(-1);
       ex.Message.Should().Contain("should be 0..850");
     }
@@ -335,26 +248,16 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""some.where"",
-  ""MqttBrokerPort"": ""6667"",
   ""Logos"": [
     {
-      ""IpAddress"": ""1.2.3.4"",
       ""Mqtt"": [
         {
-          ""ClientId"": ""mqtt-client-id"",
-          ""Subscribe"": [
+          ""Channels"": [
             {
-              ""Topic"": ""map/20/30/set"",
               ""LogoAddress"": 851,
-              ""Type"": ""byte""
-            }
-          ],
-          ""Publish"": [
+            },
             {
-              ""Topic"": ""map/20/30/get"",
               ""LogoAddress"": 42,
-              ""Type"": ""byte""
             }
           ]
         }
@@ -366,7 +269,7 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttChannel.LogoAddress));
+      ex.ParamName.Should().Be(nameof(MqttChannelConfig.LogoAddress));
       ex.ActualValue.Should().Be(851);
       ex.Message.Should().Contain("should be 0..850");
     }
@@ -376,26 +279,16 @@ namespace LogoMqttBinding.Tests
     {
       using var configFile = new TempFile(@"
 {
-  ""MqttBrokerIpAddress"": ""some.where"",
-  ""MqttBrokerPort"": ""6667"",
   ""Logos"": [
     {
-      ""IpAddress"": ""1.2.3.4"",
       ""Mqtt"": [
         {
-          ""ClientId"": ""mqtt-client-id"",
-          ""Subscribe"": [
+          ""Channels"": [
             {
-              ""Topic"": ""map/20/30/set"",
               ""LogoAddress"": -1,
-              ""Type"": ""byte""
-            }
-          ],
-          ""Publish"": [
+            },
             {
-              ""Topic"": ""map/20/30/get"",
               ""LogoAddress"": 42,
-              ""Type"": ""byte""
             }
           ]
         }
@@ -407,12 +300,70 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttChannel.LogoAddress));
+      ex.ParamName.Should().Be(nameof(MqttChannelConfig.LogoAddress));
       ex.ActualValue.Should().Be(-1);
       ex.Message.Should().Contain("should be 0..850");
     }
 
+    [Fact]
+    public void Validate_InvalidAction_ShouldThrow()
+    {
+      using var configFile = new TempFile(@"
+{
+  ""Logos"": [
+    {
+      ""Mqtt"": [
+        {
+          ""Channels"": [
+            {
+              ""Action"": ""someUndefinedValue"",
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}");
+      var config = new Config();
+      config.Read(configFile.Path);
 
+      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
+      ex.ParamName.Should().Be(nameof(MqttChannelConfig.Action));
+      ex.ActualValue.Should().Be("someUndefinedValue");
+      ex.Message.Should().Contain("Allowed values are Publish, SubscribeSet, SubscribePulse");
+    }
+
+    [Fact]
+    public void Validate_InvalidType_ShouldThrow()
+    {
+      using var configFile = new TempFile(@"
+{
+  ""Logos"": [
+    {
+      ""Mqtt"": [
+        {
+          ""Channels"": [
+            {
+              ""Type"": ""someUndefinedType""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}");
+      var config = new Config();
+      config.Read(configFile.Path);
+
+      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
+      ex.ParamName.Should().Be(nameof(MqttChannelConfig.Type));
+      ex.ActualValue.Should().Be("someUndefinedType");
+      ex.Message.Should().Contain("Allowed values are Byte, Integer, Float");
+    }
+    
+    
+    
+    
 
     [Fact]
     public void Read_ValidContent_Succeeds()
@@ -441,40 +392,39 @@ namespace LogoMqttBinding.Tests
       ""Mqtt"": [
         {
           ""ClientId"": ""mqtt-client-id"",
-          ""Subscribe"": [
+          ""Channels"": [
             {
+              ""Action"": ""subscribeSet"",
               ""Topic"": ""map/21/31/set"",
               ""LogoAddress"": 21,
               ""Type"": ""byte""
             },
             {
+              ""Action"": ""subscribeSet"",
               ""Topic"": ""map/22/32/set"",
               ""LogoAddress"": 22,
               ""Type"": ""integer""
             },
             {
+              ""Action"": ""subscribeSet"",
               ""Topic"": ""map/26/36/set"",
               ""LogoAddress"": 26,
               ""Type"": ""float""
-            }
-          ],
-          ""Publish"": [
-            {
-              ""Topic"": ""map/120/130/get"",
-              ""LogoAddress"": 120,
-              ""Type"": ""bit""
             },
             {
+              ""Action"": ""publish"",
               ""Topic"": ""map/121/131/get"",
               ""LogoAddress"": 121,
               ""Type"": ""byte""
             },
             {
+              ""Action"": ""publish"",
               ""Topic"": ""map/122/132/get"",
               ""LogoAddress"": 122,
               ""Type"": ""integer""
             },
             {
+              ""Action"": ""publish"",
               ""Topic"": ""map/126/136/get"",
               ""LogoAddress"": 126,
               ""Type"": ""float""
@@ -509,34 +459,35 @@ namespace LogoMqttBinding.Tests
 
       logo.Mqtt[0].ClientId.Should().Be("mqtt-client-id");
 
-      logo.Mqtt[0].Subscribe[0].Topic.Should().Be("map/21/31/set");
-      logo.Mqtt[0].Subscribe[0].LogoAddress.Should().Be(21);
-      logo.Mqtt[0].Subscribe[0].Type.Should().Be("byte");
+      logo.Mqtt[0].Channels[0].Action.Should().Be("subscribeSet");
+      logo.Mqtt[0].Channels[0].Topic.Should().Be("map/21/31/set");
+      logo.Mqtt[0].Channels[0].LogoAddress.Should().Be(21);
+      logo.Mqtt[0].Channels[0].Type.Should().Be("byte");
 
-      logo.Mqtt[0].Subscribe[1].Topic.Should().Be("map/22/32/set");
-      logo.Mqtt[0].Subscribe[1].LogoAddress.Should().Be(22);
-      logo.Mqtt[0].Subscribe[1].Type.Should().Be("integer");
+      logo.Mqtt[0].Channels[1].Action.Should().Be("subscribeSet");
+      logo.Mqtt[0].Channels[1].Topic.Should().Be("map/22/32/set");
+      logo.Mqtt[0].Channels[1].LogoAddress.Should().Be(22);
+      logo.Mqtt[0].Channels[1].Type.Should().Be("integer");
 
-      logo.Mqtt[0].Subscribe[2].Topic.Should().Be("map/26/36/set");
-      logo.Mqtt[0].Subscribe[2].LogoAddress.Should().Be(26);
-      logo.Mqtt[0].Subscribe[2].Type.Should().Be("float");
+      logo.Mqtt[0].Channels[2].Action.Should().Be("subscribeSet");
+      logo.Mqtt[0].Channels[2].Topic.Should().Be("map/26/36/set");
+      logo.Mqtt[0].Channels[2].LogoAddress.Should().Be(26);
+      logo.Mqtt[0].Channels[2].Type.Should().Be("float");
 
+      logo.Mqtt[0].Channels[3].Action.Should().Be("publish");
+      logo.Mqtt[0].Channels[3].Topic.Should().Be("map/121/131/get");
+      logo.Mqtt[0].Channels[3].LogoAddress.Should().Be(121);
+      logo.Mqtt[0].Channels[3].Type.Should().Be("byte");
 
-      logo.Mqtt[0].Publish[0].Topic.Should().Be("map/120/130/get");
-      logo.Mqtt[0].Publish[0].LogoAddress.Should().Be(120);
-      logo.Mqtt[0].Publish[0].Type.Should().Be("bit");
+      logo.Mqtt[0].Channels[4].Action.Should().Be("publish");
+      logo.Mqtt[0].Channels[4].Topic.Should().Be("map/122/132/get");
+      logo.Mqtt[0].Channels[4].LogoAddress.Should().Be(122);
+      logo.Mqtt[0].Channels[4].Type.Should().Be("integer");
 
-      logo.Mqtt[0].Publish[1].Topic.Should().Be("map/121/131/get");
-      logo.Mqtt[0].Publish[1].LogoAddress.Should().Be(121);
-      logo.Mqtt[0].Publish[1].Type.Should().Be("byte");
-
-      logo.Mqtt[0].Publish[2].Topic.Should().Be("map/122/132/get");
-      logo.Mqtt[0].Publish[2].LogoAddress.Should().Be(122);
-      logo.Mqtt[0].Publish[2].Type.Should().Be("integer");
-
-      logo.Mqtt[0].Publish[3].Topic.Should().Be("map/126/136/get");
-      logo.Mqtt[0].Publish[3].LogoAddress.Should().Be(126);
-      logo.Mqtt[0].Publish[3].Type.Should().Be("float");
+      logo.Mqtt[0].Channels[5].Action.Should().Be("publish");
+      logo.Mqtt[0].Channels[5].Topic.Should().Be("map/126/136/get");
+      logo.Mqtt[0].Channels[5].LogoAddress.Should().Be(126);
+      logo.Mqtt[0].Channels[5].Type.Should().Be("float");
     }
   }
 

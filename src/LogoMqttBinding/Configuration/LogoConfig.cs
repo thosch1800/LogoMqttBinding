@@ -8,6 +8,6 @@ namespace LogoMqttBinding.Configuration
   {
     public string IpAddress { get; set; } = "127.0.0.1";
     public MemoryRangeConfig[] MemoryRanges { get; set; } = Array.Empty<MemoryRangeConfig>();
-    public MqttClient[] Mqtt { get; set; } = Array.Empty<MqttClient>();
+    public MqttClientConfig[] Mqtt { get; set; } = Array.Empty<MqttClientConfig>();
   }
 }

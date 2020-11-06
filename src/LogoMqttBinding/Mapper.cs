@@ -7,8 +7,6 @@ using MQTTnet;
 
 namespace LogoMqttBinding
 {
-  //TODO: allow reading of values without change
-
   internal class Mapper
   {
     public Mapper(ILoggerFactory loggerFactory, Logo logo, Mqtt mqttClient)
