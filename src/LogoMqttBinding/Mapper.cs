@@ -6,6 +6,7 @@ using LogoMqttBinding.LogoAdapter;
 using LogoMqttBinding.MqttAdapter;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
+using Byte = LogoMqttBinding.LogoAdapter.Byte;
 
 namespace LogoMqttBinding
 {
@@ -37,21 +38,41 @@ namespace LogoMqttBinding
 
     private void SetInteger(int address, byte[] payload)
     {
-      if (converter.Parse(payload, out short value))
+      if (converter.ToValue(payload, out short value))
         logo.IntegerAt(address).Set(value);
     }
 
     private void SetByte(int address, byte[] payload)
     {
-      if (converter.Parse(payload, out byte value))
+      if (converter.ToValue(payload, out byte value))
         logo.ByteAt(address).Set(value);
     }
 
     private void SetFloat(int address, byte[] payload)
     {
-      if (converter.Parse(payload, out float value))
+      if (converter.ToValue(payload, out float value))
         logo.FloatAt(address).Set(value);
     }
+
+
+    private async Task PublishInteger(string topic, ILogoVariable<short> logoVariable)
+    {
+      var value = logoVariable.Get();
+      await PublishPayload(topic, converter.ToPayload(value)).ConfigureAwait(false);
+    }
+
+    private async Task PublishByte(string topic, ILogoVariable<byte> logoVariable)
+    {
+      var value = logoVariable.Get();
+      await PublishPayload(topic, converter.ToPayload(value)).ConfigureAwait(false);
+    }
+
+    private async Task PublishFloat(string topic, ILogoVariable<float> logoVariable)
+    {
+      var value = logoVariable.Get();
+      await PublishPayload(topic, converter.ToPayload(value)).ConfigureAwait(false);
+    }
+
 
 
     public NotificationContext LogoNotifyOnChange(string type, string topic, int address)
@@ -61,32 +82,17 @@ namespace LogoMqttBinding
         case "integer":
           return logo
             .IntegerAt(address)
-            .SubscribeToChangeNotification(
-              async logoVariable =>
-              {
-                var value = logoVariable.Get();
-                await MqttPublish(topic, converter.Create(value)).ConfigureAwait(false);
-              });
+            .SubscribeToChangeNotification(async logoVariable => await PublishInteger(topic, logoVariable).ConfigureAwait(false));
 
         case "byte":
           return logo
             .ByteAt(address)
-            .SubscribeToChangeNotification(
-              async logoVariable =>
-              {
-                var value = logoVariable.Get();
-                await MqttPublish(topic, converter.Create(value)).ConfigureAwait(false);
-              });
+            .SubscribeToChangeNotification(async logoVariable => await PublishByte(topic, logoVariable).ConfigureAwait(false));
 
         case "float":
           return logo
             .FloatAt(address)
-            .SubscribeToChangeNotification(
-              async logoVariable =>
-              {
-                var value = logoVariable.Get();
-                await MqttPublish(topic, converter.Create(value)).ConfigureAwait(false);
-              });
+            .SubscribeToChangeNotification(async logoVariable => await PublishFloat(topic, logoVariable).ConfigureAwait(false));
       }
 
       throw new ArgumentOutOfRangeException(nameof(type), type, "should be integer, byte or float");
@@ -99,30 +105,21 @@ namespace LogoMqttBinding
         switch (chType)
         {
           case "integer":
-          {
-            var value = logo.IntegerAt(chLogoAddress).Get();
-            await MqttPublish(topic, converter.Create(value)).ConfigureAwait(false);
-          }
+            await PublishInteger(topic, logo.IntegerAt(chLogoAddress)).ConfigureAwait(false);
             break;
 
           case "byte":
-          {
-            var value = logo.ByteAt(chLogoAddress).Get();
-            await MqttPublish(topic, converter.Create(value)).ConfigureAwait(false);
-          }
+            await PublishByte(topic, logo.ByteAt(chLogoAddress)).ConfigureAwait(false);
             break;
 
           case "float":
-          {
-            var value = logo.FloatAt(chLogoAddress).Get();
-            await MqttPublish(topic, converter.Create(value)).ConfigureAwait(false);
-          }
+            await PublishFloat(topic, logo.FloatAt(chLogoAddress)).ConfigureAwait(false);
             break;
         }
       };
     }
 
-    async Task MqttPublish(string topic, byte[] payload)
+    private async Task PublishPayload(string topic, byte[] payload)
     {
       await mqttClient
         .PublishAsync(new MqttApplicationMessageBuilder()

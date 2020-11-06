@@ -10,7 +10,7 @@ namespace LogoMqttBinding
 
 
 
-    public bool Parse(byte[] payload, out byte result)
+    public bool ToValue(byte[] payload, out byte result)
     {
       var s = Encoding.UTF8.GetString(payload);
       var succeeded = byte.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
@@ -18,7 +18,7 @@ namespace LogoMqttBinding
       return succeeded;
     }
 
-    public bool Parse(byte[] payload, out short result)
+    public bool ToValue(byte[] payload, out short result)
     {
       var s = Encoding.UTF8.GetString(payload);
       var succeeded = short.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
@@ -26,7 +26,7 @@ namespace LogoMqttBinding
       return succeeded;
     }
 
-    public bool Parse(byte[] payload, out float result)
+    public bool ToValue(byte[] payload, out float result)
     {
       var s = Encoding.UTF8.GetString(payload);
       var succeeded = float.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
@@ -36,19 +36,19 @@ namespace LogoMqttBinding
 
 
 
-    public byte[] Create(byte value)
+    public byte[] ToPayload(byte value)
     {
       var s = value.ToString(CultureInfo.InvariantCulture);
       return Encoding.UTF8.GetBytes(s);
     }
 
-    public byte[] Create(short value)
+    public byte[] ToPayload(short value)
     {
       var s = value.ToString(CultureInfo.InvariantCulture);
       return Encoding.UTF8.GetBytes(s);
     }
 
-    public byte[] Create(float value)
+    public byte[] ToPayload(float value)
     {
       var s = value.ToString(CultureInfo.InvariantCulture);
       return Encoding.UTF8.GetBytes(s);
