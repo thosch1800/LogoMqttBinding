@@ -2,7 +2,7 @@
 
 namespace LogoMqttBinding.LogoAdapter
 {
-  internal class Byte
+  internal class Byte : ILogoVariable<byte>
   {
     public Byte(Logo logo, int address)
     {
@@ -24,9 +24,9 @@ namespace LogoMqttBinding.LogoAdapter
       logo.Execute(c => c.DBWrite(1, address, sizeof(byte), buffer));
     }
 
-    public NotificationContext SubscribeToChangeNotification(Action onChanged)
+    public NotificationContext SubscribeToChangeNotification(Action<ILogoVariable<byte>> onChanged)
       => logo.SubscribeToChangeNotification(
-        new NotificationContext(address, sizeof(byte), onChanged));
+        new NotificationContext<byte>(address, sizeof(byte), this, onChanged));
 
     private readonly Logo logo;
     private readonly int address;

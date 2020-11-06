@@ -3,7 +3,7 @@ using Sharp7;
 
 namespace LogoMqttBinding.LogoAdapter
 {
-  internal class Int
+  internal class Int : ILogoVariable<short>
   {
     public Int(Logo logo, int address)
     {
@@ -26,9 +26,9 @@ namespace LogoMqttBinding.LogoAdapter
       logo.Execute(c => c.DBWrite(1, address, sizeof(short), buffer));
     }
 
-    public NotificationContext SubscribeToChangeNotification(Action onChanged)
+    public NotificationContext SubscribeToChangeNotification(Action<ILogoVariable<short>> onChanged)
       => logo.SubscribeToChangeNotification(
-        new NotificationContext(address, sizeof(short), onChanged));
+        new NotificationContext<short>(address, sizeof(short), this, onChanged));
 
     private readonly Logo logo;
     private readonly int address;

@@ -17,13 +17,12 @@ namespace LogoMqttBinding
   {
     public Mapper(ILoggerFactory loggerFactory)
     {
-      logger = loggerFactory.CreateLogger<Mapper>();
       converter = new Converter(loggerFactory.CreateLogger<Converter>());
       logoSetValueFor = new Dictionary<string, Action<Logo, int, byte[]>>
       {
-        { "integer", LogoSetInteger },
-        { "byte", LogoSetByte },
-        { "float", LogoSetFloat },
+        { "integer", SetInteger },
+        { "byte", SetByte },
+        { "float", SetFloat },
       }.ToImmutableDictionary();
     }
 
@@ -36,21 +35,21 @@ namespace LogoMqttBinding
       };
     }
 
-    private void LogoSetInteger(Logo logo, int address, byte[] payload)
+    private void SetInteger(Logo logo, int address, byte[] payload)
     {
-      if (FromPayload(payload, out short value))
+      if (converter.Parse(payload, out short value))
         logo.IntegerAt(address).Set(value);
     }
 
-    private void LogoSetByte(Logo logo, int address, byte[] payload)
+    private void SetByte(Logo logo, int address, byte[] payload)
     {
-      if (FromPayload(payload, out byte value))
+      if (converter.Parse(payload, out byte value))
         logo.ByteAt(address).Set(value);
     }
 
-    private void LogoSetFloat(Logo logo, int address, byte[] payload)
+    private void SetFloat(Logo logo, int address, byte[] payload)
     {
-      if (FromPayload(payload, out float value))
+      if (converter.Parse(payload, out float value))
         logo.FloatAt(address).Set(value);
     }
 
@@ -62,18 +61,27 @@ namespace LogoMqttBinding
         switch (chType)
         {
           case "integer":
-            var intValue = logo.IntegerAt(chLogoAddress).Get();
-            await MqttPublish(ToPayload(intValue)).ConfigureAwait(false);
+          {
+            var value = logo.IntegerAt(chLogoAddress).Get();
+            var payload = converter.Create(value);
+            await MqttPublish(payload).ConfigureAwait(false);
+          }
             break;
 
           case "byte":
-            var byteValue = logo.ByteAt(chLogoAddress).Get();
-            await MqttPublish(ToPayload(byteValue)).ConfigureAwait(false);
+          {
+            var value = logo.ByteAt(chLogoAddress).Get();
+            var payload = converter.Create(value);
+            await MqttPublish(payload).ConfigureAwait(false);
+          }
             break;
 
           case "float":
-            var floatValue = logo.FloatAt(chLogoAddress).Get();
-            await MqttPublish(ToPayload(floatValue)).ConfigureAwait(false);
+          {
+            var value = logo.FloatAt(chLogoAddress).Get();
+            var payload = converter.Create(value);
+            await MqttPublish(payload).ConfigureAwait(false);
+          }
             break;
 
             async Task MqttPublish(byte[] payload)
@@ -92,31 +100,28 @@ namespace LogoMqttBinding
       switch (type)
       {
         case "integer":
-          var intVariableReference = logo.IntegerAt(address);
-          intVariableReference.SubscribeToChangeNotification(async () =>
+          logo.IntegerAt(address).SubscribeToChangeNotification(async logoVariable =>
           {
-            var value = intVariableReference.Get();
-            var payload = ToPayload(value);
+            var value = logoVariable.Get();
+            var payload = converter.Create(value);
             await MqttPublish(payload).ConfigureAwait(false);
           });
           break;
 
         case "byte":
-          var byteVariableReference = logo.ByteAt(address);
-          byteVariableReference.SubscribeToChangeNotification(async () =>
+          logo.ByteAt(address).SubscribeToChangeNotification(async logoVariable =>
           {
-            var value = byteVariableReference.Get();
-            var payload = ToPayload(value);
+            var value = logoVariable.Get();
+            var payload = converter.Create(value);
             await MqttPublish(payload).ConfigureAwait(false);
           });
           break;
 
         case "float":
-          var floatVariableReference = logo.FloatAt(address);
-          floatVariableReference.SubscribeToChangeNotification(async () =>
+          logo.FloatAt(address).SubscribeToChangeNotification(async logoVariable =>
           {
-            var value = floatVariableReference.Get();
-            var payload = ToPayload(value);
+            var value = logoVariable.Get();
+            var payload = converter.Create(value);
             await MqttPublish(payload).ConfigureAwait(false);
           });
           break;
@@ -131,108 +136,63 @@ namespace LogoMqttBinding
       }
     }
 
-
-
-    private bool FromPayload(byte[] payload, out float result)
-    {
-      var s = Encoding.UTF8.GetString(payload);
-      var succeeded = float.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
-      //if (!succeeded) logger.Log();
-      return succeeded;
-    }
-
-    private bool FromPayload(byte[] payload, out byte result)
-    {
-      var s = Encoding.UTF8.GetString(payload);
-      var succeeded = byte.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
-      return succeeded;
-    }
-
-    private bool FromPayload(byte[] payload, out short result)
-    {
-      var s = Encoding.UTF8.GetString(payload);
-      var succeeded = short.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
-      //if (!succeeded) logger.Log();
-      return succeeded;
-    }
-
-    private byte[] ToPayload(float value)
-    {
-      var s = value.ToString(CultureInfo.InvariantCulture);
-      return Encoding.UTF8.GetBytes(s);
-    }
-
-    private byte[] ToPayload(byte value)
-    {
-      var s = value.ToString(CultureInfo.InvariantCulture);
-      return Encoding.UTF8.GetBytes(s);
-    }
-
-    private byte[] ToPayload(short value)
-    {
-      var s = value.ToString(CultureInfo.InvariantCulture);
-      return Encoding.UTF8.GetBytes(s);
-    }
-
-
     private readonly Converter converter;
-    private readonly ILogger<Mapper> logger;
     private readonly ImmutableDictionary<string, Action<Logo, int, byte[]>> logoSetValueFor;
   }
 
 
 
-  class Converter
+  internal class Converter
   {
     public Converter(ILogger logger) => this.logger = logger;
 
-    private byte[] Create(float value)
-    {
-      var s = value.ToString(CultureInfo.InvariantCulture);
-      return Encoding.UTF8.GetBytes(s);
-    }
 
-    private bool Parse(byte[] payload, out float result)
-    {
-      var s = Encoding.UTF8.GetString(payload);
-      var succeeded = float.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
-      if (!succeeded)
-        logger.LogMessage(
-          "Parse failed",
-          args => args
-            .Add(nameof(payload), payload)
-            .Add(nameof(s), s),
-          LogLevel.Warning);
-      return succeeded;
-    }
 
-    private bool Parse(byte[] payload, out byte result)
+    public bool Parse(byte[] payload, out byte result)
     {
       var s = Encoding.UTF8.GetString(payload);
       var succeeded = byte.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
-      //if (!succeeded) logger.Log();
+      if (!succeeded) logger.LogWarning($"Cannot parse '{s}'");
       return succeeded;
     }
 
-    private byte[] Create(byte value)
-    {
-      var s = value.ToString(CultureInfo.InvariantCulture);
-      return Encoding.UTF8.GetBytes(s);
-    }
-
-    private bool Parse(byte[] payload, out short result)
+    public bool Parse(byte[] payload, out short result)
     {
       var s = Encoding.UTF8.GetString(payload);
       var succeeded = short.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
-      //if (!succeeded) logger.Log();
+      if (!succeeded) logger.LogWarning($"Cannot parse '{s}'");
       return succeeded;
     }
 
-    private byte[] Create(short value)
+    public bool Parse(byte[] payload, out float result)
+    {
+      var s = Encoding.UTF8.GetString(payload);
+      var succeeded = float.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+      if (!succeeded) logger.LogWarning($"Cannot parse '{s}'");
+      return succeeded;
+    }
+
+
+
+    public byte[] Create(byte value)
     {
       var s = value.ToString(CultureInfo.InvariantCulture);
       return Encoding.UTF8.GetBytes(s);
     }
+
+    public byte[] Create(short value)
+    {
+      var s = value.ToString(CultureInfo.InvariantCulture);
+      return Encoding.UTF8.GetBytes(s);
+    }
+
+    public byte[] Create(float value)
+    {
+      var s = value.ToString(CultureInfo.InvariantCulture);
+      return Encoding.UTF8.GetBytes(s);
+    }
+
+
 
     private readonly ILogger logger;
   }

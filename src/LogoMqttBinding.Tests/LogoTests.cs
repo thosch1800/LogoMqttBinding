@@ -149,8 +149,8 @@ namespace LogoMqttBinding.Tests
 
       var notificationContext = logo
         .ByteAt(address)
-        .SubscribeToChangeNotification(() =>
-          notifiedValues.Add(logo.ByteAt(address).Get()));
+        .SubscribeToChangeNotification(
+          logoVariable => notifiedValues.Add(logoVariable.Get()));
 
       logoHardwareMock.WriteByte(address, firstValueUpdate);
       await Task.Delay(logoTestsEnvironment.TestUpdateDelayMilliseconds).ConfigureAwait(false); // let update happen
@@ -211,7 +211,7 @@ namespace LogoMqttBinding.Tests
       var notificationContext = logo
         .IntegerAt(address)
         .SubscribeToChangeNotification(
-          () => notifiedValues.Add(logo.IntegerAt(address).Get()));
+          logoVariable => notifiedValues.Add(logoVariable.Get()));
 
       logoHardwareMock.WriteInteger(address, firstValueUpdate);
       await Task.Delay(logoTestsEnvironment.TestUpdateDelayMilliseconds).ConfigureAwait(false); // let update happen
@@ -278,11 +278,7 @@ namespace LogoMqttBinding.Tests
       var notificationContext = logo
         .FloatAt(address)
         .SubscribeToChangeNotification(
-          () =>
-          {
-            var value = logo.FloatAt(address).Get();
-            notifiedValues.Add(value);
-          });
+          logoVariable => notifiedValues.Add(logoVariable.Get()));
 
       logoHardwareMock.WriteFloat(address, firstValueUpdate);
       await Task.Delay(logoTestsEnvironment.TestUpdateDelayMilliseconds).ConfigureAwait(false); // let update happen
