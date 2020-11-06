@@ -62,22 +62,22 @@ namespace LogoMqttBinding
       throw new ArgumentOutOfRangeException(nameof(type), type, "should be integer, byte or float");
     }
 
-    public void AddLogoGetValueHandler(Mqtt.Subscription subscription, string chType, string topic, int chLogoAddress)
+    public void AddLogoGetValueHandler(Mqtt.Subscription subscription, string topic, int address, string type)
     {
       subscription.MessageReceived += async (sender, args) =>
       {
-        switch (chType)
+        switch (type)
         {
           case "integer":
-            await mapping.PublishInteger(topic, logo.IntegerAt(chLogoAddress)).ConfigureAwait(false);
+            await mapping.PublishInteger(topic, logo.IntegerAt(address)).ConfigureAwait(false);
             break;
 
           case "byte":
-            await mapping.PublishByte(topic, logo.ByteAt(chLogoAddress)).ConfigureAwait(false);
+            await mapping.PublishByte(topic, logo.ByteAt(address)).ConfigureAwait(false);
             break;
 
           case "float":
-            await mapping.PublishFloat(topic, logo.FloatAt(chLogoAddress)).ConfigureAwait(false);
+            await mapping.PublishFloat(topic, logo.FloatAt(address)).ConfigureAwait(false);
             break;
         }
       };
