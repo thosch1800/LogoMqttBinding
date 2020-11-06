@@ -13,7 +13,7 @@ namespace LogoMqttBinding.Configuration
     public enum Actions
     {
       Publish,
-      SubscribeSet,
+      Subscribe,
       SubscribePulse,
     }
 

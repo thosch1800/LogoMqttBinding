@@ -330,7 +330,7 @@ namespace LogoMqttBinding.Tests
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
       ex.ParamName.Should().Be(nameof(MqttChannelConfig.Action));
       ex.ActualValue.Should().Be("someUndefinedValue");
-      ex.Message.Should().Contain("Allowed values are Publish, SubscribeSet, SubscribePulse");
+      ex.Message.Should().Contain("Allowed values are Publish, Subscribe, SubscribePulse");
     }
 
     [Fact]

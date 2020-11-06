@@ -15,21 +15,25 @@
           "ClientId": "logo_230",
           "Subscribe": [
             {
+              "Action": "subscribe",
               "Topic": "output/q1/set",
               "LogoAddress": 11,
               "Type": "byte"
             },
             {
+              "Action": "subscribe",
               "Topic": "output/q2/set",
               "LogoAddress": 12,
               "Type": "byte"
             },
             {
+              "Action": "subscribe",
               "Topic": "output/q3/set",
               "LogoAddress": 13,
               "Type": "byte"
             },
             {
+              "Action": "subscribe",
               "Topic": "output/q4/set",
               "LogoAddress": 14,
               "Type": "byte"
@@ -37,21 +41,25 @@
           ],
           "Publish": [
             {
+              "Action": "publish",
               "Topic": "output/q1/get",
               "LogoAddress": 111,
               "Type": "byte"
             },
             {
+              "Action": "publish",
               "Topic": "output/q2/get",
               "LogoAddress": 112,
               "Type": "byte"
             },
             {
+              "Action": "publish",
               "Topic": "output/q3/get",
               "LogoAddress": 113,
               "Type": "byte"
             },
             {
+              "Action": "publish",
               "Topic": "output/q4/get",
               "LogoAddress": 114,
               "Type": "byte"
