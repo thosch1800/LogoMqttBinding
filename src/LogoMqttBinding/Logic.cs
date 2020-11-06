@@ -12,8 +12,9 @@ namespace LogoMqttBinding
     internal static ProgramContext Initialize(ILoggerFactory loggerFactory, Config config)
     {
       var logger = loggerFactory.CreateLogger(nameof(Logic));
-      var logos = new List<Logo>();
+      var mapper = new Mapper(loggerFactory);
       var mqttClients = new List<Mqtt>();
+      var logos = new List<Logo>();
 
       logger.LogInformation($"MQTT broker {config.MqttBrokerUri}:{config.MqttBrokerPort}");
 
@@ -44,17 +45,16 @@ namespace LogoMqttBinding
           {
             logger.LogInformation($"-- subscribe {subscribed.Topic} (@{subscribed.LogoAddress}[{subscribed.Type}])");
 
-            mqttClient
-              .Subscribe(subscribed.Topic)
-              .AddLogoSetValueHandler(logo, subscribed.Type, subscribed.LogoAddress);
+            var subscription = mqttClient.Subscribe(subscribed.Topic);
+            mapper.AddLogoSetValueHandler(subscription, logo, subscribed.Type, subscribed.LogoAddress);
           }
 
           foreach (var published in mqttClientConfig.Publish)
           {
             logger.LogInformation($"-- publish {published.Topic} (@{published.LogoAddress}[{published.Type}])");
 
-            LogoMqttMapping
-              .LogoNotifyOnChange(logo, mqttClient, published.Type, published.Topic, published.LogoAddress);
+            mapper.LogoNotifyOnChange(logo, mqttClient, published.Type, published.Topic, published.LogoAddress);
+            
             /*
             mqttClient
               .Subscribe(published.Topic)

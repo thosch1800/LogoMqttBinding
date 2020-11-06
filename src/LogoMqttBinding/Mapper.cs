@@ -6,52 +6,56 @@ using System.Text;
 using System.Threading.Tasks;
 using LogoMqttBinding.LogoAdapter;
 using LogoMqttBinding.MqttAdapter;
+using Microsoft.Extensions.Logging;
 using MQTTnet;
 
 namespace LogoMqttBinding
 {
-  internal static class LogoMqttMapping
+  //TODO: refactor to instance class (also featuring a logger)
+  //TODO: allow reading of values without change
+  internal class Mapper
   {
-    //TODO: refactor to instance class (also featuring a logger)
-    //TODO: allow reading of values without change
-
-    public static void AddLogoSetValueHandler(this Mqtt.Subscription subscription, Logo logo, string chType, int chLogoAddress)
+    public Mapper(ILoggerFactory loggerFactory)
     {
-      subscription.MessageReceived += (sender, args) =>
-      {
-        if (LogoSetValueFor.TryGetValue(chType, out var handler))
-          handler.Invoke(logo, chLogoAddress, args.ApplicationMessage.Payload);
-      };
-    }
-
-    private static readonly ImmutableDictionary<string, Action<Logo, int, byte[]>> LogoSetValueFor =
-      new Dictionary<string, Action<Logo, int, byte[]>>
+      logger = loggerFactory.CreateLogger<Mapper>();
+      converter = new Converter(loggerFactory.CreateLogger<Converter>());
+      logoSetValueFor = new Dictionary<string, Action<Logo, int, byte[]>>
       {
         { "integer", LogoSetInteger },
         { "byte", LogoSetByte },
         { "float", LogoSetFloat },
       }.ToImmutableDictionary();
+    }
 
-    private static void LogoSetInteger(Logo logo, int address, byte[] payload)
+    public void AddLogoSetValueHandler(Mqtt.Subscription subscription, Logo logo, string chType, int chLogoAddress)
+    {
+      subscription.MessageReceived += (sender, args) =>
+      {
+        if (logoSetValueFor.TryGetValue(chType, out var handler))
+          handler.Invoke(logo, chLogoAddress, args.ApplicationMessage.Payload);
+      };
+    }
+
+    private void LogoSetInteger(Logo logo, int address, byte[] payload)
     {
       if (FromPayload(payload, out short value))
         logo.IntegerAt(address).Set(value);
     }
 
-    private static void LogoSetByte(Logo logo, int address, byte[] payload)
+    private void LogoSetByte(Logo logo, int address, byte[] payload)
     {
       if (FromPayload(payload, out byte value))
         logo.ByteAt(address).Set(value);
     }
 
-    private static void LogoSetFloat(Logo logo, int address, byte[] payload)
+    private void LogoSetFloat(Logo logo, int address, byte[] payload)
     {
       if (FromPayload(payload, out float value))
         logo.FloatAt(address).Set(value);
     }
 
 
-    public static void AddLogoGetValueHandler(this Mqtt.Subscription subscription, Logo logo, Mqtt mqttClient, string chType, string topic, int chLogoAddress)
+    public void AddLogoGetValueHandler(Mqtt.Subscription subscription, Logo logo, Mqtt mqttClient, string chType, string topic, int chLogoAddress)
     {
       subscription.MessageReceived += async (sender, args) =>
       {
@@ -83,7 +87,7 @@ namespace LogoMqttBinding
       };
     }
 
-    public static void LogoNotifyOnChange(Logo logo, Mqtt mqttClient, string type, string topic, int address)
+    public void LogoNotifyOnChange(Logo logo, Mqtt mqttClient, string type, string topic, int address)
     {
       switch (type)
       {
@@ -129,7 +133,7 @@ namespace LogoMqttBinding
 
 
 
-    private static bool FromPayload(byte[] payload, out float result)
+    private bool FromPayload(byte[] payload, out float result)
     {
       var s = Encoding.UTF8.GetString(payload);
       var succeeded = float.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
@@ -137,14 +141,14 @@ namespace LogoMqttBinding
       return succeeded;
     }
 
-    private static bool FromPayload(byte[] payload, out byte result)
+    private bool FromPayload(byte[] payload, out byte result)
     {
       var s = Encoding.UTF8.GetString(payload);
       var succeeded = byte.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
       return succeeded;
     }
 
-    private static bool FromPayload(byte[] payload, out short result)
+    private bool FromPayload(byte[] payload, out short result)
     {
       var s = Encoding.UTF8.GetString(payload);
       var succeeded = short.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
@@ -152,22 +156,84 @@ namespace LogoMqttBinding
       return succeeded;
     }
 
-    private static byte[] ToPayload(float value)
+    private byte[] ToPayload(float value)
     {
       var s = value.ToString(CultureInfo.InvariantCulture);
       return Encoding.UTF8.GetBytes(s);
     }
 
-    private static byte[] ToPayload(byte value)
+    private byte[] ToPayload(byte value)
     {
       var s = value.ToString(CultureInfo.InvariantCulture);
       return Encoding.UTF8.GetBytes(s);
     }
 
-    private static byte[] ToPayload(short value)
+    private byte[] ToPayload(short value)
     {
       var s = value.ToString(CultureInfo.InvariantCulture);
       return Encoding.UTF8.GetBytes(s);
     }
+
+
+    private readonly Converter converter;
+    private readonly ILogger<Mapper> logger;
+    private readonly ImmutableDictionary<string, Action<Logo, int, byte[]>> logoSetValueFor;
+  }
+
+
+
+  class Converter
+  {
+    public Converter(ILogger logger) => this.logger = logger;
+
+    private byte[] Create(float value)
+    {
+      var s = value.ToString(CultureInfo.InvariantCulture);
+      return Encoding.UTF8.GetBytes(s);
+    }
+
+    private bool Parse(byte[] payload, out float result)
+    {
+      var s = Encoding.UTF8.GetString(payload);
+      var succeeded = float.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+      if (!succeeded)
+        logger.LogMessage(
+          "Parse failed",
+          args => args
+            .Add(nameof(payload), payload)
+            .Add(nameof(s), s),
+          LogLevel.Warning);
+      return succeeded;
+    }
+
+    private bool Parse(byte[] payload, out byte result)
+    {
+      var s = Encoding.UTF8.GetString(payload);
+      var succeeded = byte.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+      //if (!succeeded) logger.Log();
+      return succeeded;
+    }
+
+    private byte[] Create(byte value)
+    {
+      var s = value.ToString(CultureInfo.InvariantCulture);
+      return Encoding.UTF8.GetBytes(s);
+    }
+
+    private bool Parse(byte[] payload, out short result)
+    {
+      var s = Encoding.UTF8.GetString(payload);
+      var succeeded = short.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+      //if (!succeeded) logger.Log();
+      return succeeded;
+    }
+
+    private byte[] Create(short value)
+    {
+      var s = value.ToString(CultureInfo.InvariantCulture);
+      return Encoding.UTF8.GetBytes(s);
+    }
+
+    private readonly ILogger logger;
   }
 }
