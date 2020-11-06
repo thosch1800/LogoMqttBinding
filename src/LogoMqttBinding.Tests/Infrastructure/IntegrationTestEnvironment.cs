@@ -19,12 +19,7 @@ namespace LogoMqttBinding.Tests.Infrastructure
     public async Task InitializeAsync()
     {
       Logger = new TestableLogger();
-      LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory
-        .Create(c =>
-        {
-          c.AddConsole();
-          c.ConfigureTestableLogger(Logger);
-        });
+      LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(c => c.ConfigureTestableLogger(Logger));
 
       LogoHardwareMock = new LogoHardwareMock();
 
@@ -55,9 +50,11 @@ namespace LogoMqttBinding.Tests.Infrastructure
         .ConnectAsync(mqttClientOptions)
         .ConfigureAwait(false);
 
-      var config = IntegrationTests.GetConfig(brokerIpAddress.ToString(), brokerPort);
-      appContext = Logic.Initialize(LoggerFactory, config);
-      await Logic.Connect(appContext);
+      appContext = Logic
+        .Initialize(LoggerFactory, IntegrationTests.GetConfig(brokerIpAddress.ToString(), brokerPort));
+      await appContext
+        .Connect()
+        .ConfigureAwait(false);
     }
 
     public async Task DisposeAsync()

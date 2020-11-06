@@ -24,5 +24,14 @@ namespace LogoMqttBinding
       foreach (var mqttClient in MqttClients) await mqttClient.DisposeAsync();
       Console.WriteLine("Disposed...");
     }
+    
+    internal async Task Connect()
+    {
+      foreach (var logo in Logos)
+        logo.Connect();
+
+      foreach (var mqttClient in MqttClients)
+        await mqttClient.ConnectAsync().ConfigureAwait(false);
+    }
   }
 }

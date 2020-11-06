@@ -67,14 +67,5 @@ namespace LogoMqttBinding
 
       return new ProgramContext(logos.ToImmutableArray(), mqttClients.ToImmutableArray());
     }
-
-    internal static async Task Connect(ProgramContext ctx)
-    {
-      foreach (var logo in ctx.Logos)
-        logo.Connect();
-
-      foreach (var mqttClient in ctx.MqttClients)
-        await mqttClient.ConnectAsync().ConfigureAwait(false);
-    }
   }
 }
