@@ -15,11 +15,11 @@ namespace LogoMqttBinding
       var mqttClients = new List<Mqtt>();
       var logos = new List<Logo>();
 
-      logger.LogInformation($"MQTT broker {config.MqttBrokerUri}:{config.MqttBrokerPort}");
+      logger.LogInformation($"MQTT broker at {config.MqttBrokerUri} using port {config.MqttBrokerPort}");
 
       foreach (var logoConfig in config.Logos)
       {
-        logger.LogInformation($"Logo at {logoConfig.IpAddress}");
+        logger.LogInformation($"Logo PLC at {logoConfig.IpAddress}");
 
         var logo = new Logo(
           loggerFactory.CreateLogger<Logo>(),
@@ -45,19 +45,13 @@ namespace LogoMqttBinding
           foreach (var subscribed in mqttClientConfig.Subscribe)
           {
             logger.LogInformation($"-- subscribe {subscribed.Topic} (@{subscribed.LogoAddress}[{subscribed.Type}])");
-            mapper.MapLogoVariable(mqttClient.Subscribe(subscribed.Topic), subscribed.LogoAddress, subscribed.Type);
+            mapper.WriteLogoVariable(mqttClient.Subscribe(subscribed.Topic), subscribed.LogoAddress, subscribed.Type);
           }
 
           foreach (var published in mqttClientConfig.Publish)
           {
             logger.LogInformation($"-- publish {published.Topic} (@{published.LogoAddress}[{published.Type}])");
-            mapper.NotifyOnChange(published.Topic, published.LogoAddress, published.Type);
-
-            /*
-            mqttClient
-              .Subscribe(published.Topic)
-              .AddLogoGetValueHandler(logo, mqttClient, published.Type, published.Topic, published.LogoAddress);
-            */
+            mapper.PublishOnChange(published.Topic, published.LogoAddress, published.Type);
           }
         }
       }
