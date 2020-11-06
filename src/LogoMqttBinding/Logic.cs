@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using LogoMqttBinding.Configuration;
 using LogoMqttBinding.LogoAdapter;
@@ -44,12 +45,25 @@ namespace LogoMqttBinding
 
           foreach (var channel in mqttClientConfig.Channels)
           {
-            logger.LogInformation($"-- {channel.Action} {channel.Topic} (@{channel.LogoAddress}[{channel.Type}])");
+            var action = channel.GetActionAsEnum();
             
-            /*
-            mapper.WriteLogoVariable(mqttClient.Subscribe(channel.Topic), channel.LogoAddress, channel.Type);
-            mapper.PublishOnChange(channel.Topic, channel.LogoAddress, channel.Type);
-          */
+            logger.LogInformation($"-- {action} {channel.Topic} (@{channel.LogoAddress}[{channel.Type}])");
+
+            switch(action)
+            {
+              case MqttChannelConfig.Actions.Publish:
+                mapper.PublishOnChange(channel.Topic, channel.LogoAddress, channel.Type);
+                break;
+              
+              case MqttChannelConfig.Actions.Subscribe:
+                mapper.WriteLogoVariable(mqttClient.Subscribe(channel.Topic), channel.LogoAddress, channel.Type);
+                break;
+              
+              case MqttChannelConfig.Actions.SubscribePulse:
+                break;
+              
+              default: throw new ArgumentOutOfRangeException();
+            }
           }
         }
       }
