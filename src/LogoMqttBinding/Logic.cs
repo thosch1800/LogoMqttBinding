@@ -29,7 +29,7 @@ namespace LogoMqttBinding
 
         foreach (var mqttClientConfig in logoConfig.Mqtt)
         {
-          logger.LogInformation($"| MQTT client {mqttClientConfig.ClientId}");
+          logger.LogInformation($"- MQTT client {mqttClientConfig.ClientId}");
 
           var mqttClient = new Mqtt(
             loggerFactory.CreateLogger<Mqtt>(),
@@ -42,7 +42,7 @@ namespace LogoMqttBinding
 
           foreach (var subscribed in mqttClientConfig.Subscribe)
           {
-            logger.LogInformation($"| | subscribe {subscribed.Topic} {subscribed.LogoAddress}/{subscribed.Type}");
+            logger.LogInformation($"-- subscribe {subscribed.Topic} (@{subscribed.LogoAddress}[{subscribed.Type}])");
 
             mqttClient
               .Subscribe(subscribed.Topic)
@@ -51,7 +51,7 @@ namespace LogoMqttBinding
 
           foreach (var published in mqttClientConfig.Publish)
           {
-            logger.LogInformation($"| | publish {published.Topic} {published.LogoAddress}/{published.Type}");
+            logger.LogInformation($"-- publish {published.Topic} (@{published.LogoAddress}[{published.Type}])");
 
             LogoMqttMapping
               .LogoNotifyOnChange(logo, mqttClient, published.Type, published.Topic, published.LogoAddress);
