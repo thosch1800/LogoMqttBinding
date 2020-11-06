@@ -60,6 +60,7 @@ namespace LogoMqttBinding
                 break;
               
               case MqttChannelConfig.Actions.SubscribePulse:
+                //TODO: how to pulse an PLC input (~250ms)?
                 break;
               
               default: throw new ArgumentOutOfRangeException();

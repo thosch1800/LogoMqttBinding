@@ -10,8 +10,6 @@ using Sharp7;
 
 namespace LogoMqttBinding.LogoAdapter
 {
-  //TODO: how to pulse an PLC input (~250ms)?
-
   internal class Logo : IAsyncDisposable
   {
     public Logo(ILogger<Logo> logger, string ipAddress, params MemoryRangeConfig[] logoMemoryRanges)
