@@ -5,7 +5,7 @@ using LogoMqttBinding.LogoAdapter;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
-namespace LogoMqttBindingTests
+namespace LogoMqttBinding.Tests
 {
   public class LogoMemoryTests
   {

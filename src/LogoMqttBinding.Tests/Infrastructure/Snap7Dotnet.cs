@@ -35,7 +35,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace LogoMqttBindingTests.Infrastructure
+namespace LogoMqttBinding.Tests.Infrastructure
 {
   public class S7Consts
   {

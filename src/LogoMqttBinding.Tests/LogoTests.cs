@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LogoMqttBinding.LogoAdapter;
-using LogoMqttBindingTests.Infrastructure;
+using LogoMqttBinding.Tests.Infrastructure;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
-namespace LogoMqttBindingTests
+namespace LogoMqttBinding.Tests
 {
   [Collection(nameof(LogoTestsEnvironment))]
   public class LogoTests
@@ -149,12 +149,8 @@ namespace LogoMqttBindingTests
 
       var notificationContext = logo
         .ByteAt(address)
-        .SubscribeToChangeNotification(
-          () =>
-          {
-            var value = logo.ByteAt(address).Get();
-            notifiedValues.Add(value);
-          });
+        .SubscribeToChangeNotification(() => 
+          notifiedValues.Add(logo.ByteAt(address).Get()));
 
       logoHardwareMock.WriteByte(address, firstValueUpdate);
       await Task.Delay(logoTestsEnvironment.TestUpdateDelayMilliseconds).ConfigureAwait(false); // let update happen
@@ -164,6 +160,7 @@ namespace LogoMqttBindingTests
 
       logo.UnsubscribeFromChangeNotification(notificationContext);
 
+      notifiedValues.Count.Should().Be(2);
       notifiedValues[0].Should().Be(firstValueUpdate);
       notifiedValues[1].Should().Be(secondValueUpdate);
     }
@@ -214,11 +211,7 @@ namespace LogoMqttBindingTests
       var notificationContext = logo
         .IntegerAt(address)
         .SubscribeToChangeNotification(
-          () =>
-          {
-            var value = logo.IntegerAt(address).Get();
-            notifiedValues.Add(value);
-          });
+          () => notifiedValues.Add(logo.IntegerAt(address).Get()));
 
       logoHardwareMock.WriteInteger(address, firstValueUpdate);
       await Task.Delay(logoTestsEnvironment.TestUpdateDelayMilliseconds).ConfigureAwait(false); // let update happen
@@ -305,6 +298,7 @@ namespace LogoMqttBindingTests
 
       logo.UnsubscribeFromChangeNotification(notificationContext);
 
+      notifiedValues.Count.Should().Be(4);
       notifiedValues[0].Should().Be(firstValueUpdate);
       notifiedValues[1].Should().Be(secondValueUpdate);
       notifiedValues[2].Should().Be(thirdValueUpdate);

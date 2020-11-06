@@ -2,14 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LogoMqttBindingTests.Infrastructure;
+using LogoMqttBinding.Tests.Infrastructure;
 using MQTTnet;
 using MQTTnet.Client.Publishing;
 using MQTTnet.Client.Receiving;
 using MQTTnet.Client.Subscribing;
 using Xunit;
 
-namespace LogoMqttBindingTests
+namespace LogoMqttBinding.Tests
 {
   [Collection(nameof(MqttLibraryTestEnvironment))]
   public class MqttLibraryTests

@@ -5,13 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LogoMqttBinding.Configuration;
-using LogoMqttBindingTests.Infrastructure;
+using LogoMqttBinding.Tests.Infrastructure;
 using MQTTnet;
 using MQTTnet.Client.Subscribing;
 using MQTTnet.Client.Unsubscribing;
 using Xunit;
 
-namespace LogoMqttBindingTests
+namespace LogoMqttBinding.Tests
 {
   [Collection(nameof(IntegrationTestEnvironment))]
   public class IntegrationTests

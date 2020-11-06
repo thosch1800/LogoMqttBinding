@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using LogoMqttBinding;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
@@ -12,7 +11,7 @@ using Xunit;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace LogoMqttBindingTests.Infrastructure
+namespace LogoMqttBinding.Tests.Infrastructure
 {
   [CollectionDefinition(nameof(IntegrationTestEnvironment), DisableParallelization = true)]
   public class IntegrationTestEnvironment : ICollectionFixture<IntegrationTestEnvironment>, IAsyncLifetime

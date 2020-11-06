@@ -2,7 +2,7 @@
 using Sharp7;
 using Xunit;
 
-namespace LogoMqttBindingTests.Infrastructure
+namespace LogoMqttBinding.Tests.Infrastructure
 {
   public class LogoHardwareMock : ICollectionFixture<LogoHardwareMock>, IDisposable
   {

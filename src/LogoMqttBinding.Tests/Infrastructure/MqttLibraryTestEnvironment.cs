@@ -10,7 +10,7 @@ using Xunit;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace LogoMqttBindingTests.Infrastructure
+namespace LogoMqttBinding.Tests.Infrastructure
 {
   [CollectionDefinition(nameof(MqttLibraryTestEnvironment), DisableParallelization = true)]
   public class MqttLibraryTestEnvironment : ICollectionFixture<MqttLibraryTestEnvironment>, IAsyncLifetime
