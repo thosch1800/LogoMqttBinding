@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
@@ -12,15 +13,19 @@ namespace LogoMqttBinding
 {
   public static class Program
   {
+    private const string ConfigPath = "./config/logo-mqtt.json";
+    private const string DefaultConfigPath = "./configDefaults/logo-mqtt.json";
+
     public static async Task Main()
     {
       Console.WriteLine("Configuring logger...");
       var loggerFactory = ConfigureLogging();
       try
       {
-        var configFile = "./config/logo-mqtt.json";
-        Console.WriteLine($"Reading configuration from {configFile}...");
-        var configuration = ReadConfiguration(configFile);
+        EnsureDefaultConfig();
+
+        Console.WriteLine($"Reading configuration from {ConfigPath}...");
+        var configuration = ReadConfiguration();
 
         Console.WriteLine("Initializing...");
         await using var appContext = Initialize(loggerFactory, configuration);
@@ -39,26 +44,6 @@ namespace LogoMqttBinding
           .LogException(ex);
         throw;
       }
-    }
-
-    private static Config ReadConfiguration(string path )
-    {
-      var configuration = new Config();
-      configuration.Read(path);
-      configuration.Validate();
-      return configuration;
-    }
-
-    private static ILoggerFactory ConfigureLogging()
-    {
-      return LoggerFactory.Create(
-        c =>
-        {
-          c.AddConsole();
-#if DEBUG
-          c.SetMinimumLevel(LogLevel.Debug);
-#endif
-        });
     }
 
     internal static ProgramContext Initialize(ILoggerFactory loggerFactory, Config config)
@@ -106,6 +91,35 @@ namespace LogoMqttBinding
       }
 
       return new ProgramContext(logos.ToImmutableArray(), mqttClients.ToImmutableArray());
+    }
+
+    private static void EnsureDefaultConfig()
+    {
+      if (!File.Exists(ConfigPath))
+      {
+        Console.WriteLine($"Copy default configuration to {ConfigPath}...");
+        File.Copy(DefaultConfigPath, ConfigPath);
+      }
+    }
+
+    private static Config ReadConfiguration()
+    {
+      var configuration = new Config();
+      configuration.Read(ConfigPath);
+      configuration.Validate();
+      return configuration;
+    }
+
+    private static ILoggerFactory ConfigureLogging()
+    {
+      return LoggerFactory.Create(
+        c =>
+        {
+          c.AddConsole();
+#if DEBUG
+          c.SetMinimumLevel(LogLevel.Debug);
+#endif
+        });
     }
 
     internal static async Task Connect(ProgramContext ctx)

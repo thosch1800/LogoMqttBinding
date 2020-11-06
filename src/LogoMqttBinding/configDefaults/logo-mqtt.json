@@ -1,0 +1,64 @@
+﻿{
+  "MqttBrokerUri": "10.1.1.86",
+  "Logos": [
+    {
+      "IpAddress": "10.1.1.230",
+      "MemoryRanges": [
+        {
+          "LocalVariableMemoryPollingCycleMilliseconds": 100,
+          "LocalVariableMemoryStart": 0,
+          "LocalVariableMemoryEnd": 150
+        }
+      ],
+      "Mqtt": [
+        {
+          "ClientId": "logo_230",
+          "Subscribed": [
+            {
+              "Topic": "output/q1/set",
+              "LogoAddress": 11,
+              "Type": "byte"
+            },
+            {
+              "Topic": "output/q2/set",
+              "LogoAddress": 12,
+              "Type": "byte"
+            },
+            {
+              "Topic": "output/q3/set",
+              "LogoAddress": 13,
+              "Type": "byte"
+            },
+            {
+              "Topic": "output/q4/set",
+              "LogoAddress": 14,
+              "Type": "byte"
+            }
+          ],
+          "Published": [
+            {
+              "Topic": "output/q1/get",
+              "LogoAddress": 111,
+              "Type": "byte"
+            },
+            {
+              "Topic": "output/q2/get",
+              "LogoAddress": 112,
+              "Type": "byte"
+            },
+            {
+              "Topic": "output/q3/get",
+              "LogoAddress": 113,
+              "Type": "byte"
+            },
+            {
+              "Topic": "output/q4/get",
+              "LogoAddress": 114,
+              "Type": "byte"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

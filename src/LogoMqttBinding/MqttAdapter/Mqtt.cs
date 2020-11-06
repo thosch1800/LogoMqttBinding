@@ -50,8 +50,6 @@ namespace LogoMqttBinding.MqttAdapter
 
 
 
-    public bool IsConnected => client.IsConnected;
-
     public async Task ConnectAsync() => await client
       .ConnectAsync(clientOptions)
       .ConfigureAwait(false);

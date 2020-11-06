@@ -14,10 +14,6 @@ namespace LogoMqttBinding.Configuration
         .Bind(config);
     }
 
-    private const int MemoryRangeMinimum = 0;
-    private const int MemoryRangeMaximum = 850;
-    private const int PollingCycleMillisecondsMinimum = 100;
-
     public static void Validate(this Config config)
     {
       if (!Uri.IsWellFormedUriString(config.MqttBrokerUri, UriKind.RelativeOrAbsolute))
@@ -92,5 +88,9 @@ namespace LogoMqttBinding.Configuration
             $"The range should be {MemoryRangeMinimum}..{MemoryRangeMaximum}");
       }
     }
+
+    private const int MemoryRangeMinimum = 0;
+    private const int MemoryRangeMaximum = 850;
+    private const int PollingCycleMillisecondsMinimum = 100;
   }
 }
