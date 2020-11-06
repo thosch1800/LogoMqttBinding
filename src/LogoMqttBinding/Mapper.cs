@@ -24,15 +24,15 @@ namespace LogoMqttBinding
         switch (type)
         {
           case "integer":
-            SetInteger(address, args.ApplicationMessage.Payload);
+            ReceivedInteger(logo.IntegerAt(address), args.ApplicationMessage.Payload);
             break;
 
           case "byte":
-            SetByte(address, args.ApplicationMessage.Payload);
+            ReceivedByte(logo.ByteAt(address), args.ApplicationMessage.Payload);
             break;
 
           case "float":
-            SetFloat(address, args.ApplicationMessage.Payload);
+            ReceivedFloat(logo.FloatAt(address), args.ApplicationMessage.Payload);
             break;
         }
       };
@@ -45,17 +45,20 @@ namespace LogoMqttBinding
         case "integer":
           return logo
             .IntegerAt(address)
-            .SubscribeToChangeNotification(async logoVariable => await PublishInteger(topic, logoVariable).ConfigureAwait(false));
+            .SubscribeToChangeNotification(async logoVariable =>
+              await PublishInteger(topic, logoVariable).ConfigureAwait(false));
 
         case "byte":
           return logo
             .ByteAt(address)
-            .SubscribeToChangeNotification(async logoVariable => await PublishByte(topic, logoVariable).ConfigureAwait(false));
+            .SubscribeToChangeNotification(async logoVariable =>
+              await PublishByte(topic, logoVariable).ConfigureAwait(false));
 
         case "float":
           return logo
             .FloatAt(address)
-            .SubscribeToChangeNotification(async logoVariable => await PublishFloat(topic, logoVariable).ConfigureAwait(false));
+            .SubscribeToChangeNotification(async logoVariable =>
+              await PublishFloat(topic, logoVariable).ConfigureAwait(false));
       }
 
       throw new ArgumentOutOfRangeException(nameof(type), type, "should be integer, byte or float");
@@ -84,22 +87,22 @@ namespace LogoMqttBinding
 
 
 
-    private void SetInteger(int address, byte[] payload)
+    private void ReceivedInteger(ILogoVariable<short> logoVariable, byte[] payload)
     {
       if (converter.ToValue(payload, out short value))
-        logo.IntegerAt(address).Set(value);
+        logoVariable.Set(value);
     }
 
-    private void SetByte(int address, byte[] payload)
+    private void ReceivedByte(ILogoVariable<byte> logoVariable, byte[] payload)
     {
       if (converter.ToValue(payload, out byte value))
-        logo.ByteAt(address).Set(value);
+        logoVariable.Set(value);
     }
 
-    private void SetFloat(int address, byte[] payload)
+    private void ReceivedFloat(ILogoVariable<float> logoVariable, byte[] payload)
     {
       if (converter.ToValue(payload, out float value))
-        logo.FloatAt(address).Set(value);
+        logoVariable.Set(value);
     }
 
     private async Task PublishInteger(string topic, ILogoVariable<short> logoVariable)
