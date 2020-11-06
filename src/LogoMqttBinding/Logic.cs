@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
@@ -13,14 +12,15 @@ namespace LogoMqttBinding
   {
     internal static ProgramContext Initialize(ILoggerFactory loggerFactory, Config config)
     {
+      var logger = loggerFactory.CreateLogger(nameof(Logic));
       var logos = new List<Logo>();
       var mqttClients = new List<Mqtt>();
 
-      Console.WriteLine($"MQTT broker {config.MqttBrokerUri}:{config.MqttBrokerPort}");
+      logger.LogInformation($"MQTT broker {config.MqttBrokerUri}:{config.MqttBrokerPort}");
 
       foreach (var logoConfig in config.Logos)
       {
-        Console.WriteLine($"Logo at {logoConfig.IpAddress}");
+        logger.LogInformation($"Logo at {logoConfig.IpAddress}");
 
         var logo = new Logo(
           loggerFactory.CreateLogger<Logo>(),
@@ -30,7 +30,7 @@ namespace LogoMqttBinding
 
         foreach (var mqttClientConfig in logoConfig.Mqtt)
         {
-          Console.WriteLine($"| MQTT client {mqttClientConfig.ClientId}");
+          logger.LogInformation($"| MQTT client {mqttClientConfig.ClientId}");
 
           var mqttClient = new Mqtt(
             loggerFactory.CreateLogger<Mqtt>(),
@@ -43,7 +43,7 @@ namespace LogoMqttBinding
 
           foreach (var subscribed in mqttClientConfig.Subscribe)
           {
-            Console.WriteLine($"| | subscribe {subscribed.Topic} {subscribed.LogoAddress}/{subscribed.Type}");
+            logger.LogInformation($"| | subscribe {subscribed.Topic} {subscribed.LogoAddress}/{subscribed.Type}");
 
             mqttClient
               .Subscribe(subscribed.Topic)
@@ -52,7 +52,7 @@ namespace LogoMqttBinding
 
           foreach (var published in mqttClientConfig.Publish)
           {
-            Console.WriteLine($"| | publish {published.Topic} {published.LogoAddress}/{published.Type}");
+            logger.LogInformation($"| | publish {published.Topic} {published.LogoAddress}/{published.Type}");
 
             LogoMqttMapping
               .LogoNotifyOnChange(logo, mqttClient, published.Type, published.Topic, published.LogoAddress);
@@ -70,8 +70,11 @@ namespace LogoMqttBinding
 
     internal static async Task Connect(ProgramContext ctx)
     {
-      foreach (var logo in ctx.Logos) logo.Connect();
-      foreach (var mqttClient in ctx.MqttClients) await mqttClient.ConnectAsync();
+      foreach (var logo in ctx.Logos)
+        logo.Connect();
+
+      foreach (var mqttClient in ctx.MqttClients)
+        await mqttClient.ConnectAsync().ConfigureAwait(false);
     }
   }
 }

@@ -18,7 +18,7 @@
       "Mqtt": [
         {
           "ClientId": "logo_230",
-          "Subscribed": [
+          "Subscribe": [
             {
               "Topic": "output/q1/set",
               "LogoAddress": 11,
@@ -101,7 +101,7 @@
               "Type": "float"
             }
           ],
-          "Published": [
+          "Publish": [
             {
               "Topic": "output/q1/get",
               "LogoAddress": 111,
