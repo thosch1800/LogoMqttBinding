@@ -63,29 +63,39 @@ namespace LogoMqttBinding
           logoConfig.MemoryRanges);
         logos.Add(logo);
 
-        foreach (var mqttConfig in logoConfig.Mqtt)
+        foreach (var mqttClientConfig in logoConfig.Mqtt)
         {
-          Console.WriteLine($"| MQTT client {mqttConfig.ClientId}");
+          Console.WriteLine($"| MQTT client {mqttClientConfig.ClientId}");
 
           var mqttClient = new Mqtt(
             loggerFactory.CreateLogger<Mqtt>(),
-            mqttConfig.ClientId,
+            mqttClientConfig.ClientId,
             config.MqttBrokerUri,
             config.MqttBrokerPort,
             config.MqttBrokerUsername,
             config.MqttBrokerPassword);
           mqttClients.Add(mqttClient);
 
-          foreach (var chConfig in mqttConfig.Subscribed)
+          foreach (var subscribed in mqttClientConfig.Subscribe)
           {
-            Console.WriteLine($"| | subscribe {chConfig.Topic} {chConfig.LogoAddress}/{chConfig.Type}");
-            mqttClient.Subscribe(chConfig.Topic).AddMessageHandler(logo, chConfig.Type, chConfig.LogoAddress);
+            Console.WriteLine($"| | subscribe {subscribed.Topic} {subscribed.LogoAddress}/{subscribed.Type}");
+
+            mqttClient
+              .Subscribe(subscribed.Topic)
+              .AddLogoSetValueHandler(logo, subscribed.Type, subscribed.LogoAddress);
           }
 
-          foreach (var chConfig in mqttConfig.Published)
+          foreach (var published in mqttClientConfig.Publish)
           {
-            Console.WriteLine($"| | publish {chConfig.Topic} {chConfig.LogoAddress}/{chConfig.Type}");
-            LogoMqttMapping.LogoNotifyOnChange(chConfig.Type, mqttClient, chConfig.Topic, logo, chConfig.LogoAddress);
+            Console.WriteLine($"| | publish {published.Topic} {published.LogoAddress}/{published.Type}");
+            
+            LogoMqttMapping
+              .LogoNotifyOnChange(logo, mqttClient, published.Type, published.Topic, published.LogoAddress);
+            /*
+            mqttClient
+              .Subscribe(published.Topic)
+              .AddLogoGetValueHandler(logo, mqttClient, published.Type, published.Topic, published.LogoAddress);
+          */
           }
         }
       }

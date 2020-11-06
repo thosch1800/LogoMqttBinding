@@ -71,12 +71,12 @@ namespace LogoMqttBinding.Configuration
           $"Polling cycle should be greater than {PollingCycleMillisecondsMinimum}");
     }
 
-    private static void ValidateMqtt(MqttDevice mqtt)
+    private static void ValidateMqtt(MqttClient mqtt)
     {
-      foreach (var published in mqtt.Published)
+      foreach (var published in mqtt.Publish)
         ValidateLogoAddress(published);
 
-      foreach (var subscribed in mqtt.Subscribed)
+      foreach (var subscribed in mqtt.Subscribe)
         ValidateLogoAddress(subscribed);
 
       static void ValidateLogoAddress(MqttChannel mqttChannel)

@@ -177,11 +177,11 @@ namespace LogoMqttBindingTests
             },
             Mqtt = new[]
             {
-              new MqttDevice
+              new MqttClient
               {
                 ClientId = "mqttClient",
 
-                Subscribed = new[]
+                Subscribe = new[]
                 {
                   new MqttChannel
                   {
@@ -223,7 +223,7 @@ namespace LogoMqttBindingTests
                   },
                 },
 
-                Published = new[]
+                Publish = new[]
                 {
                   new MqttChannel
                   {

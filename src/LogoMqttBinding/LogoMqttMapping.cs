@@ -13,12 +13,16 @@ namespace LogoMqttBinding
   internal static class LogoMqttMapping
   {
     //TODO: refactor to instance class (also featuring a logger)
-    public static void AddMessageHandler(this Mqtt.Subscription subscription, Logo logo, string chType, int chLogoAddress)
-    {
-      subscription.MessageReceived += (sender, args) => LogoSetValue(logo, chType, chLogoAddress, args.ApplicationMessage);
-    }
+    //TODO: allow reading of values without change
 
-    private static void LogoSetValue(Logo logo, string type, int address, MqttApplicationMessage msg) => LogoSetValueFor[type].Invoke(logo, address, msg.Payload);
+    public static void AddLogoSetValueHandler(this Mqtt.Subscription subscription, Logo logo, string chType, int chLogoAddress)
+    {
+      subscription.MessageReceived += (sender, args) =>
+      {
+        if (LogoSetValueFor.TryGetValue(chType, out var handler))
+          handler.Invoke(logo, chLogoAddress, args.ApplicationMessage.Payload);
+      };
+    }
 
     private static readonly ImmutableDictionary<string, Action<Logo, int, byte[]>> LogoSetValueFor =
       new Dictionary<string, Action<Logo, int, byte[]>>
@@ -47,8 +51,39 @@ namespace LogoMqttBinding
     }
 
 
+    public static void AddLogoGetValueHandler(this Mqtt.Subscription subscription, Logo logo, Mqtt mqttClient, string chType, string topic, int chLogoAddress)
+    {
+      subscription.MessageReceived += async (sender, args) =>
+      {
+        switch (chType)
+        {
+          case "integer":
+            var intValue = logo.IntegerAt(chLogoAddress).Get();
+            await MqttPublish(ToPayload(intValue)).ConfigureAwait(false);
+            break;
 
-    public static void LogoNotifyOnChange(string type, Mqtt mqttClient, string topic, Logo logo, int address)
+          case "byte":
+            var byteValue = logo.ByteAt(chLogoAddress).Get();
+            await MqttPublish(ToPayload(byteValue)).ConfigureAwait(false);
+            break;
+
+          case "float":
+            var floatValue = logo.FloatAt(chLogoAddress).Get();
+            await MqttPublish(ToPayload(floatValue)).ConfigureAwait(false);
+            break;
+
+            async Task MqttPublish(byte[] payload)
+            {
+              await mqttClient.PublishAsync(new MqttApplicationMessageBuilder()
+                .WithTopic(topic)
+                .WithPayload(payload)
+                .Build());
+            }
+        }
+      };
+    }
+
+    public static void LogoNotifyOnChange(Logo logo, Mqtt mqttClient, string type, string topic, int address)
     {
       switch (type)
       {

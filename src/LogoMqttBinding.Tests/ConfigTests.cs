@@ -261,14 +261,14 @@ namespace LogoMqttBinding.Tests
       ""Mqtt"": [
         {
           ""ClientId"": ""mqtt-client-id"",
-          ""Subscribed"": [
+          ""Subscribe"": [
             {
               ""Topic"": ""map/20/30/set"",
               ""LogoAddress"": 0,
               ""Type"": ""byte""
             }
           ],
-          ""Published"": [
+          ""Publish"": [
             {
               ""Topic"": ""map/20/30/get"",
               ""LogoAddress"": 851,
@@ -302,14 +302,14 @@ namespace LogoMqttBinding.Tests
       ""Mqtt"": [
         {
           ""ClientId"": ""mqtt-client-id"",
-          ""Subscribed"": [
+          ""Subscribe"": [
             {
               ""Topic"": ""map/20/30/set"",
               ""LogoAddress"": 0,
               ""Type"": ""byte""
             }
           ],
-          ""Published"": [
+          ""Publish"": [
             {
               ""Topic"": ""map/20/30/get"",
               ""LogoAddress"": -1,
@@ -343,14 +343,14 @@ namespace LogoMqttBinding.Tests
       ""Mqtt"": [
         {
           ""ClientId"": ""mqtt-client-id"",
-          ""Subscribed"": [
+          ""Subscribe"": [
             {
               ""Topic"": ""map/20/30/set"",
               ""LogoAddress"": 851,
               ""Type"": ""byte""
             }
           ],
-          ""Published"": [
+          ""Publish"": [
             {
               ""Topic"": ""map/20/30/get"",
               ""LogoAddress"": 42,
@@ -384,14 +384,14 @@ namespace LogoMqttBinding.Tests
       ""Mqtt"": [
         {
           ""ClientId"": ""mqtt-client-id"",
-          ""Subscribed"": [
+          ""Subscribe"": [
             {
               ""Topic"": ""map/20/30/set"",
               ""LogoAddress"": -1,
               ""Type"": ""byte""
             }
           ],
-          ""Published"": [
+          ""Publish"": [
             {
               ""Topic"": ""map/20/30/get"",
               ""LogoAddress"": 42,
@@ -441,7 +441,7 @@ namespace LogoMqttBinding.Tests
       ""Mqtt"": [
         {
           ""ClientId"": ""mqtt-client-id"",
-          ""Subscribed"": [
+          ""Subscribe"": [
             {
               ""Topic"": ""map/21/31/set"",
               ""LogoAddress"": 21,
@@ -458,7 +458,7 @@ namespace LogoMqttBinding.Tests
               ""Type"": ""float""
             }
           ],
-          ""Published"": [
+          ""Publish"": [
             {
               ""Topic"": ""map/120/130/get"",
               ""LogoAddress"": 120,
@@ -509,34 +509,34 @@ namespace LogoMqttBinding.Tests
 
       logo.Mqtt[0].ClientId.Should().Be("mqtt-client-id");
 
-      logo.Mqtt[0].Subscribed[0].Topic.Should().Be("map/21/31/set");
-      logo.Mqtt[0].Subscribed[0].LogoAddress.Should().Be(21);
-      logo.Mqtt[0].Subscribed[0].Type.Should().Be("byte");
+      logo.Mqtt[0].Subscribe[0].Topic.Should().Be("map/21/31/set");
+      logo.Mqtt[0].Subscribe[0].LogoAddress.Should().Be(21);
+      logo.Mqtt[0].Subscribe[0].Type.Should().Be("byte");
 
-      logo.Mqtt[0].Subscribed[1].Topic.Should().Be("map/22/32/set");
-      logo.Mqtt[0].Subscribed[1].LogoAddress.Should().Be(22);
-      logo.Mqtt[0].Subscribed[1].Type.Should().Be("integer");
+      logo.Mqtt[0].Subscribe[1].Topic.Should().Be("map/22/32/set");
+      logo.Mqtt[0].Subscribe[1].LogoAddress.Should().Be(22);
+      logo.Mqtt[0].Subscribe[1].Type.Should().Be("integer");
 
-      logo.Mqtt[0].Subscribed[2].Topic.Should().Be("map/26/36/set");
-      logo.Mqtt[0].Subscribed[2].LogoAddress.Should().Be(26);
-      logo.Mqtt[0].Subscribed[2].Type.Should().Be("float");
+      logo.Mqtt[0].Subscribe[2].Topic.Should().Be("map/26/36/set");
+      logo.Mqtt[0].Subscribe[2].LogoAddress.Should().Be(26);
+      logo.Mqtt[0].Subscribe[2].Type.Should().Be("float");
 
 
-      logo.Mqtt[0].Published[0].Topic.Should().Be("map/120/130/get");
-      logo.Mqtt[0].Published[0].LogoAddress.Should().Be(120);
-      logo.Mqtt[0].Published[0].Type.Should().Be("bit");
+      logo.Mqtt[0].Publish[0].Topic.Should().Be("map/120/130/get");
+      logo.Mqtt[0].Publish[0].LogoAddress.Should().Be(120);
+      logo.Mqtt[0].Publish[0].Type.Should().Be("bit");
 
-      logo.Mqtt[0].Published[1].Topic.Should().Be("map/121/131/get");
-      logo.Mqtt[0].Published[1].LogoAddress.Should().Be(121);
-      logo.Mqtt[0].Published[1].Type.Should().Be("byte");
+      logo.Mqtt[0].Publish[1].Topic.Should().Be("map/121/131/get");
+      logo.Mqtt[0].Publish[1].LogoAddress.Should().Be(121);
+      logo.Mqtt[0].Publish[1].Type.Should().Be("byte");
 
-      logo.Mqtt[0].Published[2].Topic.Should().Be("map/122/132/get");
-      logo.Mqtt[0].Published[2].LogoAddress.Should().Be(122);
-      logo.Mqtt[0].Published[2].Type.Should().Be("integer");
+      logo.Mqtt[0].Publish[2].Topic.Should().Be("map/122/132/get");
+      logo.Mqtt[0].Publish[2].LogoAddress.Should().Be(122);
+      logo.Mqtt[0].Publish[2].Type.Should().Be("integer");
 
-      logo.Mqtt[0].Published[3].Topic.Should().Be("map/126/136/get");
-      logo.Mqtt[0].Published[3].LogoAddress.Should().Be(126);
-      logo.Mqtt[0].Published[3].Type.Should().Be("float");
+      logo.Mqtt[0].Publish[3].Topic.Should().Be("map/126/136/get");
+      logo.Mqtt[0].Publish[3].LogoAddress.Should().Be(126);
+      logo.Mqtt[0].Publish[3].Type.Should().Be("float");
     }
   }
 
