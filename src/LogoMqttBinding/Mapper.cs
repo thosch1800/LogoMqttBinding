@@ -87,10 +87,9 @@ namespace LogoMqttBinding
                 var value = logoVariable.Get();
                 await MqttPublish(topic, converter.Create(value)).ConfigureAwait(false);
               });
-
-        default:
-          throw new ArgumentOutOfRangeException(nameof(type), type, "should be integer, byte or float");
       }
+
+      throw new ArgumentOutOfRangeException(nameof(type), type, "should be integer, byte or float");
     }
 
     public void AddLogoGetValueHandler(Mqtt.Subscription subscription, string chType, string topic, int chLogoAddress)
@@ -102,21 +101,21 @@ namespace LogoMqttBinding
           case "integer":
           {
             var value = logo.IntegerAt(chLogoAddress).Get();
-            await MqttPublish(topic,converter.Create(value)).ConfigureAwait(false);
+            await MqttPublish(topic, converter.Create(value)).ConfigureAwait(false);
           }
             break;
 
           case "byte":
           {
             var value = logo.ByteAt(chLogoAddress).Get();
-            await MqttPublish(topic,converter.Create(value)).ConfigureAwait(false);
+            await MqttPublish(topic, converter.Create(value)).ConfigureAwait(false);
           }
             break;
 
           case "float":
           {
             var value = logo.FloatAt(chLogoAddress).Get();
-            await MqttPublish(topic,converter.Create(value)).ConfigureAwait(false);
+            await MqttPublish(topic, converter.Create(value)).ConfigureAwait(false);
           }
             break;
         }
