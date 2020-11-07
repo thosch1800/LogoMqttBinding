@@ -63,6 +63,9 @@ namespace LogoMqttBinding.Tests
       ex.ActualValue.Should().Be(65536);
       ex.Message.Should().Contain("'65536' should be a valid port");
     }
+    
+
+    
 
     [Fact]
     public void Validate_InvalidLogoIpAddress_ShouldThrow()
@@ -180,6 +183,40 @@ namespace LogoMqttBinding.Tests
       ex.ActualValue.Should().Be(99);
       ex.Message.Should().Contain("Polling cycle should be greater than 100");
     }
+    
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void Validate_InvalidClientId_ShouldThrow(string clientId)
+    {
+      using var configFile = new TempFile(@$"
+{{
+  ""Logos"": [
+    {{
+      ""Mqtt"": [
+        {{
+          ""ClientId"": ""{clientId}"",
+        }}
+      ]
+    }}
+  ]
+}}");
+      var config = new Config();
+      config.Read(configFile.Path);
+
+      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
+      ex.ParamName.Should().Be(nameof(MqttClientConfig.ClientId));
+      ex.ActualValue.Should().Be(clientId);
+      ex.Message.Should().Contain("ClientId should not be empty or whitespace");
+    }    
+    
+
+    //todo: clean session
+    //todo: qos
+    //todo: provide application state as dedicated mqtt client (also configuration like log level)
+    //Todo: retained message
+    //TODO: last will
+    
 
     [Fact]
     public void Validate_PublishedLogoAddressAboveRange_ShouldThrow()
@@ -192,9 +229,11 @@ namespace LogoMqttBinding.Tests
         {
           ""Channels"": [
             {
+              ""Topic"": ""any/valid/topic"",
               ""LogoAddress"": 0,
             },
             {
+              ""Topic"": ""any/valid/topic"",
               ""LogoAddress"": 851,
             }
           ]
@@ -223,9 +262,11 @@ namespace LogoMqttBinding.Tests
         {
           ""Channels"": [
             {
+              ""Topic"": ""any/valid/topic"",
               ""LogoAddress"": 0,
             },
             {
+              ""Topic"": ""any/valid/topic"",
               ""LogoAddress"": -1,
             }
           ]
@@ -362,51 +403,46 @@ namespace LogoMqttBinding.Tests
     }
 
 
-    [Fact]
-    public void Validate_InvalidTopic_StartsWithStroke_ShouldThrow()
+    [Theory]
+    [InlineData("/a/invalid/topic", "Topic should not start with /")]
+    [InlineData("a/#/topic", "Topic should contain # at the end only")]
+    [InlineData("a/ /topic", "Topic should not contain whitespace")]
+    [InlineData("", "Topic should not be empty or whitespace")]
+    [InlineData(" ", "Topic should not be empty or whitespace")]
+    public void Validate_InvalidTopic_ShouldThrow(string topic, string message)
     {
-      using var configFile = new TempFile(@"
-{
+      using var configFile = new TempFile(@$"
+{{
   ""Logos"": [
-    {
+    {{
       ""Mqtt"": [
-        {
+        {{
           ""Channels"": [
-            {
+            {{
               ""LogoAddress"": ""0"",
-              ""Topic"": ""/a/invalid/topic""
-            }
+              ""Topic"": ""{topic}""
+            }}
           ]
-        }
+        }}
       ]
-    }
+    }}
   ]
-}");
+}}");
       var config = new Config();
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
       ex.ParamName.Should().Be(nameof(MqttChannelConfig.Topic));
-      ex.ActualValue.Should().Be("/a/invalid/topic");
-      ex.Message.Should().Contain("Topic should not start with /");
+      ex.ActualValue.Should().Be(topic);
+      ex.Message.Should().Contain(message);
     }
-
-    //TODO: test topic: 
-    // doesnt start with /
-    // has # at end only
-    // has alphanumeric and / only - no spaces, no whitespace
-    // is not empty
-
-    // broker username or password is null - error if just one is specified
-
-    //todo: clean session
-    //todo: qos
-    //todo: provide application state as dedicated mqtt client (also configuration like log level)
-    //Todo: retained message
-    //TODO: last will
-
-
-
+    
+    
+    
+    
+    
+    
+    
     [Fact]
     public void Read_ValidContent_Succeeds()
     {

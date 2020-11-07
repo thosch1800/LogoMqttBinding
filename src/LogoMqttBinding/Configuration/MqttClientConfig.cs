@@ -9,7 +9,7 @@ namespace LogoMqttBinding.Configuration
   [DebuggerDisplay("{" + nameof(ClientId) + "}")]
   public class MqttClientConfig
   {
-    public string ClientId { get; set; } = "";
+    public string ClientId { get; set; } = "logo-mqtt";
 
     public MqttChannelConfig[] Channels { get; set; } = Array.Empty<MqttChannelConfig>();
 

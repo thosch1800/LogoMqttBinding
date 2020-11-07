@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Configuration;
 
@@ -73,6 +74,14 @@ namespace LogoMqttBinding.Configuration
 
     private static void ValidateMqttClientConfig(MqttClientConfig mqttClientConfig)
     {
+      if (string.IsNullOrWhiteSpace(mqttClientConfig.ClientId))
+        throw new ArgumentOutOfRangeException(
+          nameof( mqttClientConfig.ClientId),
+          mqttClientConfig.ClientId,
+          $"ClientId should not be empty or whitespace");
+      
+      
+      
       foreach (var mqttChannelConfig in mqttClientConfig.Channels)
       {
         if (!EnumIsDefined(typeof(MqttChannelConfig.Actions), mqttChannelConfig.Action))
@@ -93,13 +102,29 @@ namespace LogoMqttBinding.Configuration
             mqttChannelConfig.LogoAddress,
             $"The range should be {MemoryRangeMinimum}..{MemoryRangeMaximum}");
 
+        if (string.IsNullOrWhiteSpace(mqttChannelConfig.Topic))
+          throw new ArgumentOutOfRangeException(
+            nameof(mqttChannelConfig.Topic),
+            mqttChannelConfig.Topic,
+            $"Topic should not be empty or whitespace");
+
+        if (mqttChannelConfig.Topic.Any(char.IsWhiteSpace))
+          throw new ArgumentOutOfRangeException(
+            nameof(mqttChannelConfig.Topic),
+            mqttChannelConfig.Topic,
+            $"Topic should not contain whitespace");
+
         if (mqttChannelConfig.Topic.StartsWith('/'))
           throw new ArgumentOutOfRangeException(
             nameof(mqttChannelConfig.Topic),
             mqttChannelConfig.Topic,
             $"Topic should not start with /");
 
-
+        if (mqttChannelConfig.Topic.Contains('#') && !mqttChannelConfig.Topic.EndsWith('#'))
+          throw new ArgumentOutOfRangeException(
+            nameof(mqttChannelConfig.Topic),
+            mqttChannelConfig.Topic,
+            $"Topic should contain # at the end only");
       }
 
       static bool EnumIsDefined(Type type, string value)
