@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LogoMqttBinding
 {
+  //todo v2.0: provide application state as dedicated mqtt client (e.g. log level, statistics, event log)
   internal static class Logic
   {
     internal static ProgramContext Initialize(ILoggerFactory loggerFactory, Config config)

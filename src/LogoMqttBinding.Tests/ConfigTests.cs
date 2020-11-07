@@ -688,9 +688,6 @@ namespace LogoMqttBinding.Tests
       logo.Mqtt[0].Channels[5].LogoAddress.Should().Be(126);
       logo.Mqtt[0].Channels[5].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Float);
     }
-
-    //todo: provide application state as dedicated mqtt client (also configuration like log level)
-    //Todo: retained message
   }
 
   public class TempFile : IDisposable
