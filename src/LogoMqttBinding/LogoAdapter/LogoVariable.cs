@@ -8,6 +8,7 @@ namespace LogoMqttBinding.LogoAdapter
 
     public void Set(T value);
 
+    // ReSharper disable once UnusedMemberInSuper.Global
     public NotificationContext SubscribeToChangeNotification(Action<ILogoVariable<T>> onChanged);
   }
 }

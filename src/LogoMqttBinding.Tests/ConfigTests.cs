@@ -369,7 +369,7 @@ namespace LogoMqttBinding.Tests
     // is not empty
 
     // broker username or password is null - error if just one is specified
-    
+
     //todo: clean session
     //todo: qos
     //todo: provide application state as dedicated mqtt client (also configuration like log level)

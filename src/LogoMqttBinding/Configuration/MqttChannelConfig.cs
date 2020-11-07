@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+
 namespace LogoMqttBinding.Configuration
 {
   [DebuggerDisplay("{Topic} -> {Type}@{LogoAddress}")]

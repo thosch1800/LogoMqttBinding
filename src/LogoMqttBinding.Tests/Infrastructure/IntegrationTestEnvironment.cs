@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using LogoMqttBinding.Configuration;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
@@ -50,11 +51,10 @@ namespace LogoMqttBinding.Tests.Infrastructure
         .ConnectAsync(mqttClientOptions)
         .ConfigureAwait(false);
 
-      appContext = await Logic
-        .Initialize(
-          LoggerFactory, 
-          IntegrationTests.GetConfig(brokerIpAddress.ToString(), brokerPort))
-        .ConfigureAwait(false);
+      var config = IntegrationTests.GetConfig(brokerIpAddress.ToString(), brokerPort);
+      config.Validate();
+      appContext = Logic
+        .Initialize(LoggerFactory, config);
       await appContext
         .Connect()
         .ConfigureAwait(false);

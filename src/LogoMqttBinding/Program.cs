@@ -22,7 +22,7 @@ namespace LogoMqttBinding
       try
       {
         logger.LogInformation("Configuring...");
-        await using var context = await Configure().ConfigureAwait(false);
+        await using var context = Configure();
 
         logger.LogInformation("Connecting...");
         await context.Connect().ConfigureAwait(false);
@@ -39,7 +39,7 @@ namespace LogoMqttBinding
       }
     }
 
-    private async Task<ProgramContext> Configure()
+    private ProgramContext Configure()
     {
       var configuration = new Config();
 
@@ -56,10 +56,10 @@ namespace LogoMqttBinding
       configuration.Validate();
 
       logger.LogInformation("Initializing...");
-      return await Logic.Initialize(loggerFactory, configuration).ConfigureAwait(false);
+      return Logic.Initialize(loggerFactory, configuration);
     }
 
-    private async Task WaitForCtrlCAsync(CancellationToken ct)
+    private static async Task WaitForCtrlCAsync(CancellationToken ct)
     {
       using var semaphore = new SemaphoreSlim(1, 1);
       await semaphore.WaitAsync(ct).ConfigureAwait(false);

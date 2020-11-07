@@ -36,19 +36,19 @@ namespace LogoMqttBinding.MqttAdapter
 
 
 
-    public byte[] ToPayload(byte value)
+    public static byte[] ToPayload(byte value)
     {
       var s = value.ToString(CultureInfo.InvariantCulture);
       return Encoding.UTF8.GetBytes(s);
     }
 
-    public byte[] ToPayload(short value)
+    public static byte[] ToPayload(short value)
     {
       var s = value.ToString(CultureInfo.InvariantCulture);
       return Encoding.UTF8.GetBytes(s);
     }
 
-    public byte[] ToPayload(float value)
+    public static byte[] ToPayload(float value)
     {
       var s = value.ToString(CultureInfo.InvariantCulture);
       return Encoding.UTF8.GetBytes(s);

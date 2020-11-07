@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
 using LogoMqttBinding.LogoAdapter;
 using LogoMqttBinding.MqttAdapter;
@@ -11,7 +10,7 @@ namespace LogoMqttBinding
 {
   internal static class Logic
   {
-    internal static async Task<ProgramContext> Initialize(ILoggerFactory loggerFactory, Config config)
+    internal static ProgramContext Initialize(ILoggerFactory loggerFactory, Config config)
     {
       var logger = loggerFactory.CreateLogger(nameof(Logic));
       var mqttClients = new List<Mqtt>();
@@ -49,23 +48,23 @@ namespace LogoMqttBinding
           foreach (var channel in mqttClientConfig.Channels)
           {
             var action = channel.GetActionAsEnum();
-            
+
             logger.LogInformation($"-- {action} {channel.Topic} (@{channel.LogoAddress}[{channel.Type}])");
 
-            switch(action)
+            switch (action)
             {
               case MqttChannelConfig.Actions.Publish:
                 mapper.PublishOnChange(channel.Topic, channel.LogoAddress, channel.GetTypeAsEnum(), channel.Retain, channel.GetQualityOfServiceAsEnum().ToMqttNet());
                 break;
-              
+
               case MqttChannelConfig.Actions.Subscribe:
-                mapper.WriteLogoVariable(await mqttClient.Subscribe(channel.Topic, channel.GetQualityOfServiceAsEnum().ToMqttNet()), channel.LogoAddress, channel.GetTypeAsEnum());
+                mapper.WriteLogoVariable(mqttClient.Subscribe(channel.Topic, channel.GetQualityOfServiceAsEnum().ToMqttNet()), channel.LogoAddress, channel.GetTypeAsEnum());
                 break;
-              
+
               case MqttChannelConfig.Actions.SubscribePulse:
                 //TODO: how to pulse an PLC input (~250ms)?
                 break;
-              
+
               default: throw new ArgumentOutOfRangeException();
             }
           }

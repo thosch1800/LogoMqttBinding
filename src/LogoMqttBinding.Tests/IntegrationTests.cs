@@ -228,7 +228,7 @@ namespace LogoMqttBinding.Tests
                     Type = MqttChannelConfig.Types.Byte.ToString(),
                   },
 
-                  
+
                   new MqttChannelConfig
                   {
                     Action = MqttChannelConfig.Actions.Publish.ToString(),

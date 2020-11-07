@@ -94,10 +94,9 @@ namespace LogoMqttBinding.Configuration
             $"The range should be {MemoryRangeMinimum}..{MemoryRangeMaximum}");
       }
 
-      bool EnumIsDefined(Type type, string value) 
-        => Enum.TryParse(type, value,true, out var action) && 
-           Enum.IsDefined(type, action!)
-      ;
+      static bool EnumIsDefined(Type type, string value)
+        => Enum.TryParse(type, value, true, out var action) &&
+           Enum.IsDefined(type, action!);
     }
 
     private const int MemoryRangeMinimum = 0;

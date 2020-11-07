@@ -34,43 +34,54 @@ namespace LogoMqttBinding
           case MqttChannelConfig.Types.Float:
             mapping.ReceivedFloat(logo.FloatAt(address), args.ApplicationMessage.Payload);
             break;
+
+          default: throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
       };
     }
 
+    // ReSharper disable once UnusedMethodReturnValue.Global
     public NotificationContext PublishOnChange(string topic, int address, MqttChannelConfig.Types type, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
-      switch (type)
+      return type switch
       {
-        case MqttChannelConfig.Types.Integer:
-          return logo
+        MqttChannelConfig.Types.Integer =>
+          logo
             .IntegerAt(address)
-            .SubscribeToChangeNotification(async logoVariable =>
-              await mapping.PublishInteger(logoVariable, topic, retain, qualityOfService).ConfigureAwait(false));
-
-        case MqttChannelConfig.Types.Byte:
-          return logo
+            .SubscribeToChangeNotification(
+              async logoVariable =>
+                await mapping
+                  .PublishInteger(logoVariable, topic, retain, qualityOfService)
+                  .ConfigureAwait(false)),
+        
+        MqttChannelConfig.Types.Byte =>
+          logo
             .ByteAt(address)
-            .SubscribeToChangeNotification(async logoVariable =>
-              await mapping.PublishByte(logoVariable, topic, retain, qualityOfService).ConfigureAwait(false));
-
-        case MqttChannelConfig.Types.Float:
-          return logo
+            .SubscribeToChangeNotification(
+              async logoVariable => 
+                await mapping
+                  .PublishByte(logoVariable, topic, retain, qualityOfService)
+                  .ConfigureAwait(false)),
+        
+        MqttChannelConfig.Types.Float => 
+          logo
             .FloatAt(address)
-            .SubscribeToChangeNotification(async logoVariable =>
-              await mapping.PublishFloat(logoVariable, topic, retain, qualityOfService).ConfigureAwait(false));
-      }
-
-      throw new ArgumentOutOfRangeException(nameof(type), type, "should be integer, byte or float");
+            .SubscribeToChangeNotification(
+              async logoVariable => 
+                await mapping
+                  .PublishFloat(logoVariable, topic, retain, qualityOfService)
+                  .ConfigureAwait(false)),
+        
+        _ => throw new ArgumentOutOfRangeException(nameof(type), type, "should be integer, byte or float"),
+      };
     }
 
     private readonly Logo logo;
     private readonly Mapping mapping;
   }
-  
-  
-  
-  
+
+
+
   internal class Mapping
   {
     public Mapping(ILoggerFactory loggerFactory, Mqtt mqttClient)
@@ -104,19 +115,19 @@ namespace LogoMqttBinding
     public async Task PublishInteger(ILogoVariable<short> logoVariable, string topic, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
       var value = logoVariable.Get();
-      await Publish(topic, mqttFormat.ToPayload(value), retain, qualityOfService).ConfigureAwait(false);
+      await Publish(topic, MqttFormat.ToPayload(value), retain, qualityOfService).ConfigureAwait(false);
     }
 
     public async Task PublishByte(ILogoVariable<byte> logoVariable, string topic, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
       var value = logoVariable.Get();
-      await Publish(topic, mqttFormat.ToPayload(value), retain, qualityOfService).ConfigureAwait(false);
+      await Publish(topic, MqttFormat.ToPayload(value), retain, qualityOfService).ConfigureAwait(false);
     }
 
     public async Task PublishFloat(ILogoVariable<float> logoVariable, string topic, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
       var value = logoVariable.Get();
-      await Publish(topic, mqttFormat.ToPayload(value), retain, qualityOfService).ConfigureAwait(false);
+      await Publish(topic, MqttFormat.ToPayload(value), retain, qualityOfService).ConfigureAwait(false);
     }
 
 
@@ -135,5 +146,5 @@ namespace LogoMqttBinding
 
     private readonly Mqtt mqttClient;
     private readonly MqttFormat mqttFormat;
-  }  
+  }
 }

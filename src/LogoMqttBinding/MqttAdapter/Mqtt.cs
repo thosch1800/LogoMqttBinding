@@ -71,9 +71,21 @@ namespace LogoMqttBinding.MqttAdapter
 
 
 
-    public async Task ConnectAsync() => await client
-      .ConnectAsync(clientOptions)
-      .ConfigureAwait(false);
+    public async Task ConnectAsync()
+    {
+      await client
+        .ConnectAsync(clientOptions)
+        .ConfigureAwait(false);
+
+      foreach (var subscription in subscriptions.Values)
+      {
+        var result = await client
+          .SubscribeAsync(subscription.Topic, subscription.Qos)
+          .ConfigureAwait(false);
+
+        HandleSubscribeError(result, subscription);
+      }
+    }
 
     public async Task PublishAsync(MqttApplicationMessage message)
     {
@@ -97,47 +109,46 @@ namespace LogoMqttBinding.MqttAdapter
     }
 
 
-    public async Task<Subscription> Subscribe(string topic, MqttQualityOfServiceLevel qualityOfService)
+    public Subscription Subscribe(string topic, MqttQualityOfServiceLevel qualityOfService)
     {
-      var subscribeResult = await client.SubscribeAsync(topic, qualityOfService);
-      HandleSubscribeError();
-
-      var subscription = new Subscription(topic);
+      var subscription = new Subscription(topic, qualityOfService);
       subscriptions.Add(topic, subscription);
       return subscription;
+    }
 
-      void HandleSubscribeError()
+    private void HandleSubscribeError(MqttClientSubscribeResult subscribeResult, Subscription subscription)
+    {
+      var resultItem = subscribeResult.Items.First();
+      switch (subscription.Qos)
       {
-        var resultItem = subscribeResult.Items.First();
-        switch (qualityOfService)
-        {
-          case MqttQualityOfServiceLevel.AtLeastOnce:
-            if (resultItem.ResultCode != MqttClientSubscribeResultCode.GrantedQoS0)
-              logger.LogMessage($"received unexpected result code {resultItem.ResultCode}",
-                args: a => a
-                  .Add(nameof(topic), topic)
-                  .Add(nameof(qualityOfService), qualityOfService),
-                LogLevel.Error);
-            break;
+        case MqttQualityOfServiceLevel.AtLeastOnce:
+          if (resultItem.ResultCode != MqttClientSubscribeResultCode.GrantedQoS0)
+            logger.LogMessage($"received unexpected result code {resultItem.ResultCode}",
+              a => a
+                .Add(nameof(subscription.Topic), subscription.Topic)
+                .Add(nameof(subscription.Qos), subscription.Qos),
+              LogLevel.Error);
+          break;
 
-          case MqttQualityOfServiceLevel.AtMostOnce:
-            if (resultItem.ResultCode != MqttClientSubscribeResultCode.GrantedQoS1)
-              logger.LogMessage($"received unexpected result code {resultItem.ResultCode}",
-                args: a => a
-                  .Add(nameof(topic), topic)
-                  .Add(nameof(qualityOfService), qualityOfService),
-                LogLevel.Error);
-            break;
+        case MqttQualityOfServiceLevel.AtMostOnce:
+          if (resultItem.ResultCode != MqttClientSubscribeResultCode.GrantedQoS1)
+            logger.LogMessage($"received unexpected result code {resultItem.ResultCode}",
+              a => a
+                .Add(nameof(subscription.Topic), subscription.Topic)
+                .Add(nameof(subscription.Qos), subscription.Qos),
+              LogLevel.Error);
+          break;
 
-          case MqttQualityOfServiceLevel.ExactlyOnce:
-            if (resultItem.ResultCode != MqttClientSubscribeResultCode.GrantedQoS2)
-              logger.LogMessage($"received unexpected result code {resultItem.ResultCode}",
-                args: a => a
-                  .Add(nameof(topic), topic)
-                  .Add(nameof(qualityOfService), qualityOfService),
-                LogLevel.Error);
-            break;
-        }
+        case MqttQualityOfServiceLevel.ExactlyOnce:
+          if (resultItem.ResultCode != MqttClientSubscribeResultCode.GrantedQoS2)
+            logger.LogMessage($"received unexpected result code {resultItem.ResultCode}",
+              a => a
+                .Add(nameof(subscription.Topic), subscription.Topic)
+                .Add(nameof(subscription.Qos), subscription.Qos),
+              LogLevel.Error);
+          break;
+
+        default: throw new ArgumentOutOfRangeException();
       }
     }
 
@@ -189,8 +200,14 @@ namespace LogoMqttBinding.MqttAdapter
 
     public class Subscription
     {
-      internal Subscription(string topic) => Topic = topic;
+      internal Subscription(string topic, MqttQualityOfServiceLevel qos)
+      {
+        Topic = topic;
+        Qos = qos;
+      }
+
       public string Topic { get; }
+      public MqttQualityOfServiceLevel Qos { get; }
 
       internal void OnMessageReceived(MqttApplicationMessageReceivedEventArgs e) => MessageReceived?.Invoke(this, e);
       public event EventHandler<MqttApplicationMessageReceivedEventArgs>? MessageReceived;
