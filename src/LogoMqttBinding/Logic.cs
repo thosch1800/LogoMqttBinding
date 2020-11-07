@@ -50,7 +50,7 @@ namespace LogoMqttBinding
           {
             var action = channel.GetActionAsEnum();
 
-            logger.LogInformation($"-- {action} {channel.Topic} (@{channel.LogoAddress}[{channel.Type}])");
+            logger.LogInformation($"-- {action} {channel.Topic} {channel.GetQualityOfServiceAsEnum()} retain:{channel.Retain} logo: {channel.Type}@{channel.LogoAddress}");
 
             switch (action)
             {
