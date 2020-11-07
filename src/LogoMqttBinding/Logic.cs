@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
 using LogoMqttBinding.LogoAdapter;
 using LogoMqttBinding.MqttAdapter;
@@ -10,7 +11,7 @@ namespace LogoMqttBinding
 {
   internal static class Logic
   {
-    internal static ProgramContext Initialize(ILoggerFactory loggerFactory, Config config)
+    internal static async Task<ProgramContext> Initialize(ILoggerFactory loggerFactory, Config config)
     {
       var logger = loggerFactory.CreateLogger(nameof(Logic));
       var mqttClients = new List<Mqtt>();
@@ -37,8 +38,10 @@ namespace LogoMqttBinding
             mqttClientConfig.ClientId,
             config.MqttBrokerUri,
             config.MqttBrokerPort,
+            mqttClientConfig.CleanSession,
             config.MqttBrokerUsername,
-            config.MqttBrokerPassword);
+            config.MqttBrokerPassword,
+            mqttClientConfig.LastWill);
           mqttClients.Add(mqttClient);
 
           var mapper = new Mapper(loggerFactory, logo, mqttClient);
@@ -52,11 +55,11 @@ namespace LogoMqttBinding
             switch(action)
             {
               case MqttChannelConfig.Actions.Publish:
-                mapper.PublishOnChange(channel.Topic, channel.LogoAddress, channel.GetTypeAsEnum());
+                mapper.PublishOnChange(channel.Topic, channel.LogoAddress, channel.GetTypeAsEnum(), channel.Retain, channel.GetQualityOfServiceAsEnum().ToMqttNet());
                 break;
               
               case MqttChannelConfig.Actions.Subscribe:
-                mapper.WriteLogoVariable(mqttClient.Subscribe(channel.Topic), channel.LogoAddress, channel.GetTypeAsEnum());
+                mapper.WriteLogoVariable(await mqttClient.Subscribe(channel.Topic, channel.GetQualityOfServiceAsEnum().ToMqttNet()), channel.LogoAddress, channel.GetTypeAsEnum());
                 break;
               
               case MqttChannelConfig.Actions.SubscribePulse:

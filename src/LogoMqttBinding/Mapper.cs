@@ -5,6 +5,7 @@ using LogoMqttBinding.LogoAdapter;
 using LogoMqttBinding.MqttAdapter;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
+using MQTTnet.Protocol;
 
 namespace LogoMqttBinding
 {
@@ -37,7 +38,7 @@ namespace LogoMqttBinding
       };
     }
 
-    public NotificationContext PublishOnChange(string topic, int address, MqttChannelConfig.Types type)
+    public NotificationContext PublishOnChange(string topic, int address, MqttChannelConfig.Types type, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
       switch (type)
       {
@@ -45,19 +46,19 @@ namespace LogoMqttBinding
           return logo
             .IntegerAt(address)
             .SubscribeToChangeNotification(async logoVariable =>
-              await mapping.PublishInteger(topic, logoVariable).ConfigureAwait(false));
+              await mapping.PublishInteger(logoVariable, topic, retain, qualityOfService).ConfigureAwait(false));
 
         case MqttChannelConfig.Types.Byte:
           return logo
             .ByteAt(address)
             .SubscribeToChangeNotification(async logoVariable =>
-              await mapping.PublishByte(topic, logoVariable).ConfigureAwait(false));
+              await mapping.PublishByte(logoVariable, topic, retain, qualityOfService).ConfigureAwait(false));
 
         case MqttChannelConfig.Types.Float:
           return logo
             .FloatAt(address)
             .SubscribeToChangeNotification(async logoVariable =>
-              await mapping.PublishFloat(topic, logoVariable).ConfigureAwait(false));
+              await mapping.PublishFloat(logoVariable, topic, retain, qualityOfService).ConfigureAwait(false));
       }
 
       throw new ArgumentOutOfRangeException(nameof(type), type, "should be integer, byte or float");
@@ -100,32 +101,34 @@ namespace LogoMqttBinding
 
 
 
-    public async Task PublishInteger(string topic, ILogoVariable<short> logoVariable)
+    public async Task PublishInteger(ILogoVariable<short> logoVariable, string topic, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
       var value = logoVariable.Get();
-      await Publish(topic, mqttFormat.ToPayload(value)).ConfigureAwait(false);
+      await Publish(topic, mqttFormat.ToPayload(value), retain, qualityOfService).ConfigureAwait(false);
     }
 
-    public async Task PublishByte(string topic, ILogoVariable<byte> logoVariable)
+    public async Task PublishByte(ILogoVariable<byte> logoVariable, string topic, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
       var value = logoVariable.Get();
-      await Publish(topic, mqttFormat.ToPayload(value)).ConfigureAwait(false);
+      await Publish(topic, mqttFormat.ToPayload(value), retain, qualityOfService).ConfigureAwait(false);
     }
 
-    public async Task PublishFloat(string topic, ILogoVariable<float> logoVariable)
+    public async Task PublishFloat(ILogoVariable<float> logoVariable, string topic, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
       var value = logoVariable.Get();
-      await Publish(topic, mqttFormat.ToPayload(value)).ConfigureAwait(false);
+      await Publish(topic, mqttFormat.ToPayload(value), retain, qualityOfService).ConfigureAwait(false);
     }
 
 
 
-    private async Task Publish(string topic, byte[] payload)
+    private async Task Publish(string topic, byte[] payload, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
       await mqttClient
         .PublishAsync(new MqttApplicationMessageBuilder()
           .WithTopic(topic)
           .WithPayload(payload)
+          .WithRetainFlag(retain)
+          .WithQualityOfServiceLevel(qualityOfService)
           .Build())
         .ConfigureAwait(false);
     }

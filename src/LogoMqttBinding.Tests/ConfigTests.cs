@@ -360,10 +360,23 @@ namespace LogoMqttBinding.Tests
       ex.ActualValue.Should().Be("someUndefinedType");
       ex.Message.Should().Contain("Allowed values are Byte, Integer, Float");
     }
+
+
+    //TODO: test topic: 
+    // doesnt start with /
+    // has # at end only
+    // has alphanumeric and / only - no spaces, no whitespace
+    // is not empty
+
+    // broker username or password is null - error if just one is specified
     
-    
-    
-    
+    //todo: clean session
+    //todo: qos
+    //todo: provide application state as dedicated mqtt client (also configuration like log level)
+    //Todo: retained message
+    //TODO: last will
+
+
 
     [Fact]
     public void Read_ValidContent_Succeeds()

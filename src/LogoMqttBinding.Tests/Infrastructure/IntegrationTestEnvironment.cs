@@ -50,8 +50,11 @@ namespace LogoMqttBinding.Tests.Infrastructure
         .ConnectAsync(mqttClientOptions)
         .ConfigureAwait(false);
 
-      appContext = Logic
-        .Initialize(LoggerFactory, IntegrationTests.GetConfig(brokerIpAddress.ToString(), brokerPort));
+      appContext = await Logic
+        .Initialize(
+          LoggerFactory, 
+          IntegrationTests.GetConfig(brokerIpAddress.ToString(), brokerPort))
+        .ConfigureAwait(false);
       await appContext
         .Connect()
         .ConfigureAwait(false);

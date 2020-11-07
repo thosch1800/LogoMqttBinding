@@ -7,6 +7,11 @@ namespace LogoMqttBinding.Configuration
   public class MqttClientConfig
   {
     public string ClientId { get; set; } = "";
+
     public MqttChannelConfig[] Channels { get; set; } = Array.Empty<MqttChannelConfig>();
+
+    public MqttChannelConfig? LastWill { get; set; }
+    
+    public bool CleanSession { get; set; } = true;
   }
 }

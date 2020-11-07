@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using LogoMqttBinding.Configuration;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
@@ -9,12 +11,21 @@ using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
 using MQTTnet.Client.Subscribing;
+using MQTTnet.Protocol;
 
 namespace LogoMqttBinding.MqttAdapter
 {
   public class Mqtt : IAsyncDisposable
   {
-    public Mqtt(ILogger<Mqtt> logger, string clientId, string serverUri, int port, string? brokerUsername, string? brokerPassword)
+    public Mqtt(
+      ILogger<Mqtt> logger,
+      string clientId,
+      string serverUri,
+      int port,
+      bool cleanSession,
+      string? brokerUsername,
+      string? brokerPassword,
+      MqttChannelConfig? lastWill)
     {
       this.logger = logger;
       this.serverUri = serverUri;
@@ -28,7 +39,17 @@ namespace LogoMqttBinding.MqttAdapter
 
       var clientOptionsBuilder = new MqttClientOptionsBuilder()
         .WithTcpServer(serverUri, port)
-        .WithClientId(clientId);
+        .WithClientId(clientId)
+        .WithCleanSession(cleanSession);
+
+      if (lastWill is not null)
+        clientOptionsBuilder.WithWillMessage(
+          new MqttApplicationMessageBuilder()
+            .WithTopic(lastWill.Topic)
+            .WithPayload(lastWill.Payload)
+            .WithRetainFlag(lastWill.Retain)
+            .WithQualityOfServiceLevel(lastWill.GetQualityOfServiceAsEnum().ToMqttNet())
+            .Build());
 
       if (brokerUsername is not null &&
           brokerPassword is not null)
@@ -76,17 +97,49 @@ namespace LogoMqttBinding.MqttAdapter
     }
 
 
-    public Subscription Subscribe(string topic)
+    public async Task<Subscription> Subscribe(string topic, MqttQualityOfServiceLevel qualityOfService)
     {
-      client.SubscribeAsync(new MqttClientSubscribeOptionsBuilder()
-        .WithTopicFilter(topic)
-        .Build());
+      var subscribeResult = await client.SubscribeAsync(topic, qualityOfService);
+      HandleSubscribeError();
 
       var subscription = new Subscription(topic);
       subscriptions.Add(topic, subscription);
       return subscription;
-    }
 
+      void HandleSubscribeError()
+      {
+        var resultItem = subscribeResult.Items.First();
+        switch (qualityOfService)
+        {
+          case MqttQualityOfServiceLevel.AtLeastOnce:
+            if (resultItem.ResultCode != MqttClientSubscribeResultCode.GrantedQoS0)
+              logger.LogMessage($"received unexpected result code {resultItem.ResultCode}",
+                args: a => a
+                  .Add(nameof(topic), topic)
+                  .Add(nameof(qualityOfService), qualityOfService),
+                LogLevel.Error);
+            break;
+
+          case MqttQualityOfServiceLevel.AtMostOnce:
+            if (resultItem.ResultCode != MqttClientSubscribeResultCode.GrantedQoS1)
+              logger.LogMessage($"received unexpected result code {resultItem.ResultCode}",
+                args: a => a
+                  .Add(nameof(topic), topic)
+                  .Add(nameof(qualityOfService), qualityOfService),
+                LogLevel.Error);
+            break;
+
+          case MqttQualityOfServiceLevel.ExactlyOnce:
+            if (resultItem.ResultCode != MqttClientSubscribeResultCode.GrantedQoS2)
+              logger.LogMessage($"received unexpected result code {resultItem.ResultCode}",
+                args: a => a
+                  .Add(nameof(topic), topic)
+                  .Add(nameof(qualityOfService), qualityOfService),
+                LogLevel.Error);
+            break;
+        }
+      }
+    }
 
     private void MessageReceivedHandler(MqttApplicationMessageReceivedEventArgs e)
     {
