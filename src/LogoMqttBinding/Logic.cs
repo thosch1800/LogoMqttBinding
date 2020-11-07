@@ -62,7 +62,7 @@ namespace LogoMqttBinding
                 break;
 
               case MqttChannelConfig.Actions.SubscribePulse:
-                //TODO: how to pulse an PLC input (~250ms)?
+                mapper.PulseLogoVariable(mqttClient.Subscribe(channel.Topic, channel.GetQualityOfServiceAsEnum().ToMqttNet()), channel.LogoAddress, channel.GetTypeAsEnum());
                 break;
 
               default: throw new ArgumentOutOfRangeException();

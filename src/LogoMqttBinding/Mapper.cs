@@ -6,6 +6,7 @@ using LogoMqttBinding.MqttAdapter;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Protocol;
+using Byte = LogoMqttBinding.LogoAdapter.Byte;
 
 namespace LogoMqttBinding
 {
@@ -19,25 +20,28 @@ namespace LogoMqttBinding
 
     public void WriteLogoVariable(Mqtt.Subscription subscription, int address, MqttChannelConfig.Types type)
     {
-      subscription.MessageReceived += (sender, args) =>
+      subscription.MessageReceived += type switch
       {
-        switch (type)
-        {
-          case MqttChannelConfig.Types.Integer:
-            mapping.ReceivedInteger(logo.IntegerAt(address), args.ApplicationMessage.Payload);
-            break;
+        MqttChannelConfig.Types.Integer => (sender, args) =>
+          mapping.ReceivedInteger(logo.IntegerAt(address), args.ApplicationMessage.Payload),
 
-          case MqttChannelConfig.Types.Byte:
-            mapping.ReceivedByte(logo.ByteAt(address), args.ApplicationMessage.Payload);
-            break;
+        MqttChannelConfig.Types.Byte => (sender, args) =>
+          mapping.ReceivedByte(logo.ByteAt(address), args.ApplicationMessage.Payload),
 
-          case MqttChannelConfig.Types.Float:
-            mapping.ReceivedFloat(logo.FloatAt(address), args.ApplicationMessage.Payload);
-            break;
+        MqttChannelConfig.Types.Float => (sender, args) =>
+          mapping.ReceivedFloat(logo.FloatAt(address), args.ApplicationMessage.Payload),
 
-          default: throw new ArgumentOutOfRangeException(nameof(type), type, null);
-        }
+        _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
       };
+    }
+
+    public void PulseLogoVariable(Mqtt.Subscription subscription, int address, MqttChannelConfig.Types type)
+    {
+      if (type != MqttChannelConfig.Types.Byte)
+        throw new ArgumentOutOfRangeException(nameof(type), type, null);
+
+      subscription.MessageReceived += async (sender, args) =>
+        await mapping.PulseByte(logo.ByteAt(address), args.ApplicationMessage.Payload);
     }
 
     // ReSharper disable once UnusedMethodReturnValue.Global
@@ -53,25 +57,25 @@ namespace LogoMqttBinding
                 await mapping
                   .PublishInteger(logoVariable, topic, retain, qualityOfService)
                   .ConfigureAwait(false)),
-        
+
         MqttChannelConfig.Types.Byte =>
           logo
             .ByteAt(address)
             .SubscribeToChangeNotification(
-              async logoVariable => 
+              async logoVariable =>
                 await mapping
                   .PublishByte(logoVariable, topic, retain, qualityOfService)
                   .ConfigureAwait(false)),
-        
-        MqttChannelConfig.Types.Float => 
+
+        MqttChannelConfig.Types.Float =>
           logo
             .FloatAt(address)
             .SubscribeToChangeNotification(
-              async logoVariable => 
+              async logoVariable =>
                 await mapping
                   .PublishFloat(logoVariable, topic, retain, qualityOfService)
                   .ConfigureAwait(false)),
-        
+
         _ => throw new ArgumentOutOfRangeException(nameof(type), type, "should be integer, byte or float"),
       };
     }
@@ -108,6 +112,17 @@ namespace LogoMqttBinding
     {
       if (mqttFormat.ToValue(payload, out float value))
         logoVariable.Set(value);
+    }
+
+
+
+    public async Task PulseByte(Byte logoVariable, byte[] payload)
+    {
+      if (mqttFormat.ToValue(payload, out byte value))
+        logoVariable.Set(value);
+
+      await Task.Delay(250);
+      logoVariable.Set(0);
     }
 
 
