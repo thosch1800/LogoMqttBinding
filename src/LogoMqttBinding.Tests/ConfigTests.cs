@@ -63,9 +63,8 @@ namespace LogoMqttBinding.Tests
       ex.ActualValue.Should().Be(65536);
       ex.Message.Should().Contain("'65536' should be a valid port");
     }
-    
 
-    
+
 
     [Fact]
     public void Validate_InvalidLogoIpAddress_ShouldThrow()
@@ -183,7 +182,7 @@ namespace LogoMqttBinding.Tests
       ex.ActualValue.Should().Be(99);
       ex.Message.Should().Contain("Polling cycle should be greater than 100");
     }
-    
+
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
@@ -208,15 +207,100 @@ namespace LogoMqttBinding.Tests
       ex.ParamName.Should().Be(nameof(MqttClientConfig.ClientId));
       ex.ActualValue.Should().Be(clientId);
       ex.Message.Should().Contain("ClientId should not be empty or whitespace");
-    }    
-    
+    }
 
-    //todo: clean session
-    //todo: qos
-    //todo: provide application state as dedicated mqtt client (also configuration like log level)
-    //Todo: retained message
-    //TODO: last will
-    
+    [Fact]
+    public void Validate_InvalidLastWillAction_ShouldThrow()
+    {
+      using var configFile = new TempFile(@$"
+{{
+  ""Logos"": [
+    {{
+      ""Mqtt"": [
+        {{
+          ""LastWill"": 
+            {{
+              ""Action"": ""pubsubsomething"",
+              ""Topic"": ""any/valid/topic"",
+              ""Payload"": ""any payload message"",
+            }},
+        }}
+      ]
+    }}
+  ]
+}}");
+      var config = new Config();
+      config.Read(configFile.Path);
+
+      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
+      ex.ParamName.Should().Be(nameof(MqttClientConfig.LastWill) + "." + nameof(MqttClientConfig.LastWill.Action));
+      ex.ActualValue.Should().Be("pubsubsomething");
+      ex.Message.Should().Contain("LastWill should provide action publish");
+    }
+
+    [Theory]
+    [InlineData("/a/invalid/topic")]
+    [InlineData("a/ /topic")]
+    [InlineData("a/#/topic")]
+    public void Validate_InvalidLastWillTopic_ShouldThrow(string topic)
+    {
+      using var configFile = new TempFile(@$"
+{{
+  ""Logos"": [
+    {{
+      ""Mqtt"": [
+        {{
+          ""LastWill"": 
+            {{
+              ""Action"": ""publish"",
+              ""Topic"": ""{topic}"",
+              ""Payload"": ""any payload message"",
+            }},
+        }}
+      ]
+    }}
+  ]
+}}");
+      var config = new Config();
+      config.Read(configFile.Path);
+
+      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
+      ex.ParamName.Should().Be(nameof(MqttClientConfig.LastWill.Topic));
+      ex.ActualValue.Should().Be(topic);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void Validate_InvalidLastWillPayload_ShouldThrow(string payload)
+    {
+      using var configFile = new TempFile(@$"
+{{
+  ""Logos"": [
+    {{
+      ""Mqtt"": [
+        {{
+          ""LastWill"": 
+            {{
+              ""Topic"": ""any/valid/topic"",
+              ""LogoAddress"": 0,
+              ""Payload"": ""{payload}"",
+            }},
+        }}
+      ]
+    }}
+  ]
+}}");
+      var config = new Config();
+      config.Read(configFile.Path);
+
+      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
+      ex.ParamName.Should().Be(nameof(MqttClientConfig.LastWill) + "." + nameof(MqttClientConfig.LastWill.Payload));
+      ex.ActualValue.Should().Be(payload);
+      ex.Message.Should().Contain("LastWill should provide a payload");
+    }
+
+
 
     [Fact]
     public void Validate_PublishedLogoAddressAboveRange_ShouldThrow()
@@ -409,6 +493,7 @@ namespace LogoMqttBinding.Tests
     [InlineData("a/ /topic", "Topic should not contain whitespace")]
     [InlineData("", "Topic should not be empty or whitespace")]
     [InlineData(" ", "Topic should not be empty or whitespace")]
+    [InlineData("a//topic", "Topic should not define empty groups")]
     public void Validate_InvalidTopic_ShouldThrow(string topic, string message)
     {
       using var configFile = new TempFile(@$"
@@ -436,13 +521,9 @@ namespace LogoMqttBinding.Tests
       ex.ActualValue.Should().Be(topic);
       ex.Message.Should().Contain(message);
     }
-    
-    
-    
-    
-    
-    
-    
+
+
+
     [Fact]
     public void Read_ValidContent_Succeeds()
     {
@@ -470,6 +551,13 @@ namespace LogoMqttBinding.Tests
       ""Mqtt"": [
         {
           ""ClientId"": ""mqtt-client-id"",
+          ""CleanSession"": ""true"",
+          ""LastWill"": 
+            {
+              ""Action"": ""publish"",
+              ""Topic"": ""clientId/status"",
+              ""Payload"": ""disconnected""
+            },
           ""Channels"": [
             {
               ""Action"": ""subscribe"",
@@ -568,6 +656,10 @@ namespace LogoMqttBinding.Tests
       logo.Mqtt[0].Channels[5].LogoAddress.Should().Be(126);
       logo.Mqtt[0].Channels[5].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Float);
     }
+
+    //todo: qos
+    //todo: provide application state as dedicated mqtt client (also configuration like log level)
+    //Todo: retained message
   }
 
   public class TempFile : IDisposable
