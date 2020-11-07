@@ -117,6 +117,12 @@ namespace LogoMqttBinding.Configuration
           mqttChannelConfig.Type,
           $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfig.Types)))}");
 
+      if (!EnumIsDefined(typeof(MqttChannelConfig.QoS), mqttChannelConfig.QualityOfService))
+        throw new ArgumentOutOfRangeException(
+          nameof(mqttChannelConfig.QualityOfService),
+          mqttChannelConfig.QualityOfService,
+          $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfig.QoS)))}");
+
       if (mqttChannelConfig.LogoAddress is < MemoryRangeMinimum or > MemoryRangeMaximum)
         throw new ArgumentOutOfRangeException(
           nameof(mqttChannelConfig.LogoAddress),

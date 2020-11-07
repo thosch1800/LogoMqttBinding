@@ -486,6 +486,34 @@ namespace LogoMqttBinding.Tests
       ex.Message.Should().Contain("Allowed values are Byte, Integer, Float");
     }
 
+    [Fact]
+    public void Validate_InvalidQualityOfService_ShouldThrow()
+    {
+      using var configFile = new TempFile(@"
+{
+  ""Logos"": [
+    {
+      ""Mqtt"": [
+        {
+          ""Channels"": [
+            {
+              ""QualityOfService"": ""someUndefinedQoS""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}");
+      var config = new Config();
+      config.Read(configFile.Path);
+
+      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
+      ex.ParamName.Should().Be(nameof(MqttChannelConfig.QualityOfService));
+      ex.ActualValue.Should().Be("someUndefinedQoS");
+      ex.Message.Should().Contain("Allowed values are ");
+    }
+
 
     [Theory]
     [InlineData("/a/invalid/topic", "Topic should not start with /")]
@@ -554,9 +582,9 @@ namespace LogoMqttBinding.Tests
           ""CleanSession"": ""true"",
           ""LastWill"": 
             {
-              ""Action"": ""publish"",
               ""Topic"": ""clientId/status"",
-              ""Payload"": ""disconnected""
+              ""Payload"": ""disconnected"",
+              ""Retain"": ""true"",
             },
           ""Channels"": [
             {
@@ -626,6 +654,10 @@ namespace LogoMqttBinding.Tests
 
       logo.Mqtt[0].ClientId.Should().Be("mqtt-client-id");
 
+      logo.Mqtt[0].LastWill!.GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Publish);
+      logo.Mqtt[0].LastWill!.Topic.Should().Be("clientId/status");
+      logo.Mqtt[0].LastWill!.Retain.Should().Be(true);
+
       logo.Mqtt[0].Channels[0].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Subscribe);
       logo.Mqtt[0].Channels[0].Topic.Should().Be("map/21/31/set");
       logo.Mqtt[0].Channels[0].LogoAddress.Should().Be(21);
@@ -657,7 +689,6 @@ namespace LogoMqttBinding.Tests
       logo.Mqtt[0].Channels[5].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Float);
     }
 
-    //todo: qos
     //todo: provide application state as dedicated mqtt client (also configuration like log level)
     //Todo: retained message
   }
