@@ -1,8 +1,8 @@
 ﻿{
-  "MqttBrokerUri": "10.1.1.86",
+  "MqttBrokerUri": "192.168.2.42",
   "Logos": [
     {
-      "IpAddress": "10.1.1.230",
+      "IpAddress": "192.168.2.23",
       "MemoryRanges": [
         {
           "LocalVariableMemoryPollingCycleMilliseconds": 100,
@@ -12,54 +12,66 @@
       ],
       "Mqtt": [
         {
-          "ClientId": "logo_230",
+          "ClientId": "logo",
+          "LastWill": {
+            "Topic": "logo/status",
+            "Payload": "unexpected gone offline",
+            "QualityOfService": "ExactlyOnce"
+          },
           "Channels": [
             {
-              "Action": "subscribe",
-              "Topic": "output/q1/set",
-              "LogoAddress": 11,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "output/q2/set",
-              "LogoAddress": 12,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "output/q3/set",
-              "LogoAddress": 13,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "output/q4/set",
-              "LogoAddress": 14,
-              "Type": "byte"
-            },
-            {
               "Action": "publish",
-              "Topic": "output/q1/get",
+              "Topic": "logo/q1/get",
               "LogoAddress": 111,
-              "Type": "byte"
+              "Type": "byte",
+              "QualityOfService": "ExactlyOnce"
             },
             {
+              "Action": "subscribe",
+              "Topic": "logo/q1/set",
+              "LogoAddress": 11,
+              "Type": "byte",
+              "QualityOfService": "ExactlyOnce"
+            },
+
+            {
               "Action": "publish",
-              "Topic": "output/q2/get",
+              "Topic": "logo/q2/get",
               "LogoAddress": 112,
-              "Type": "byte"
+              "Type": "byte",
+              "QualityOfService": "AtLeastOnce"
             },
             {
+              "Action": "subscribe",
+              "Topic": "logo/q2/set",
+              "LogoAddress": 12,
+              "Type": "byte",
+              "QualityOfService": "AtLeastOnce"
+            },
+
+            {
               "Action": "publish",
-              "Topic": "output/q3/get",
+              "Topic": "logo/q3/get",
               "LogoAddress": 113,
               "Type": "byte"
             },
             {
+              "Action": "subscribe",
+              "Topic": "logo/q3/set",
+              "LogoAddress": 13,
+              "Type": "byte"
+            },
+
+            {
               "Action": "publish",
-              "Topic": "output/q4/get",
+              "Topic": "logo/q4/get",
               "LogoAddress": 114,
+              "Type": "byte"
+            },
+            {
+              "Action": "subscribe",
+              "Topic": "logo/q4/set",
+              "LogoAddress": 14,
               "Type": "byte"
             }
           ]
