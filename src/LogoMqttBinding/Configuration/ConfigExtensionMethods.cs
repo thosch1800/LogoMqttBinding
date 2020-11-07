@@ -92,6 +92,14 @@ namespace LogoMqttBinding.Configuration
             nameof(mqttChannelConfig.LogoAddress),
             mqttChannelConfig.LogoAddress,
             $"The range should be {MemoryRangeMinimum}..{MemoryRangeMaximum}");
+
+        if (mqttChannelConfig.Topic.StartsWith('/'))
+          throw new ArgumentOutOfRangeException(
+            nameof(mqttChannelConfig.Topic),
+            mqttChannelConfig.Topic,
+            $"Topic should not start with /");
+
+
       }
 
       static bool EnumIsDefined(Type type, string value)

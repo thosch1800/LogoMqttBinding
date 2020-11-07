@@ -362,6 +362,35 @@ namespace LogoMqttBinding.Tests
     }
 
 
+    [Fact]
+    public void Validate_InvalidTopic_StartsWithStroke_ShouldThrow()
+    {
+      using var configFile = new TempFile(@"
+{
+  ""Logos"": [
+    {
+      ""Mqtt"": [
+        {
+          ""Channels"": [
+            {
+              ""LogoAddress"": ""0"",
+              ""Topic"": ""/a/invalid/topic""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}");
+      var config = new Config();
+      config.Read(configFile.Path);
+
+      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
+      ex.ParamName.Should().Be(nameof(MqttChannelConfig.Topic));
+      ex.ActualValue.Should().Be("/a/invalid/topic");
+      ex.Message.Should().Contain("Topic should not start with /");
+    }
+
     //TODO: test topic: 
     // doesnt start with /
     // has # at end only
