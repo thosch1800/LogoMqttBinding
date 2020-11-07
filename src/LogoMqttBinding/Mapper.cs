@@ -35,13 +35,13 @@ namespace LogoMqttBinding
       };
     }
 
-    public void PulseLogoVariable(Mqtt.Subscription subscription, int address, MqttChannelConfig.Types type)
+    public void PulseLogoVariable(Mqtt.Subscription subscription, int address, MqttChannelConfig.Types type, int duration)
     {
       if (type != MqttChannelConfig.Types.Byte)
         throw new ArgumentOutOfRangeException(nameof(type), type, null);
 
       subscription.MessageReceived += async (sender, args) =>
-        await mapping.PulseByte(logo.ByteAt(address), args.ApplicationMessage.Payload);
+        await mapping.PulseByte(logo.ByteAt(address), args.ApplicationMessage.Payload, duration);
     }
 
     // ReSharper disable once UnusedMethodReturnValue.Global
@@ -116,13 +116,14 @@ namespace LogoMqttBinding
 
 
 
-    public async Task PulseByte(Byte logoVariable, byte[] payload)
+    public async Task PulseByte(Byte logoVariable, byte[] payload, int duration)
     {
       if (mqttFormat.ToValue(payload, out byte value))
+      {
         logoVariable.Set(value);
-
-      await Task.Delay(250);
-      logoVariable.Set(0);
+        await Task.Delay(duration);
+        logoVariable.Set(0);
+      }
     }
 
 

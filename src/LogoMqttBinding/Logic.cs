@@ -54,15 +54,31 @@ namespace LogoMqttBinding
             switch (action)
             {
               case MqttChannelConfig.Actions.Publish:
-                mapper.PublishOnChange(channel.Topic, channel.LogoAddress, channel.GetTypeAsEnum(), channel.Retain, channel.GetQualityOfServiceAsEnum().ToMqttNet());
+                mapper.PublishOnChange(
+                  channel.Topic,
+                  channel.LogoAddress,
+                  channel.GetTypeAsEnum(),
+                  channel.Retain,
+                  channel.GetQualityOfServiceAsEnum().ToMqttNet());
                 break;
 
               case MqttChannelConfig.Actions.Subscribe:
-                mapper.WriteLogoVariable(mqttClient.Subscribe(channel.Topic, channel.GetQualityOfServiceAsEnum().ToMqttNet()), channel.LogoAddress, channel.GetTypeAsEnum());
+                mapper.WriteLogoVariable(
+                  mqttClient.Subscribe(
+                    channel.Topic,
+                    channel.GetQualityOfServiceAsEnum().ToMqttNet()),
+                  channel.LogoAddress,
+                  channel.GetTypeAsEnum());
                 break;
 
               case MqttChannelConfig.Actions.SubscribePulse:
-                mapper.PulseLogoVariable(mqttClient.Subscribe(channel.Topic, channel.GetQualityOfServiceAsEnum().ToMqttNet()), channel.LogoAddress, channel.GetTypeAsEnum());
+                mapper.PulseLogoVariable(
+                  mqttClient.Subscribe(
+                    channel.Topic,
+                    channel.GetQualityOfServiceAsEnum().ToMqttNet()),
+                  channel.LogoAddress,
+                  channel.GetTypeAsEnum(),
+                  channel.Duration);
                 break;
 
               default: throw new ArgumentOutOfRangeException();
