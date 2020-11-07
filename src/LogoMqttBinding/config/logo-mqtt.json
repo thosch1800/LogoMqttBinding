@@ -18,6 +18,11 @@
       "Mqtt": [
         {
           "ClientId": "logo_230",
+          "LastWill": {
+            "Topic": "status",
+            "Payload": "gone offline",
+            "QualityOfService": "ExactlyOnce"
+          },
           "Channels": [
             {
               "Action": "subscribe",
@@ -43,7 +48,6 @@
               "LogoAddress": 14,
               "Type": "byte"
             },
-
             {
               "Action": "subscribe",
               "Topic": "map/20/30/set",
@@ -116,10 +120,6 @@
               "LogoAddress": 65,
               "Type": "float"
             },
-            
-            
-            
-            
             {
               "Action": "publish",
               "Topic": "output/q1/get",
@@ -136,20 +136,22 @@
               "Action": "publish",
               "Topic": "output/q3/get",
               "LogoAddress": 113,
-              "Type": "byte"
+              "Type": "byte",
+              "QualityOfService": "ExactlyOnce"
             },
             {
               "Action": "publish",
               "Topic": "output/q4/get",
               "LogoAddress": 114,
-              "Type": "byte"
+              "Type": "byte",
+              "QualityOfService": "AtMostOnce"
             },
-
             {
               "Action": "publish",
               "Topic": "input/i1/get",
               "LogoAddress": 1,
-              "Type": "byte"
+              "Type": "byte",
+              "QualityOfService": "AtLeastOnce"
             },
             {
               "Action": "publish",
@@ -193,7 +195,6 @@
               "LogoAddress": 8,
               "Type": "byte"
             },
-
             {
               "Action": "publish",
               "Topic": "map/20/30/get",
