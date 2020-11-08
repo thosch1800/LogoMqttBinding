@@ -1,4 +1,4 @@
-﻿FROM docker.pkg.github.com/thosch1800/build-image/dotnet-core-sdk:latest AS build-env
+﻿FROM ghcr.io/thosch1800/dotnet-core-sdk:latest AS build-env
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
