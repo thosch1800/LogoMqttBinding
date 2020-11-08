@@ -2,7 +2,7 @@
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
-COPY ./src/NuGet.Config ./
+COPY ./NuGet.Config ./
 COPY ./src/LogoMqttBinding/*.csproj ./
 RUN dotnet restore
 
