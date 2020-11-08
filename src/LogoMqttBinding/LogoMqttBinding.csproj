@@ -12,6 +12,10 @@
         <!-- Console app -->
         <OutputType>Exe</OutputType>
         <IsPackable>false</IsPackable>
+
+        <Authors>thosch1800</Authors>
+        <PackageDescription>Makes Siemens LOGO PLC Variables accessible via MQTT</PackageDescription>
+        <RepositoryUrl>https://github.com/thosch1800/LogoMqttBinding</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>

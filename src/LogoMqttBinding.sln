@@ -13,6 +13,7 @@ ProjectSection(SolutionItems) = preProject
 	..\README.md = ..\README.md
 	..\Dockerfile = ..\Dockerfile
 	..\docker-compose.yml = ..\docker-compose.yml
+	NuGet.Config = NuGet.Config
 EndProjectSection
 EndProject
 Global
