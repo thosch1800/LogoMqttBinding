@@ -1,4 +1,5 @@
 # LogoMqttBinding
+Supports to synconize values from and to Siemens Logo PLC via MQTT.
 
 ## What is it?
 It is a connector between one or more [Siemens Logo PLC](https://de.wikipedia.org/wiki/Logo_(SPS)) to [MQTT](https://en.wikipedia.org/wiki/MQTT).
@@ -11,3 +12,28 @@ The hardware requirements starting with Raspberry Pi computer or the like. The P
 The host should have the latest version of docker and docker-compose installed.
 
  
+ 
+ 
+## docker-compose.yml
+download the file from the repository or create it on your own:
+```
+version: '3.3'
+
+services:
+  logo-mqtt-binding:
+    image: ghcr.io/thosch1800/logo-mqtt:latest
+    volumes:
+      - ~/smarthome/config:/app/config
+    restart: always
+```
+
+### Volume mapping
+The docker-compose.yml volume path ```~/smarthome/config:/app/config``` is mapped to ```C:\Users\<username>\smarthome\config``` in windows or ```~/smarthome/config``` in linux.
+
+## Run a MQTT broker for test purposes
+Just fire up a mosquitto instance:
+```docker run -d -it --name mosquitto -p 1883:1883 eclipse-mosquitto```
+
+
+
+
