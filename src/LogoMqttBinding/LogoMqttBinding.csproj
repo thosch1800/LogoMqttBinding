@@ -4,7 +4,7 @@
         <RootNamespace>LogoMqttBinding</RootNamespace>
         
         <!-- C# -->
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net5</TargetFramework>
         <LangVersion>9</LangVersion>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -35,12 +35,12 @@
 
     <ItemGroup>
         <!-- project dependencies  -->
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.9" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.9" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.9" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.9" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.9" />
-        <PackageReference Include="thosch.Logging" Version="1.1.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+        <PackageReference Include="thosch.Logging" Version="1.2.0" />
         <PackageReference Include="MQTTnet" Version="3.0.13" />
         <PackageReference Include="Sharp7" Version="1.1.75" />
     </ItemGroup>
