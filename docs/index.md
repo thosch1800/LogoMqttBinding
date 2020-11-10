@@ -1,6 +1,10 @@
 # LogoMqttBinding
 Supports to synconize values from and to Siemens Logo PLC via MQTT.
 
+# Beta software
+This software is currently under development and in an early stage. Do not (yet) use for productive environment, but feel free to try it out.
+I apprechiate your feedback! The final version is planned within Q4/2020.
+
 ## What is it?
 It is a connector between one or more [Siemens Logo PLC](https://de.wikipedia.org/wiki/Logo_(SPS)) to [MQTT](https://en.wikipedia.org/wiki/MQTT).
 MQTT is widely used for smart home controller (like openHAB or hass.io) or other IoT applications.
