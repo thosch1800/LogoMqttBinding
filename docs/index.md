@@ -19,22 +19,13 @@ The host should have the latest version of docker and docker-compose installed.
  
  
 ## Get started
-download the file from the repository or create it on your own:
-```
-version: '3.3'
-
-services:
-  logo-mqtt-binding:
-    image: ghcr.io/thosch1800/logo-mqtt:latest
-    volumes:
-      - ~/smarthome/config:/app/config
-    restart: always
-```
+Download [docker-compose.yml](https://raw.githubusercontent.com/thosch1800/LogoMqttBinding/main/docker-compose.yml) or create it on your own.
 
 After a first start with ```docker-compose up``` the program will crash because it is using the default configuration. 
 The configuration file resides in smarthome/config in your home folder, 
 this is ```C:\Users\<username>\smarthome\config\logo-mqtt.json``` in windows
 or ```~/smarthome/config/logo-mqtt.json``` in linux.
+
 Edit this file to meet your needs - if you want to go back to the default configuration just rename  or delete your current config file and restart the application.
 
 
