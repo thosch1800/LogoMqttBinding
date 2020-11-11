@@ -1,12 +1,12 @@
 # LogoMqttBinding
 Read and write values from Siemens Logo PLC via MQTT.
 
-# This is still a MVP (Minimum viable product)
+## This is still a MVP (Minimum viable product)
 This software is currently under development. 
 Do not (yet) use for productive environment, but feel free to try it.
 I appreciate your feedback! The stable version is planned within Q4/2020.
 
-# Planned features in future releases
+## Planned features in future releases
 - MQTT last will
 - MQTT status channel
 - LOGO password
