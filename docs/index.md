@@ -1,32 +1,65 @@
 # LogoMqttBinding
-Supports to synconize values from and to Siemens Logo PLC via MQTT.
+Read and write values from Siemens Logo PLC via MQTT.
 
-# Beta software
-This software is currently under development and in an early stage. Do not (yet) use for productive environment, but feel free to try it out.
-I apprechiate your feedback! The final version is planned within Q4/2020.
+# This is still a MVP (Minimum viable product)
+This software is currently under development. 
+Do not (yet) use for productive environment, but feel free to try it.
+I appreciate your feedback! The stable version is planned within Q4/2020.
+
+# Planned features in future releases
+- MQTT last will
+- MQTT status channel
+- LOGO password
+- better documentation ;)
+
+
+
+
+
 
 ## What is it?
-It is a connector between one or more [Siemens Logo PLC](https://de.wikipedia.org/wiki/Logo_(SPS)) to [MQTT](https://en.wikipedia.org/wiki/MQTT).
+It is a connector between one or more 
+[Siemens Logo PLC](https://de.wikipedia.org/wiki/Logo_(SPS)) to 
+[MQTT](https://en.wikipedia.org/wiki/MQTT).
 MQTT is widely used for smart home controller (like openHAB or hass.io) or other IoT applications.
  
 ### Hardware Requirements
-The hardware requirements starting with Raspberry Pi computer or the like. The PLC and the MQTT broker should be accessible via wired network.
+A Raspberry Pi computer or the like should be sufficient for smart home usage with moderate value exchange.
+The PLC and the MQTT broker should be accessible via wired network.
+Wifi connections are not recommended, but should work as well.
 
 ### Software Requirements
-The host should have the latest version of docker and docker-compose installed.
+All operating systems that support docker and docker-compose are supported.
+
+
+
+
+
+
 
  
  
  
 ## Get started
-Download [docker-compose.yml](https://raw.githubusercontent.com/thosch1800/LogoMqttBinding/main/docker-compose.yml) or create it on your own.
+Download 
+[docker-compose.yml](https://raw.githubusercontent.com/thosch1800/LogoMqttBinding/main/docker-compose.yml) 
+(right click -> save link as).
 
-After a first start with ```docker-compose up``` the program will crash because it is using the default configuration. 
+With the first start ```docker-compose up``` the program will create a default configuration. 
+It will exit with errors because the default config is just a template for your setup. 
 The configuration file resides in smarthome/config in your home folder, 
 this is ```C:\Users\<username>\smarthome\config\logo-mqtt.json``` in windows
 or ```~/smarthome/config/logo-mqtt.json``` in linux.
 
-Edit this file to meet your needs - if you want to go back to the default configuration just rename  or delete your current config file and restart the application.
+Edit this file to meet your setup. 
+If you want to return to the default configuration just rename the logo-mqtt.json and restart the application.
+
+
+
+
+
+
+
 
 
 
@@ -156,7 +189,15 @@ Edit this file to meet your needs - if you want to go back to the default config
 ```
 
 
-## Run a MQTT broker for test purposes
+
+
+
+
+
+
+
+
+## How to run a MQTT broker for test purposes
 Just fire up a mosquitto instance:
 ```docker run -d -it --name mosquitto -p 1883:1883 eclipse-mosquitto```
 
