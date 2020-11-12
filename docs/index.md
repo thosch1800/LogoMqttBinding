@@ -203,4 +203,4 @@ Just fire up a mosquitto instance:
 
 
 
-![](https://raw.githubusercontent.com/thosch1800/LogoMqttBinding/main/docs/logo-mqtt.png)
+![](https://raw.githubusercontent.com/thosch1800/LogoMqttBinding/main/docs/poc.png)
