@@ -197,10 +197,17 @@ If you want to return to the default configuration just rename the logo-mqtt.jso
 
 
 
-## How to run a MQTT broker for test purposes
+### How to run a MQTT broker for test purposes
 Just fire up a mosquitto instance:
 ```docker run -d -it --name mosquitto -p 1883:1883 eclipse-mosquitto```
 
 
 
+
+### A picture of my first manual test
+On the left you can see the configuration I used, in the middle you can see the container output. 
+The program on the right is a MQTT client [MQTT.fx](https://mqttfx.jensd.de/index.php).
+I also used a real logo PLC that runs a program with all inputs and outputs connected via network input/output.
 ![](https://raw.githubusercontent.com/thosch1800/LogoMqttBinding/main/docs/poc.png)
+Whenever I set an input to high or low I got a message for the subscribes channels.      
+MISSION ACCOMPLISHED
