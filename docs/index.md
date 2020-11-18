@@ -1,7 +1,7 @@
 # LogoMqttBinding
 Read and write values from Siemens Logo PLC via MQTT.
 
-## This is still a MVP (Minimum viable product)
+## This is still under development (MVP / minimum viable product)
 This software is currently under development. 
 Do not (yet) use for productive environment, but feel free to try it.
 I appreciate your feedback! The stable version is planned within Q4/2020.
@@ -208,6 +208,6 @@ Just fire up a mosquitto instance:
 On the left you can see the configuration I used, in the middle you can see the container output. 
 The program on the right is a MQTT client [MQTT.fx](https://mqttfx.jensd.de/index.php).
 I also used a real logo PLC that runs a program with all inputs and outputs connected via network input/output.
-![](https://raw.githubusercontent.com/thosch1800/LogoMqttBinding/main/docs/poc.png)
-Whenever I set an input to high or low I got a message for the subscribes channels.      
-MISSION ACCOMPLISHED
+![](https://raw.githubusercontent.com/thosch1800/LogoMqttBinding/main/docs/poc.png)      
+Whenever I set an input to high or low I get a message for the subscribed channels.      
+**MVP: MISSION ACCOMPLISHED**
