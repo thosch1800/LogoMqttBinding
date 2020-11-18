@@ -1,5 +1,5 @@
 ﻿{
-  "MqttBrokerUri": "127.0.0.1",
+  "MqttBrokerUri": "10.1.1.86",
   "Logos": [
     {
       "IpAddress": "10.1.1.230",
@@ -7,266 +7,116 @@
         {
           "LocalVariableMemoryPollingCycleMilliseconds": 100,
           "LocalVariableMemoryStart": 0,
-          "LocalVariableMemoryEnd": 49
-        },
-        {
-          "LocalVariableMemoryPollingCycleMilliseconds": 100,
-          "LocalVariableMemoryStart": 50,
-          "LocalVariableMemoryEnd": 200
+          "LocalVariableMemoryEnd": 150
         }
       ],
       "Mqtt": [
         {
-          "ClientId": "logo_230",
+          "ClientId": "logo",
           "LastWill": {
-            "Topic": "status",
-            "Payload": "gone offline",
+            "Topic": "logo/status",
+            "Payload": "unexpected gone offline",
             "QualityOfService": "ExactlyOnce"
           },
           "Channels": [
             {
-              "Action": "subscribe",
-              "Topic": "output/q1/set",
-              "LogoAddress": 11,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "output/q2/set",
-              "LogoAddress": 12,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "output/q3/set",
-              "LogoAddress": 13,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "output/q4/set",
-              "LogoAddress": 14,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "map/20/30/set",
-              "LogoAddress": 20,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "map/21/31/set",
-              "LogoAddress": 21,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "map/22/32/set",
-              "LogoAddress": 22,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "map/23/33/set",
-              "LogoAddress": 23,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "map/24/34/set",
-              "LogoAddress": 24,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "map/25/35/set",
-              "LogoAddress": 25,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "map/26/36/set",
-              "LogoAddress": 26,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "map/27/37/set",
-              "LogoAddress": 27,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "map/50/150/set",
-              "LogoAddress": 50,
-              "Type": "float"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "map/55/155/set",
-              "LogoAddress": 55,
-              "Type": "float"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "map/60/160/set",
-              "LogoAddress": 60,
-              "Type": "float"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "map/65/165/set",
-              "LogoAddress": 65,
-              "Type": "float"
-            },
-            {
               "Action": "publish",
-              "Topic": "output/q1/get",
+              "Topic": "logo/q1/get",
               "LogoAddress": 111,
               "Type": "byte"
             },
             {
+              "Action": "subscribePulse",
+              "Topic": "logo/q1/set",
+              "LogoAddress": 11,
+              "Type": "byte"
+            },
+
+            {
               "Action": "publish",
-              "Topic": "output/q2/get",
+              "Topic": "logo/q2/get",
               "LogoAddress": 112,
               "Type": "byte"
             },
             {
+              "Action": "subscribe",
+              "Topic": "logo/q2/set",
+              "LogoAddress": 12,
+              "Type": "byte"
+            },
+
+            {
               "Action": "publish",
-              "Topic": "output/q3/get",
+              "Topic": "logo/q3/get",
               "LogoAddress": 113,
               "Type": "byte",
               "QualityOfService": "ExactlyOnce"
             },
             {
-              "Action": "publish",
-              "Topic": "output/q4/get",
-              "LogoAddress": 114,
+              "Action": "subscribe",
+              "Topic": "logo/q3/set",
+              "LogoAddress": 13,
               "Type": "byte",
-              "QualityOfService": "AtMostOnce"
+              "QualityOfService": "ExactlyOnce"
             },
+
             {
               "Action": "publish",
-              "Topic": "input/i1/get",
-              "LogoAddress": 1,
+              "Topic": "logo/q4/get",
+              "LogoAddress": 114,
               "Type": "byte",
               "QualityOfService": "AtLeastOnce"
             },
             {
-              "Action": "publish",
-              "Topic": "input/i2/get",
+              "Action": "subscribe",
+              "Topic": "logo/q4/set",
+              "LogoAddress": 14,
+              "Type": "byte",
+              "QualityOfService": "AtLeastOnce"
+            },
+
+
+            {
+              "Topic": "logo/i1/get",
+              "LogoAddress": 1,
+              "Type": "byte"
+            },
+            {
+              "Topic": "logo/i2/get",
               "LogoAddress": 2,
               "Type": "byte"
             },
             {
-              "Action": "publish",
-              "Topic": "input/i3/get",
+              "Topic": "logo/i3/get",
               "LogoAddress": 3,
               "Type": "byte"
             },
             {
-              "Action": "publish",
-              "Topic": "input/i4/get",
+              "Topic": "logo/i4/get",
               "LogoAddress": 4,
               "Type": "byte"
             },
             {
-              "Action": "publish",
-              "Topic": "input/i5/get",
+              "Topic": "logo/i5/get",
               "LogoAddress": 5,
               "Type": "byte"
             },
             {
-              "Action": "publish",
-              "Topic": "input/i6/get",
+              "Topic": "logo/i6/get",
               "LogoAddress": 6,
               "Type": "byte"
             },
             {
-              "Action": "publish",
-              "Topic": "input/i7/get",
+              "Topic": "logo/i7/get",
               "LogoAddress": 7,
               "Type": "byte"
             },
             {
-              "Action": "publish",
-              "Topic": "input/i8/get",
+              "Topic": "logo/i8/get",
               "LogoAddress": 8,
               "Type": "byte"
-            },
-            {
-              "Action": "publish",
-              "Topic": "map/20/30/get",
-              "LogoAddress": 30,
-              "Type": "byte"
-            },
-            {
-              "Action": "publish",
-              "Topic": "map/21/31/get",
-              "LogoAddress": 31,
-              "Type": "byte"
-            },
-            {
-              "Action": "publish",
-              "Topic": "map/22/32/get",
-              "LogoAddress": 32,
-              "Type": "byte"
-            },
-            {
-              "Action": "publish",
-              "Topic": "map/23/33/get",
-              "LogoAddress": 33,
-              "Type": "byte"
-            },
-            {
-              "Action": "publish",
-              "Topic": "map/24/34/get",
-              "LogoAddress": 34,
-              "Type": "byte"
-            },
-            {
-              "Action": "publish",
-              "Topic": "map/25/35/get",
-              "LogoAddress": 35,
-              "Type": "byte"
-            },
-            {
-              "Action": "publish",
-              "Topic": "map/26/36/get",
-              "LogoAddress": 36,
-              "Type": "byte"
-            },
-            {
-              "Action": "publish",
-              "Topic": "map/27/37/get",
-              "LogoAddress": 37,
-              "Type": "byte"
-            },
-            {
-              "Action": "publish",
-              "Topic": "map/50/150/get",
-              "LogoAddress": 150,
-              "Type": "float"
-            },
-            {
-              "Action": "publish",
-              "Topic": "map/55/155/get",
-              "LogoAddress": 155,
-              "Type": "float"
-            },
-            {
-              "Action": "publish",
-              "Topic": "map/60/160/get",
-              "LogoAddress": 160,
-              "Type": "float"
-            },
-            {
-              "Action": "publish",
-              "Topic": "map/65/165/get",
-              "LogoAddress": 165,
-              "Type": "float"
             }
+
           ]
         }
       ]
