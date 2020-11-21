@@ -116,6 +116,11 @@ namespace LogoMqttBinding.MqttAdapter
       return subscription;
     }
 
+
+    public override string ToString() => $"MQTT client {clientId} -> {serverUri}";
+
+
+
     private void HandleSubscriptionResult(MqttClientSubscribeResult subscribeResult, Subscription subscription)
     {
       var resultItem = subscribeResult.Items.First();
@@ -191,7 +196,7 @@ namespace LogoMqttBinding.MqttAdapter
     private readonly IMqttClient client;
     private readonly ILogger<Mqtt> logger;
     private readonly IMqttClientOptions clientOptions;
-    private readonly Dictionary<string, Subscription> subscriptions = new Dictionary<string, Subscription>();
+    private readonly Dictionary<string, Subscription> subscriptions = new();
 
     public class Subscription
     {
