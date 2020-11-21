@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
 using LogoMqttBinding.LogoAdapter;
+using LogoMqttBinding.LogoAdapter.Interfaces;
 using LogoMqttBinding.MqttAdapter;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
@@ -31,7 +34,7 @@ namespace LogoMqttBinding
         MqttChannelConfig.Types.Float => (sender, args) =>
           mapping.ReceivedFloat(logo.FloatAt(address), args.ApplicationMessage.Payload),
 
-        _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
       };
     }
 
@@ -91,6 +94,7 @@ namespace LogoMqttBinding
     public Mapping(ILoggerFactory loggerFactory, Mqtt mqttClient)
     {
       this.mqttClient = mqttClient;
+      logger = loggerFactory.CreateLogger<Mapping>();
       mqttFormat = new MqttFormat(loggerFactory.CreateLogger<MqttFormat>());
     }
 
@@ -99,31 +103,37 @@ namespace LogoMqttBinding
     public void ReceivedInteger(ILogoVariable<short> logoVariable, byte[] payload)
     {
       if (mqttFormat.ToValue(payload, out short value))
-        logoVariable.Set(value);
+        LogoSet(logoVariable, value);
+      else
+        PrintWarning(logoVariable, payload);
     }
 
     public void ReceivedByte(ILogoVariable<byte> logoVariable, byte[] payload)
     {
       if (mqttFormat.ToValue(payload, out byte value))
-        logoVariable.Set(value);
+        LogoSet(logoVariable, value);
+      else
+        PrintWarning(logoVariable, payload);
     }
 
     public void ReceivedFloat(ILogoVariable<float> logoVariable, byte[] payload)
     {
       if (mqttFormat.ToValue(payload, out float value))
-        logoVariable.Set(value);
+        LogoSet(logoVariable, value);
+      else
+        PrintWarning(logoVariable, payload);
     }
-
-
 
     public async Task PulseByte(Byte logoVariable, byte[] payload, int duration)
     {
       if (mqttFormat.ToValue(payload, out byte value))
       {
-        logoVariable.Set(value);
+        LogoSet(logoVariable, value);
         await Task.Delay(duration);
-        logoVariable.Set(0);
+        LogoSet<byte>(logoVariable, 0);
       }
+      else
+        PrintWarning(logoVariable, payload);
     }
 
 
@@ -131,24 +141,40 @@ namespace LogoMqttBinding
     public async Task PublishInteger(ILogoVariable<short> logoVariable, string topic, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
       var value = logoVariable.Get();
-      await Publish(topic, MqttFormat.ToPayload(value), retain, qualityOfService).ConfigureAwait(false);
+      logger.LogDebug($"{logoVariable} changed to {value}");
+      await MqttPublish(topic, MqttFormat.ToPayload(value), qualityOfService, retain).ConfigureAwait(false);
     }
 
     public async Task PublishByte(ILogoVariable<byte> logoVariable, string topic, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
       var value = logoVariable.Get();
-      await Publish(topic, MqttFormat.ToPayload(value), retain, qualityOfService).ConfigureAwait(false);
+      logger.LogDebug($"{logoVariable} changed to {value}");
+      await MqttPublish(topic, MqttFormat.ToPayload(value), qualityOfService, retain).ConfigureAwait(false);
     }
 
     public async Task PublishFloat(ILogoVariable<float> logoVariable, string topic, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
       var value = logoVariable.Get();
-      await Publish(topic, MqttFormat.ToPayload(value), retain, qualityOfService).ConfigureAwait(false);
+      logger.LogDebug($"{logoVariable} changed to {value}");
+      await MqttPublish(topic, MqttFormat.ToPayload(value), qualityOfService, retain).ConfigureAwait(false);
     }
 
 
 
-    private async Task Publish(string topic, byte[] payload, bool retain, MqttQualityOfServiceLevel qualityOfService)
+    private void LogoSet<T>(ILogoVariable<T> logoVariable, T value)
+    {
+      logger.LogDebug($"{logoVariable} setting to {value}");
+      logoVariable.Set(value);
+    }
+
+    private void PrintWarning<T>(ILogoVariable<T> logoVariable, IEnumerable<byte> payload)
+    {
+      var payloadString = string.Join("-", payload.Select(b => b.ToString("X")));
+      logger.LogWarning($"{logoVariable} failed to set payload {payloadString}");
+    }
+
+
+    private async Task MqttPublish(string topic, byte[] payload, MqttQualityOfServiceLevel qualityOfService, bool retain)
     {
       await mqttClient
         .PublishAsync(new MqttApplicationMessageBuilder()
@@ -162,5 +188,6 @@ namespace LogoMqttBinding
 
     private readonly Mqtt mqttClient;
     private readonly MqttFormat mqttFormat;
+    private readonly ILogger<Mapping> logger;
   }
 }

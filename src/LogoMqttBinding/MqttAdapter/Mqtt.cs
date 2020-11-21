@@ -71,6 +71,12 @@ namespace LogoMqttBinding.MqttAdapter
 
 
 
+    public async Task TryConnectAsync()
+    {
+      try { await ConnectAsync(); }
+      catch { logger.LogWarning($"connection failed {this}"); }
+    }
+
     public async Task ConnectAsync()
     {
       await client

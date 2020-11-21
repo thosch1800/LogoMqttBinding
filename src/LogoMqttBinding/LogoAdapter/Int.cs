@@ -1,4 +1,5 @@
 ﻿using System;
+using LogoMqttBinding.LogoAdapter.Interfaces;
 using Sharp7;
 
 namespace LogoMqttBinding.LogoAdapter
@@ -29,6 +30,8 @@ namespace LogoMqttBinding.LogoAdapter
     public NotificationContext SubscribeToChangeNotification(Action<ILogoVariable<short>> onChanged)
       => logo.SubscribeToChangeNotification(
         new NotificationContext<short>(address, sizeof(short), this, onChanged));
+
+    public override string ToString() => $"{nameof(Int)} {address}";
 
     private readonly Logo logo;
     private readonly int address;

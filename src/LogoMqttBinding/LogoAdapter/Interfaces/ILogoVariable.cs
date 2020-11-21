@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LogoMqttBinding.LogoAdapter
+namespace LogoMqttBinding.LogoAdapter.Interfaces
 {
   public interface ILogoVariable<T>
   {

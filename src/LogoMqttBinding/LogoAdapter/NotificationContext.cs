@@ -1,4 +1,5 @@
 ﻿using System;
+using LogoMqttBinding.LogoAdapter.Interfaces;
 
 namespace LogoMqttBinding.LogoAdapter
 {

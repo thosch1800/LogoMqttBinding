@@ -1,4 +1,5 @@
 ﻿using System;
+using LogoMqttBinding.LogoAdapter.Interfaces;
 
 namespace LogoMqttBinding.LogoAdapter
 {
@@ -27,6 +28,8 @@ namespace LogoMqttBinding.LogoAdapter
     public NotificationContext SubscribeToChangeNotification(Action<ILogoVariable<byte>> onChanged)
       => logo.SubscribeToChangeNotification(
         new NotificationContext<byte>(address, sizeof(byte), this, onChanged));
+
+    public override string ToString() => $"{nameof(Byte)} {address}";
 
     private readonly Logo logo;
     private readonly int address;

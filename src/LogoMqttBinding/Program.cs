@@ -13,7 +13,13 @@ namespace LogoMqttBinding
 
     private Program()
     {
-      loggerFactory = LoggerFactory.Create(c => c.AddConsole());
+      loggerFactory = LoggerFactory.Create(c =>
+      {
+        c.AddConsole();
+#if DEBUG
+        c.SetMinimumLevel(LogLevel.Debug);
+#endif
+      });
       logger = loggerFactory.CreateLogger<Program>();
     }
 

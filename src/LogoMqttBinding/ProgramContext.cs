@@ -40,7 +40,7 @@ namespace LogoMqttBinding
       foreach (var mqttClient in mqttClients)
       {
         logger.LogInformation($"Connecting to {mqttClient}");
-        await mqttClient.ConnectAsync().ConfigureAwait(false);
+        await mqttClient.TryConnectAsync().ConfigureAwait(false);
       }
     }
 
