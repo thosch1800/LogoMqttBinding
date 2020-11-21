@@ -27,7 +27,7 @@ namespace LogoMqttBinding.LogoAdapter
       await pollingLogicTask.ConfigureAwait(false);
     }
 
-    public void SetUpdate(bool active) => update = active;
+    public void EnableUpdate(bool active) => update = active;
 
     public int Start { get; }
     public int End { get; }

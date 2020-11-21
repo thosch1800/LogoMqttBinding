@@ -30,7 +30,7 @@ namespace LogoMqttBinding.LogoAdapter
 
     public async ValueTask DisposeAsync()
     {
-      SetUpdate(false);
+      EnableUpdates(false);
 
       foreach (var memoryRange in logoMemoryRanges)
         await memoryRange
@@ -54,7 +54,7 @@ namespace LogoMqttBinding.LogoAdapter
         logger.LogMessage("connecting...", logLevel: LogLevel.Debug);
         Execute(c => c.Connect());
         logger.LogMessage($"connected:{client.Connected}", logLevel: LogLevel.Debug);
-        SetUpdate(true);
+        EnableUpdates(true);
 
         return client.Connected;
       }
@@ -87,13 +87,13 @@ namespace LogoMqttBinding.LogoAdapter
         var message = $"{ToString()} Error {error}/0x{error:X8} {client.ErrorText(error)}";
         logger.LogMessage(message, logLevel: LogLevel.Error, callerName: callerName, callerFile: callerFile, callerFileLine: callerFileLine);
 
-        HandleError(error);
+        HandleError();
 
         return true;
       }
     }
 
-    private void HandleError(int error)
+    private void HandleError()
     { // try to solve error by reconnect...
       client.Disconnect();
       Connect();
@@ -111,10 +111,10 @@ namespace LogoMqttBinding.LogoAdapter
       => GetMemoryRange(n.Address, n.Length)
         .UnsubscribeFromChangeNotification(n);
 
-    private void SetUpdate(bool active)
+    private void EnableUpdates(bool active)
     {
       foreach (var memoryRange in logoMemoryRanges)
-        memoryRange.SetUpdate(active);
+        memoryRange.EnableUpdate(active);
     }
 
     private LogoMemory GetMemoryRange(int address, int length)
