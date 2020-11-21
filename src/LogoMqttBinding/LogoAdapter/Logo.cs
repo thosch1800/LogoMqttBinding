@@ -38,9 +38,9 @@ namespace LogoMqttBinding.LogoAdapter
       Execute(c => c.Disconnect());
     }
 
-    public Int IntegerAt(int address) => new Int(this, address);
-    public Float FloatAt(int address) => new Float(this, address);
-    public Byte ByteAt(int address) => new Byte(this, address);
+    public Int IntegerAt(int address) => new(this, address);
+    public Float FloatAt(int address) => new(this, address);
+    public Byte ByteAt(int address) => new(this, address);
 
 
     public bool Connect()
@@ -93,9 +93,27 @@ namespace LogoMqttBinding.LogoAdapter
           callerFileLine: callerFileLine
         );
 
-        if (error == 9) Connect(); //Error 9: Client not connected
 
         return true;
+      }
+    }
+
+    private void HandleError(int error)
+    {
+      switch (error)
+      {
+        case 9: Connect(); break;     //Error 9: Client not connected
+        default: Reconnect(); break;  // in any other errors try to fix it with a reconnect
+      }
+    }
+
+    private void Reconnect()
+    {
+      lock (clientLock)
+      {
+        SetUpdate(false);
+        client.Disconnect();
+        Connect();
       }
     }
 
@@ -132,7 +150,7 @@ namespace LogoMqttBinding.LogoAdapter
     private readonly string ipAddress;
     private readonly ILogger<Logo> logger;
     private readonly ImmutableArray<LogoMemory> logoMemoryRanges;
-    private readonly object clientLock = new object();
-    private readonly S7Client client = new S7Client();
+    private readonly object clientLock = new();
+    private readonly S7Client client = new();
   }
 }

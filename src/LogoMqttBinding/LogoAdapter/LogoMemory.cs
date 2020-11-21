@@ -60,32 +60,25 @@ namespace LogoMqttBinding.LogoAdapter
     {
       var readBuffer = new byte[size];
 
-      for (var errorCount = 0;
-        !cts.Token.IsCancellationRequested;
-        await Task.Delay(pollingCycleMilliseconds, cts.Token).ConfigureAwait(false))
-        if (update)
+      for (; !cts.Token.IsCancellationRequested; await Task.Delay(pollingCycleMilliseconds, cts.Token).ConfigureAwait(false))
+      {
+        if (!update) continue; // do nothing during initialization phase
+
+        var hasErrors = logo.Execute(c => c.DBRead(1, Start, size, readBuffer));
+        if (hasErrors) await Task.Delay(TimeSpan.FromSeconds(3), cts.Token).ConfigureAwait(false);
+        else
         {
-          var hasErrors = logo.Execute(c => c.DBRead(1, Start, size, readBuffer));
-          if (!hasErrors)
-          {
-            imageLock.EnterReadLock();
-            Array.Copy(image, 0, imageOfLastCycle, 0, size);
-            imageLock.ExitReadLock();
+          imageLock.EnterReadLock();
+          Array.Copy(image, 0, imageOfLastCycle, 0, size);
+          imageLock.ExitReadLock();
 
-            imageLock.EnterWriteLock();
-            Array.Copy(readBuffer, 0, image, 0, size);
-            imageLock.ExitWriteLock();
+          imageLock.EnterWriteLock();
+          Array.Copy(readBuffer, 0, image, 0, size);
+          imageLock.ExitWriteLock();
 
-            NotifyChanged();
-          }
-
-          errorCount = hasErrors ? errorCount + 1 : 0;
-          if (errorCount > 3)
-          {
-            logo.Connect();
-            await Task.Delay(3000, cts.Token).ConfigureAwait(false);
-          }
+          NotifyChanged();
         }
+      }
     }
 
     private void NotifyChanged()
@@ -117,10 +110,10 @@ namespace LogoMqttBinding.LogoAdapter
     private volatile bool update;
     private readonly byte[] image;
     private readonly byte[] imageOfLastCycle;
-    private readonly ReaderWriterLockSlim imageLock = new ReaderWriterLockSlim();
-    private readonly CancellationTokenSource cts = new CancellationTokenSource();
-    private readonly object notificationContextsLock = new object();
-    private readonly List<NotificationContext> notificationContexts = new List<NotificationContext>();
+    private readonly ReaderWriterLockSlim imageLock = new();
+    private readonly CancellationTokenSource cts = new();
+    private readonly object notificationContextsLock = new();
+    private readonly List<NotificationContext> notificationContexts = new();
     private readonly Task pollingLogicTask;
     private readonly int pollingCycleMilliseconds;
   }
