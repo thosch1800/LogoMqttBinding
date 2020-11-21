@@ -115,6 +115,28 @@
               "Topic": "logo/i8/get",
               "LogoAddress": 8,
               "Type": "byte"
+            },
+
+            
+            {
+              "Topic": "logo/i11/get",
+              "LogoAddress": 11,
+              "Type": "byte"
+            },
+            {
+              "Topic": "logo/i12/get",
+              "LogoAddress": 12,
+              "Type": "byte"
+            },
+            {
+              "Topic": "logo/i13/get",
+              "LogoAddress": 13,
+              "Type": "byte"
+            },
+            {
+              "Topic": "logo/i14/get",
+              "LogoAddress": 14,
+              "Type": "byte"
             }
 
           ]
