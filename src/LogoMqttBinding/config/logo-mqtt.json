@@ -119,26 +119,59 @@
 
             
             {
-              "Topic": "logo/F1/get",
+              "Topic": "logo/up/get",
               "LogoAddress": 101,
               "Type": "byte"
             },
             {
-              "Topic": "logo/F2/get",
+              "Topic": "logo/down/get",
               "LogoAddress": 102,
               "Type": "byte"
             },
             {
-              "Topic": "logo/F3/get",
+              "Topic": "logo/left/get",
               "LogoAddress": 103,
               "Type": "byte"
             },
             {
-              "Topic": "logo/F4/get",
+              "Topic": "logo/right/get",
               "LogoAddress": 104,
               "Type": "byte"
-            }
+            },
 
+            {
+              "Action": "Subscribe",
+              "Topic": "logo/white/set",
+              "LogoAddress": 105,
+              "Type": "byte"
+            },
+            {
+              "Topic": "logo/white/get",
+              "LogoAddress": 108,
+              "Type": "byte"
+            },
+            {
+              "Action": "Subscribe",
+              "Topic": "logo/orange/set",
+              "LogoAddress": 106,
+              "Type": "byte"
+            },
+            {
+              "Topic": "logo/orange/get",
+              "LogoAddress": 109,
+              "Type": "byte"
+            },
+            {
+              "Action": "Subscribe",
+              "Topic": "logo/red/set",
+              "LogoAddress": 107,
+              "Type": "byte"
+            },
+            {
+              "Topic": "logo/red/get",
+              "LogoAddress": 110,
+              "Type": "byte"
+            }
           ]
         }
       ]
