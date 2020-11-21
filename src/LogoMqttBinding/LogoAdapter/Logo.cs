@@ -8,6 +8,8 @@ using LogoMqttBinding.Configuration;
 using Microsoft.Extensions.Logging;
 using Sharp7;
 
+// ReSharper disable ExplicitCallerInfoArgument
+
 namespace LogoMqttBinding.LogoAdapter
 {
   internal class Logo : IAsyncDisposable
@@ -83,38 +85,18 @@ namespace LogoMqttBinding.LogoAdapter
         if (error == 0) return false;
 
         var message = $"{ToString()} Error {error}/0x{error:X8} {client.ErrorText(error)}";
-        logger.LogMessage(
-          message,
-          logLevel: LogLevel.Error,
-          callerName: callerName,
-          // ReSharper disable once ExplicitCallerInfoArgument
-          callerFile: callerFile,
-          // ReSharper disable once ExplicitCallerInfoArgument
-          callerFileLine: callerFileLine
-        );
+        logger.LogMessage(message, logLevel: LogLevel.Error, callerName: callerName, callerFile: callerFile, callerFileLine: callerFileLine);
 
+        HandleError(error);
 
         return true;
       }
     }
 
     private void HandleError(int error)
-    {
-      switch (error)
-      {
-        case 9: Connect(); break;     //Error 9: Client not connected
-        default: Reconnect(); break;  // in any other errors try to fix it with a reconnect
-      }
-    }
-
-    private void Reconnect()
-    {
-      lock (clientLock)
-      {
-        SetUpdate(false);
-        client.Disconnect();
-        Connect();
-      }
+    { // try to solve error by reconnect...
+      client.Disconnect();
+      Connect();
     }
 
     internal byte[] GetBytes(int address, int length)
