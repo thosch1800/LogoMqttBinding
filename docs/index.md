@@ -19,8 +19,8 @@ I appreciate your feedback! The stable version is planned within Q4/2020.
 
 ## What is it?
 It is a connector between one or more 
-[Siemens Logo PLC](https://de.wikipedia.org/wiki/Logo_(SPS)) to 
-[MQTT](https://en.wikipedia.org/wiki/MQTT).
+[Siemens Logo PLC](https://de.wikipedia.org/wiki/Logo_(SPS)) to one 
+[MQTT](https://en.wikipedia.org/wiki/MQTT) broker.
 MQTT is widely used for smart home controller (like openHAB or hass.io) or other IoT applications.
  
 ### Hardware Requirements
