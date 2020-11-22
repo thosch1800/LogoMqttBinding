@@ -9,7 +9,6 @@ using LogoMqttBinding.MqttAdapter;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Protocol;
-using Byte = LogoMqttBinding.LogoAdapter.Byte;
 
 namespace LogoMqttBinding
 {
@@ -95,38 +94,37 @@ namespace LogoMqttBinding
     {
       this.mqttClient = mqttClient;
       logger = loggerFactory.CreateLogger<Mapping>();
-      mqttFormat = new MqttFormat(loggerFactory.CreateLogger<MqttFormat>());
     }
 
 
 
-    public void ReceivedInteger(ILogoVariable<short> logoVariable, byte[] payload)
+    public void ReceivedInteger(ILogoVariable<short> logoVariable, byte[]? payload)
     {
-      if (mqttFormat.ToValue(payload, out short value))
+      if (MqttFormat.ToValue(payload, out short value))
         LogoSet(logoVariable, value);
       else
         PrintWarning(logoVariable, payload);
     }
 
-    public void ReceivedByte(ILogoVariable<byte> logoVariable, byte[] payload)
+    public void ReceivedByte(ILogoVariable<byte> logoVariable, byte[]? payload)
     {
-      if (mqttFormat.ToValue(payload, out byte value))
+      if (MqttFormat.ToValue(payload, out byte value))
         LogoSet(logoVariable, value);
       else
         PrintWarning(logoVariable, payload);
     }
 
-    public void ReceivedFloat(ILogoVariable<float> logoVariable, byte[] payload)
+    public void ReceivedFloat(ILogoVariable<float> logoVariable, byte[]? payload)
     {
-      if (mqttFormat.ToValue(payload, out float value))
+      if (MqttFormat.ToValue(payload, out float value))
         LogoSet(logoVariable, value);
       else
         PrintWarning(logoVariable, payload);
     }
 
-    public async Task PulseByte(Byte logoVariable, byte[] payload, int duration)
+    public async Task PulseByte(LogoAdapter.Byte logoVariable, byte[]? payload, int duration)
     {
-      if (mqttFormat.ToValue(payload, out byte value))
+      if (MqttFormat.ToValue(payload, out byte value))
       {
         LogoSet(logoVariable, value);
         await Task.Delay(duration);
@@ -163,14 +161,14 @@ namespace LogoMqttBinding
 
     private void LogoSet<T>(ILogoVariable<T> logoVariable, T value)
     {
-      logger.LogDebug($"{logoVariable} setting to {value}");
+      logger.LogDebug($"{logoVariable} setting to '{value}'");
       logoVariable.Set(value);
     }
 
-    private void PrintWarning<T>(ILogoVariable<T> logoVariable, IEnumerable<byte> payload)
+    private void PrintWarning<T>(ILogoVariable<T> logoVariable, IEnumerable<byte>? payload)
     {
-      var payloadString = string.Join("-", payload.Select(b => b.ToString("X")));
-      logger.LogWarning($"{logoVariable} failed to set payload {payloadString}");
+      var payloadString = payload != null ? string.Join("-", payload.Select(b => b.ToString("X"))) : "null";
+      logger.LogWarning($"{logoVariable} failed to set payload '{payloadString}'");
     }
 
 
@@ -187,7 +185,6 @@ namespace LogoMqttBinding
     }
 
     private readonly Mqtt mqttClient;
-    private readonly MqttFormat mqttFormat;
     private readonly ILogger<Mapping> logger;
   }
 }
