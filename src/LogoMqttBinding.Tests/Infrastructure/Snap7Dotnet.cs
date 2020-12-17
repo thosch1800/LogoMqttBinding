@@ -1037,7 +1037,7 @@ namespace LogoMqttBinding.Tests.Infrastructure
 
     public string ErrorText(int Error)
     {
-      StringBuilder Message = new StringBuilder(MsgTextLen);
+      StringBuilder Message = new(MsgTextLen);
       Cli_ErrorText(Error, Message, MsgTextLen);
       return Message.ToString();
     }
@@ -1365,7 +1365,7 @@ namespace LogoMqttBinding.Tests.Infrastructure
 
     public string EventText(ref USrvEvent Event)
     {
-      StringBuilder Message = new StringBuilder(MsgTextLen);
+      StringBuilder Message = new(MsgTextLen);
       Srv_EventText(ref Event, Message, MsgTextLen);
       return Message.ToString();
     }
@@ -1467,7 +1467,7 @@ namespace LogoMqttBinding.Tests.Infrastructure
 
     public string ErrorText(int Error)
     {
-      StringBuilder Message = new StringBuilder(MsgTextLen);
+      StringBuilder Message = new(MsgTextLen);
       Srv_ErrorText(Error, Message, MsgTextLen);
       return Message.ToString();
     }
@@ -1715,7 +1715,7 @@ namespace LogoMqttBinding.Tests.Infrastructure
 
     public string ErrorText(int Error)
     {
-      StringBuilder Message = new StringBuilder(MsgTextLen);
+      StringBuilder Message = new(MsgTextLen);
       Par_ErrorText(Error, Message, MsgTextLen);
       return Message.ToString();
     }
