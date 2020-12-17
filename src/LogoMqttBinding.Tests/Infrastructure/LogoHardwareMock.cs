@@ -30,7 +30,7 @@ namespace LogoMqttBinding.Tests.Infrastructure
     public int ReadInteger(int address) => (short) db.GetIntAt(address);
 
 
-    private readonly S7Server server = new S7Server();
+    private readonly S7Server server = new();
     private readonly byte[] db = new byte[850]; // maximum local variable memory range is 0..850
   }
 }

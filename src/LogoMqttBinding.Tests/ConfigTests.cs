@@ -212,23 +212,23 @@ namespace LogoMqttBinding.Tests
     [Fact]
     public void Validate_InvalidLastWillAction_ShouldThrow()
     {
-      using var configFile = new TempFile(@$"
-{{
+      using var configFile = new TempFile(@"
+{
   ""Logos"": [
-    {{
+    {
       ""Mqtt"": [
-        {{
+        {
           ""LastWill"": 
-            {{
+            {
               ""Action"": ""pubsubsomething"",
               ""Topic"": ""any/valid/topic"",
               ""Payload"": ""any payload message"",
-            }},
-        }}
+            },
+        }
       ]
-    }}
+    }
   ]
-}}");
+}");
       var config = new Config();
       config.Read(configFile.Path);
 

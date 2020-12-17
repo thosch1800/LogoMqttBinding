@@ -51,7 +51,7 @@ namespace LogoMqttBinding.Tests.Infrastructure
     public TestableLogger Logger { get; private set; }
 
     internal Logo CreateLogo(ILogger<Logo>? logger = null, string? ipAddress = null)
-      => new Logo(
+      => new(
         logger ?? NullLogger<Logo>.Instance,
         ipAddress ?? IPAddress.Loopback.ToString(),
         new MemoryRangeConfig

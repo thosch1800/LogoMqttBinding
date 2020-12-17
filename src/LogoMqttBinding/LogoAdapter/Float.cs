@@ -30,7 +30,7 @@ namespace LogoMqttBinding.LogoAdapter
     public NotificationContext SubscribeToChangeNotification(Action<ILogoVariable<float>> onChanged)
       => logo.SubscribeToChangeNotification(
         new NotificationContext<float>(address, sizeof(float), this, onChanged));
-    
+
     public override string ToString() => $"{nameof(Float)} {address}";
 
     private readonly Logo logo;

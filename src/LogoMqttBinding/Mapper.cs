@@ -9,6 +9,7 @@ using LogoMqttBinding.MqttAdapter;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Protocol;
+using Byte = LogoMqttBinding.LogoAdapter.Byte;
 
 namespace LogoMqttBinding
 {
@@ -33,7 +34,7 @@ namespace LogoMqttBinding
         MqttChannelConfig.Types.Float => (sender, args) =>
           mapping.ReceivedFloat(logo.FloatAt(address), args.ApplicationMessage.Payload),
 
-        _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
+        _ => throw new ArgumentOutOfRangeException(nameof(type), type, $"Mapping '{subscription.Topic}'->'{address}' should be of type integer, byte or float, but was '{type}'"),
       };
     }
 
@@ -78,7 +79,7 @@ namespace LogoMqttBinding
                   .PublishFloat(logoVariable, topic, retain, qualityOfService)
                   .ConfigureAwait(false)),
 
-        _ => throw new ArgumentOutOfRangeException(nameof(type), type, "should be integer, byte or float"),
+        _ => throw new ArgumentOutOfRangeException(nameof(type), type, $"Mapping '{address}'->'{topic}' should be of type integer, byte or float, but was '{type}'"),
       };
     }
 
@@ -122,7 +123,7 @@ namespace LogoMqttBinding
         PrintWarning(logoVariable, payload);
     }
 
-    public async Task PulseByte(LogoAdapter.Byte logoVariable, byte[]? payload, int duration)
+    public async Task PulseByte(Byte logoVariable, byte[]? payload, int duration)
     {
       if (MqttFormat.ToValue(payload, out byte value))
       {

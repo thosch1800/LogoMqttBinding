@@ -157,7 +157,7 @@ namespace LogoMqttBinding.Tests
 
     internal static Config GetConfig(string brokerUri, int brokerPort)
     {
-      return new Config
+      return new()
       {
         MqttBrokerUri = brokerUri,
         MqttBrokerPort = brokerPort,

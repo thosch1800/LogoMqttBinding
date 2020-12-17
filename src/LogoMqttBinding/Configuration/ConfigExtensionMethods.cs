@@ -78,7 +78,7 @@ namespace LogoMqttBinding.Configuration
         throw new ArgumentOutOfRangeException(
           nameof(mqttClientConfig.ClientId),
           mqttClientConfig.ClientId,
-          $"ClientId should not be empty or whitespace");
+          "ClientId should not be empty or whitespace");
 
       var lastWill = mqttClientConfig.LastWill;
       if (lastWill is not null)
@@ -88,13 +88,13 @@ namespace LogoMqttBinding.Configuration
           throw new ArgumentOutOfRangeException(
             nameof(mqttClientConfig.LastWill) + "." + nameof(lastWill.Action),
             lastWill.Action,
-            $"LastWill should provide action publish");
+            "LastWill should provide action publish");
 
         if (string.IsNullOrWhiteSpace(lastWill.Payload))
           throw new ArgumentOutOfRangeException(
             nameof(mqttClientConfig.LastWill) + "." + nameof(lastWill.Payload),
             lastWill.Payload,
-            $"LastWill should provide a payload");
+            "LastWill should provide a payload");
 
         ValidateTopic(lastWill);
       }
