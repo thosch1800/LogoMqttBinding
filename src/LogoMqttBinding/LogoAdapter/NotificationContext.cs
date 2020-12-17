@@ -3,7 +3,7 @@ using LogoMqttBinding.LogoAdapter.Interfaces;
 
 namespace LogoMqttBinding.LogoAdapter
 {
-  public class NotificationContext<T> : NotificationContext
+  public record NotificationContext<T> : NotificationContext
   {
     public NotificationContext(int address, int length, ILogoVariable<T> logoVariable, Action<ILogoVariable<T>> onChanged)
       : base(address, length)
@@ -18,16 +18,8 @@ namespace LogoMqttBinding.LogoAdapter
     private readonly Action<ILogoVariable<T>> onChanged;
   }
 
-  public abstract class NotificationContext
+  public abstract record NotificationContext(int Address, int Length)
   {
-    protected NotificationContext(int address, int length)
-    {
-      Address = address;
-      Length = length;
-    }
-
-    public int Address { get; }
-    public int Length { get; }
     public Guid Id { get; } = Guid.NewGuid();
 
     internal abstract void NotifyChanged();
