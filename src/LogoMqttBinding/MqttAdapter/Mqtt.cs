@@ -26,7 +26,7 @@ namespace LogoMqttBinding.MqttAdapter
       string? brokerUsername,
       string? brokerPassword,
       // ReSharper disable once SuggestBaseTypeForParameter
-      MqttStatusChannelConfig? statusChannelConfig)
+      MqttStatusChannelConfig? status)
     {
       this.logger = logger;
       this.serverUri = serverUri;
@@ -43,15 +43,15 @@ namespace LogoMqttBinding.MqttAdapter
         .WithClientId(clientId)
         .WithCleanSession(cleanSession);
 
-      if (statusChannelConfig is not null)
+      if (status is not null)
         clientOptionsBuilder.WithWillMessage(
           new MqttApplicationMessageBuilder()
-            .WithTopic(statusChannelConfig.Topic)
             .WithPayload("connection lost")
-            .WithRetainFlag()
-            .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.ExactlyOnce)
+            .WithTopic(status.Topic)
+            .WithRetainFlag(status.Retain)
+            .WithQualityOfServiceLevel(status.GetQualityOfServiceAsEnum().ToMqttNet())
             .Build());
-
+      
       if (brokerUsername is not null &&
           brokerPassword is not null)
         clientOptionsBuilder.WithCredentials(brokerUsername, brokerPassword);
