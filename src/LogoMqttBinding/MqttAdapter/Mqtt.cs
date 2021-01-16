@@ -24,9 +24,7 @@ namespace LogoMqttBinding.MqttAdapter
       int port,
       bool cleanSession,
       string? brokerUsername,
-      string? brokerPassword,
-      // ReSharper disable once SuggestBaseTypeForParameter
-      MqttStatusChannelConfig? status)
+      string? brokerPassword)
     {
       this.logger = logger;
       this.serverUri = serverUri;
@@ -38,25 +36,14 @@ namespace LogoMqttBinding.MqttAdapter
       client.ConnectedHandler = new MqttClientConnectedHandlerDelegate(ConnectedHandler);
       client.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(MessageReceivedHandler);
 
-      var clientOptionsBuilder = new MqttClientOptionsBuilder()
+      clientOptionsBuilder = new MqttClientOptionsBuilder()
         .WithTcpServer(serverUri, port)
         .WithClientId(clientId)
         .WithCleanSession(cleanSession);
 
-      if (status is not null)
-        clientOptionsBuilder.WithWillMessage(
-          new MqttApplicationMessageBuilder()
-            .WithPayload("connection lost")
-            .WithTopic(status.Topic)
-            .WithRetainFlag(status.Retain)
-            .WithQualityOfServiceLevel(status.GetQualityOfServiceAsEnum().ToMqttNet())
-            .Build());
-      
       if (brokerUsername is not null &&
           brokerPassword is not null)
         clientOptionsBuilder.WithCredentials(brokerUsername, brokerPassword);
-
-      clientOptions = clientOptionsBuilder.Build();
     }
 
     public async ValueTask DisposeAsync()
@@ -81,7 +68,7 @@ namespace LogoMqttBinding.MqttAdapter
     public async Task ConnectAsync()
     {
       await client
-        .ConnectAsync(clientOptions)
+        .ConnectAsync(clientOptionsBuilder.Build())
         .ConfigureAwait(false);
 
       foreach (var subscription in subscriptions.Values)
@@ -123,6 +110,17 @@ namespace LogoMqttBinding.MqttAdapter
       return subscription;
     }
 
+
+    public void AddLastWill(MqttStatusChannelConfig status, string payload)
+    {
+      clientOptionsBuilder.WithWillMessage(
+        new MqttApplicationMessageBuilder()
+          .WithPayload(payload)
+          .WithTopic(status.Topic)
+          .WithRetainFlag(status.Retain)
+          .WithQualityOfServiceLevel(status.GetQualityOfServiceAsEnum().ToMqttNet())
+          .Build());
+    }
 
     public override string ToString() => $"MQTT client {clientId} -> {serverUri}";
 
@@ -202,7 +200,7 @@ namespace LogoMqttBinding.MqttAdapter
     private readonly string serverUri;
     private readonly IMqttClient client;
     private readonly ILogger<Mqtt> logger;
-    private readonly IMqttClientOptions clientOptions;
+    private readonly MqttClientOptionsBuilder clientOptionsBuilder;
     private readonly Dictionary<string, Subscription> subscriptions = new();
 
     public class Subscription

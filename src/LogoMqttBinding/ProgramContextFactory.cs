@@ -41,22 +41,23 @@ namespace LogoMqttBinding
           logoConfig.IpAddress,
           logoConfig.MemoryRanges);
 
-        foreach (var mqttClientConfig in logoConfig.Mqtt)
+        foreach (var mqttConfig in logoConfig.Mqtt)
         {
-          logger.LogInformation($"- MQTT client {mqttClientConfig.ClientId} status channel {mqttClientConfig.Status}");
+          logger.LogInformation($"- MQTT client {mqttConfig.ClientId} status channel {mqttConfig.Status}");
 
           var mqttClient = new Mqtt(
             loggerFactory.CreateLogger<Mqtt>(),
-            mqttClientConfig.ClientId,
+            mqttConfig.ClientId,
             config.MqttBrokerUri,
             config.MqttBrokerPort,
-            mqttClientConfig.CleanSession,
+            mqttConfig.CleanSession,
             config.MqttBrokerUsername,
-            config.MqttBrokerPassword,
-            mqttClientConfig.Status);
+            config.MqttBrokerPassword);
+
+          InitializeStatusChannel(mqttClient, mqttConfig.Status);
 
           InitializeChannels(
-            mqttClientConfig, 
+            mqttConfig, 
             new Mapper(loggerFactory, logo, mqttClient),
             mqttClient);
 
@@ -65,6 +66,16 @@ namespace LogoMqttBinding
 
         logos.Add(logo);
       }
+    }
+
+    private void InitializeStatusChannel(Mqtt mqttClient, MqttStatusChannelConfig? status)
+    {
+      if (status is null) return;
+      
+      mqttClient.AddLastWill(status, "Connection lost");
+      
+      //TODO: mqttClient.
+      
     }
 
     private void InitializeChannels(MqttClientConfig mqttClientConfig, Mapper mapper, Mqtt mqttClient)
