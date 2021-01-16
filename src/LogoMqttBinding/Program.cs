@@ -62,7 +62,8 @@ namespace LogoMqttBinding
       configuration.Validate();
 
       logger.LogInformation("Initializing...");
-      return Logic.Initialize(loggerFactory, configuration);
+      return new ProgramContextFactory(loggerFactory)
+        .Initialize(configuration);
     }
 
     private static async Task WaitForCtrlCAsync(CancellationToken ct)

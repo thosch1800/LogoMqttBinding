@@ -18,9 +18,6 @@
           "Status": {
             "Topic": "logo/status"
           },
-          "LastWill": {
-            "Topic": "logo/lastwill"
-          },
           "Channels": [
             {
               "Action": "publish",

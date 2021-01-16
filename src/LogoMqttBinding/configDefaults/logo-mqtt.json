@@ -13,10 +13,8 @@
       "Mqtt": [
         {
           "ClientId": "logo",
-          "LastWill": {
-            "Topic": "logo/status",
-            "Payload": "unexpected gone offline",
-            "QualityOfService": "ExactlyOnce"
+          "Status": {
+            "Topic": "logo/status"
           },
           "Channels": [
             {

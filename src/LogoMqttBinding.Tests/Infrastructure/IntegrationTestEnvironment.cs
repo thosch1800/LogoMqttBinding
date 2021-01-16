@@ -53,8 +53,9 @@ namespace LogoMqttBinding.Tests.Infrastructure
 
       var config = IntegrationTests.GetConfig(brokerIpAddress.ToString(), brokerPort);
       config.Validate();
-      appContext = Logic
-        .Initialize(LoggerFactory, config);
+      appContext = 
+        new ProgramContextFactory(LoggerFactory)
+        .Initialize(config);
       await appContext
         .Connect()
         .ConfigureAwait(false);
