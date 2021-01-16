@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
+using LogoMqttBinding.MqttAdapter;
 using Microsoft.Extensions.Logging;
 using Sharp7;
 
@@ -38,7 +40,12 @@ namespace LogoMqttBinding.LogoAdapter
           .ConfigureAwait(false);
 
       Execute(c => c.Disconnect());
+      StatusChannel.Update(connectionState: StatusChannel.ConnectionState.Disconnected);
+      
+      await StatusChannel.DisposeAsync();
     }
+
+    public StatusChannel StatusChannel { get; } = new StatusChannel();
 
     public Int IntegerAt(int address) => new(this, address);
     public Float FloatAt(int address) => new(this, address);
@@ -55,6 +62,8 @@ namespace LogoMqttBinding.LogoAdapter
         Execute(c => c.Connect());
         logger.LogMessage($"connected:{client.Connected}", logLevel: LogLevel.Debug);
         EnableUpdates(true);
+
+        StatusChannel.Update(connectionState: StatusChannel.ConnectionState.Connected);
 
         return client.Connected;
       }
@@ -129,10 +138,11 @@ namespace LogoMqttBinding.LogoAdapter
       return m;
     }
 
-    private readonly string ipAddress;
-    private readonly ILogger<Logo> logger;
-    private readonly ImmutableArray<LogoMemory> logoMemoryRanges;
     private readonly object clientLock = new();
     private readonly S7Client client = new();
+    private readonly string ipAddress;
+    private readonly ILogger<Logo> logger;
+    private readonly List<StatusChannel> statusChannels = new();
+    private readonly ImmutableArray<LogoMemory> logoMemoryRanges;
   }
 }

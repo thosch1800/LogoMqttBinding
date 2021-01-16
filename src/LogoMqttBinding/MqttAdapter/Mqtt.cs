@@ -111,16 +111,7 @@ namespace LogoMqttBinding.MqttAdapter
     }
 
 
-    public void AddLastWill(MqttStatusChannelConfig status, string payload)
-    {
-      clientOptionsBuilder.WithWillMessage(
-        new MqttApplicationMessageBuilder()
-          .WithPayload(payload)
-          .WithTopic(status.Topic)
-          .WithRetainFlag(status.Retain)
-          .WithQualityOfServiceLevel(status.GetQualityOfServiceAsEnum().ToMqttNet())
-          .Build());
-    }
+    public void AddLastWill(MqttApplicationMessage lastWillMessage) => clientOptionsBuilder.WithWillMessage(lastWillMessage);
 
     public override string ToString() => $"MQTT client {clientId} -> {serverUri}";
 

@@ -22,7 +22,7 @@ namespace LogoMqttBinding
     {
       logger.LogInformation($"MQTT broker at {config.MqttBrokerUri} port {config.MqttBrokerPort} user {config.MqttBrokerUsername}");
 
-      InitializeLogos( config);
+      InitializeLogos(config);
 
       return new ProgramContext(
         loggerFactory.CreateLogger<ProgramContext>(),
@@ -54,10 +54,10 @@ namespace LogoMqttBinding
             config.MqttBrokerUsername,
             config.MqttBrokerPassword);
 
-          InitializeStatusChannel(mqttClient, mqttConfig.Status);
+          logo.StatusChannel.AddMqtt(mqttClient, mqttConfig.Status);
 
           InitializeChannels(
-            mqttConfig, 
+            mqttConfig,
             new Mapper(loggerFactory, logo, mqttClient),
             mqttClient);
 
@@ -66,16 +66,6 @@ namespace LogoMqttBinding
 
         logos.Add(logo);
       }
-    }
-
-    private void InitializeStatusChannel(Mqtt mqttClient, MqttStatusChannelConfig? status)
-    {
-      if (status is null) return;
-      
-      mqttClient.AddLastWill(status, "Connection lost");
-      
-      //TODO: mqttClient.
-      
     }
 
     private void InitializeChannels(MqttClientConfig mqttClientConfig, Mapper mapper, Mqtt mqttClient)
