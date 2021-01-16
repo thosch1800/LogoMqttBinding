@@ -27,12 +27,13 @@ namespace LogoMqttBinding.MqttAdapter
     {
       if (statusConfig is null) return;
 
-      contexts.Add(new MqttContext(mqttClient, statusConfig));
-
       mqttClient.AddLastWill(
         BuildMqttMessage(
           GetStatusMessageFrom(ConnectionState.Interrupted),
           statusConfig));
+
+      statusConfig.Retain = false;
+      contexts.Add(new MqttContext(mqttClient, statusConfig));
     }
 
     public void Update(ConnectionState? connectionState = null)
