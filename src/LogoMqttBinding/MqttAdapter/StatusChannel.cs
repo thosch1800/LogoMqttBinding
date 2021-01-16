@@ -32,7 +32,6 @@ namespace LogoMqttBinding.MqttAdapter
           GetStatusMessageFrom(ConnectionState.Interrupted),
           statusConfig));
 
-      statusConfig.Retain = false;
       contexts.Add(new MqttContext(mqttClient, statusConfig));
     }
 
