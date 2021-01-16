@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
@@ -102,6 +103,9 @@ namespace LogoMqttBinding.LogoAdapter
 
       foreach (var context in changed)
         context.NotifyChanged();
+      
+      if(changed.Any())
+        logo.StatusChannel.Update(notificationTimestamp: DateTime.UtcNow);
     }
 
 

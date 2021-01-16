@@ -142,7 +142,6 @@ namespace LogoMqttBinding.LogoAdapter
     private readonly S7Client client = new();
     private readonly string ipAddress;
     private readonly ILogger<Logo> logger;
-    private readonly List<StatusChannel> statusChannels = new();
     private readonly ImmutableArray<LogoMemory> logoMemoryRanges;
   }
 }

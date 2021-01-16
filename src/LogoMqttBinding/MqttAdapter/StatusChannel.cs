@@ -35,11 +35,14 @@ namespace LogoMqttBinding.MqttAdapter
       contexts.Add(new MqttContext(mqttClient, statusConfig));
     }
 
-    public void Update(ConnectionState? connectionState = null)
+    public void Update(
+      ConnectionState? connectionState = null,
+      DateTime? notificationTimestamp = null)
     {
       lock (synchronizationContext)
       { // update state as needed
         connection = connectionState ?? connection;
+        lastNotification = notificationTimestamp ?? lastNotification;
         ActivateTimer();
       }
     }
@@ -48,16 +51,18 @@ namespace LogoMqttBinding.MqttAdapter
 
     private async Task SendStatusUpdate()
     {
-      string statusMessage;
-      lock (synchronizationContext)
-        statusMessage = GetStatusMessageFrom(connection);
+      var statusMessage = GetStatusMessageFrom(connection);
       foreach (var context in contexts)
         await UpdateStatus(context, statusMessage);
     }
 
-    private static string GetStatusMessageFrom(ConnectionState connection)
+    private string GetStatusMessageFrom(ConnectionState connectionState)
     {
-      return $"{GetConnectionText(connection)}";
+      lock (synchronizationContext)
+        return @$"
+Connection: {GetConnectionText(connectionState)}
+Last notification: {GetNotificationText(lastNotification)}
+";
     }
 
     private static string GetConnectionText(ConnectionState state) =>
@@ -65,9 +70,11 @@ namespace LogoMqttBinding.MqttAdapter
       {
         ConnectionState.Connected => "connected",
         ConnectionState.Disconnected => "disconnected",
-        ConnectionState.Interrupted => "connection lost",
+        ConnectionState.Interrupted => "lost",
         _ => throw new ArgumentOutOfRangeException(nameof(state), state, null),
       };
+
+    private static string GetNotificationText(DateTime time) => time.ToLongTimeString();
 
     private async Task UpdateStatus(MqttContext context, string statusMessage)
     {
@@ -86,6 +93,7 @@ namespace LogoMqttBinding.MqttAdapter
     }
 
     private ConnectionState connection = ConnectionState.Disconnected;
+    private DateTime lastNotification = DateTime.MinValue;
     private readonly List<MqttContext> contexts = new();
     private readonly Timer timer;
     private readonly object synchronizationContext = new();

@@ -31,16 +31,16 @@ namespace LogoMqttBinding
 
     internal async Task Connect()
     {
-      foreach (var logo in logos)
-      {
-        logger.LogInformation($"Connecting to {logo}");
-        logo.Connect();
-      }
-
       foreach (var mqttClient in mqttClients)
       {
         logger.LogInformation($"Connecting to {mqttClient}");
         await mqttClient.TryConnectAsync().ConfigureAwait(false);
+      }
+
+      foreach (var logo in logos)
+      {
+        logger.LogInformation($"Connecting to {logo}");
+        logo.Connect();
       }
     }
 
