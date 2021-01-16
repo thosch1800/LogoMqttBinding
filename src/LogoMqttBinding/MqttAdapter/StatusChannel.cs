@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
 using MQTTnet;
+using MQTTnet.Internal;
 
 namespace LogoMqttBinding.MqttAdapter
 {
@@ -12,57 +15,51 @@ namespace LogoMqttBinding.MqttAdapter
     public StatusChannel()
     {
       timer = new Timer(
-        async s => await SendStatusUpdate(),
+        async s => await SendUpdates(),
         null,
         TimeSpan.FromMilliseconds(-1),
         TimeSpan.FromMilliseconds(-1));
     }
 
-    public async ValueTask DisposeAsync()
-    {
-      await timer.DisposeAsync();
-    }
+    public async ValueTask DisposeAsync() => await timer.DisposeAsync();
+
 
     public void AddMqtt(Mqtt mqttClient, MqttStatusChannelConfig? statusConfig)
     {
       if (statusConfig is null) return;
 
       mqttClient.AddLastWill(
-        BuildMqttMessage(
-          GetStatusMessageFrom(ConnectionState.Interrupted),
-          statusConfig));
+        BuildMessage(
+          GetConnectionText(ConnectionState.Interrupted),
+          statusConfig,
+          Status.Connection));
 
       contexts.Add(new MqttContext(mqttClient, statusConfig));
     }
 
-    public void Update(
-      ConnectionState? connectionState = null,
-      DateTime? notificationTimestamp = null)
+
+    public enum ConnectionState { Connected, Disconnected, Interrupted };
+
+    public void UpdateConnection(ConnectionState connectionState)
     {
-      lock (synchronizationContext)
-      { // update state as needed
-        connection = connectionState ?? connection;
-        lastNotification = notificationTimestamp ?? lastNotification;
-        ActivateTimer();
-      }
+      messageQueue.Enqueue((Status.Connection, GetConnectionText(connectionState)));
+      ScheduleSend();
     }
 
-    private void ActivateTimer() => timer.Change(TimeSpan.Zero, TimeSpan.FromMilliseconds(-1));
-
-    private async Task SendStatusUpdate()
+    public void UpdateNotificationTime()
     {
-      var statusMessage = GetStatusMessageFrom(connection);
+      messageQueue.Enqueue((Status.Notification, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)));
+      ScheduleSend();
+    }
+
+
+    private void ScheduleSend() => timer.Change(TimeSpan.Zero, TimeSpan.FromMilliseconds(-1));
+
+    private async Task SendUpdates()
+    {
+      var (topic, message) = messageQueue.Dequeue();
       foreach (var context in contexts)
-        await UpdateStatus(context, statusMessage);
-    }
-
-    private string GetStatusMessageFrom(ConnectionState connectionState)
-    {
-      lock (synchronizationContext)
-        return @$"
-Connection: {GetConnectionText(connectionState)}
-Last notification: {GetNotificationText(lastNotification)}
-";
+        await Send(context, message, topic);
     }
 
     private static string GetConnectionText(ConnectionState state) =>
@@ -74,32 +71,32 @@ Last notification: {GetNotificationText(lastNotification)}
         _ => throw new ArgumentOutOfRangeException(nameof(state), state, null),
       };
 
-    private static string GetNotificationText(DateTime time) => time.ToLongTimeString();
-
-    private async Task UpdateStatus(MqttContext context, string statusMessage)
+    private async Task Send(MqttContext context, string statusMessage, string subStatusTopic)
     {
-      var mqttMessage = BuildMqttMessage(statusMessage, context.Config);
+      var mqttMessage = BuildMessage(statusMessage, context.Config, subStatusTopic);
       await context.Client.PublishAsync(mqttMessage);
     }
 
-    private static MqttApplicationMessage BuildMqttMessage(string message, MqttStatusChannelConfig config)
+    private static MqttApplicationMessage BuildMessage(string message, MqttStatusChannelConfig config, string subStatusTopic)
     {
       return new MqttApplicationMessageBuilder()
         .WithPayload(message)
-        .WithTopic(config.Topic)
+        .WithTopic(config.Topic + $"/{subStatusTopic}")
         .WithRetainFlag(config.Retain)
         .WithQualityOfServiceLevel(config.GetQualityOfServiceAsEnum().ToMqttNet())
         .Build();
     }
 
-    private ConnectionState connection = ConnectionState.Disconnected;
-    private DateTime lastNotification = DateTime.MinValue;
+    private readonly BlockingQueue<(string, string)> messageQueue = new();
     private readonly List<MqttContext> contexts = new();
     private readonly Timer timer;
-    private readonly object synchronizationContext = new();
-
-    public enum ConnectionState { Connected, Disconnected, Interrupted };
 
     internal record MqttContext(Mqtt Client, MqttStatusChannelConfig Config);
+  }
+
+  static class Status
+  {
+    public static string Connection => nameof(Connection);
+    public static string Notification => nameof(Notification);
   }
 }

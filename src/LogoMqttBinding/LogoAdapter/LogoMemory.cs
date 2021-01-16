@@ -103,9 +103,9 @@ namespace LogoMqttBinding.LogoAdapter
 
       foreach (var context in changed)
         context.NotifyChanged();
-      
-      if(changed.Any())
-        logo.StatusChannel.Update(notificationTimestamp: DateTime.UtcNow);
+
+      if (changed.Any())
+        logo.StatusChannel.UpdateNotificationTime();
     }
 
 
