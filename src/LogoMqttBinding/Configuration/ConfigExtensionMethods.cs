@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Configuration;
@@ -96,11 +97,13 @@ namespace LogoMqttBinding.Configuration
           channelConfig.Action,
           $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfigBase.Actions)))}");
 
-      if (!EnumIsDefined(typeof(MqttChannelConfigBase.Types), channelConfig.Type))
+      var allowedTypes = new[] { MqttChannelConfigBase.Types.Byte, MqttChannelConfigBase.Types.Integer, MqttChannelConfigBase.Types.Float };
+      if (!EnumIsDefined(typeof(MqttChannelConfigBase.Types), channelConfig.Type)
+          || TypeIsOneOf(channelConfig, allowedTypes))
         throw new ArgumentOutOfRangeException(
           nameof(channelConfig.Type),
           channelConfig.Type,
-          $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfigBase.Types)))}");
+          $"Allowed values are {string.Join(", ", allowedTypes)}");
 
       if (!EnumIsDefined(typeof(MqttChannelConfigBase.QoS), channelConfig.QualityOfService))
         throw new ArgumentOutOfRangeException(
@@ -115,6 +118,16 @@ namespace LogoMqttBinding.Configuration
           $"The range should be {MemoryRangeMinimum}..{MemoryRangeMaximum}");
 
       ValidateTopic(channelConfig.Topic, nameof(channelConfig.Topic));
+    }
+
+    private static bool TypeIsOneOf(MqttChannelConfigBase channel, IEnumerable<MqttChannelConfigBase.Types> allowedTypes)
+    {
+      try
+      {
+        var type = channel.GetTypeAsEnum();
+        return !allowedTypes.Contains(type);
+      }
+      catch { return true; }
     }
 
     private static void ValidateStatusChannel(MqttStatusChannelConfig channelConfig)

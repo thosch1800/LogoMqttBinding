@@ -424,8 +424,10 @@ namespace LogoMqttBinding.Tests
       ex.Message.Should().Contain("Allowed values are Publish, Subscribe, SubscribePulse");
     }
 
-    [Fact]
-    public void Validate_InvalidType_ShouldThrow()
+    [Theory]
+    [InlineData("someUndefinedType")]
+    [InlineData("String")]
+    public void Validate_InvalidType_ShouldThrow(string type)
     {
       using var configFile = new TempFile(@"
 {
@@ -435,20 +437,21 @@ namespace LogoMqttBinding.Tests
         {
           ""Channels"": [
             {
-              ""Type"": ""someUndefinedType""
+              ""Type"": ""TYPE""
             }
           ]
         }
       ]
     }
   ]
-}");
+}".Replace("TYPE",type));
+      
       var config = new Config();
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
       ex.ParamName.Should().Be(nameof(MqttLogoChannelConfig.Type));
-      ex.ActualValue.Should().Be("someUndefinedType");
+      ex.ActualValue.Should().Be(type);
       ex.Message.Should().Contain("Allowed values are Byte, Integer, Float");
     }
 
