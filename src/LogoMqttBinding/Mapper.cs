@@ -21,26 +21,26 @@ namespace LogoMqttBinding
       mapping = new Mapping(loggerFactory, mqttClient);
     }
 
-    public void WriteLogoVariable(Mqtt.Subscription subscription, int address, MqttChannelConfig.Types type)
+    public void WriteLogoVariable(Mqtt.Subscription subscription, int address, MqttChannelConfigBase.Types type)
     {
       subscription.MessageReceived += type switch
       {
-        MqttChannelConfig.Types.Integer => (sender, args) =>
+        MqttChannelConfigBase.Types.Integer => (sender, args) =>
           mapping.ReceivedInteger(logo.IntegerAt(address), args.ApplicationMessage.Payload),
 
-        MqttChannelConfig.Types.Byte => (sender, args) =>
+        MqttChannelConfigBase.Types.Byte => (sender, args) =>
           mapping.ReceivedByte(logo.ByteAt(address), args.ApplicationMessage.Payload),
 
-        MqttChannelConfig.Types.Float => (sender, args) =>
+        MqttChannelConfigBase.Types.Float => (sender, args) =>
           mapping.ReceivedFloat(logo.FloatAt(address), args.ApplicationMessage.Payload),
 
         _ => throw new ArgumentOutOfRangeException(nameof(type), type, $"Mapping '{subscription.Topic}'->'{address}' should be of type integer, byte or float, but was '{type}'"),
       };
     }
 
-    public void PulseLogoVariable(Mqtt.Subscription subscription, int address, MqttChannelConfig.Types type, int duration)
+    public void PulseLogoVariable(Mqtt.Subscription subscription, int address, MqttChannelConfigBase.Types type, int duration)
     {
-      if (type != MqttChannelConfig.Types.Byte)
+      if (type != MqttChannelConfigBase.Types.Byte)
         throw new ArgumentOutOfRangeException(nameof(type), type, null);
 
       subscription.MessageReceived += async (sender, args) =>
@@ -48,11 +48,11 @@ namespace LogoMqttBinding
     }
 
     // ReSharper disable once UnusedMethodReturnValue.Global
-    public NotificationContext PublishOnChange(string topic, int address, MqttChannelConfig.Types type, bool retain, MqttQualityOfServiceLevel qualityOfService)
+    public NotificationContext PublishOnChange(string topic, int address, MqttChannelConfigBase.Types type, bool retain, MqttQualityOfServiceLevel qualityOfService)
     {
       return type switch
       {
-        MqttChannelConfig.Types.Integer =>
+        MqttChannelConfigBase.Types.Integer =>
           logo
             .IntegerAt(address)
             .SubscribeToChangeNotification(
@@ -61,7 +61,7 @@ namespace LogoMqttBinding
                   .PublishInteger(logoVariable, topic, retain, qualityOfService)
                   .ConfigureAwait(false)),
 
-        MqttChannelConfig.Types.Byte =>
+        MqttChannelConfigBase.Types.Byte =>
           logo
             .ByteAt(address)
             .SubscribeToChangeNotification(
@@ -70,7 +70,7 @@ namespace LogoMqttBinding
                   .PublishByte(logoVariable, topic, retain, qualityOfService)
                   .ConfigureAwait(false)),
 
-        MqttChannelConfig.Types.Float =>
+        MqttChannelConfigBase.Types.Float =>
           logo
             .FloatAt(address)
             .SubscribeToChangeNotification(

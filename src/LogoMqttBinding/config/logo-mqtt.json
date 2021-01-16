@@ -1,5 +1,7 @@
 ﻿{
   "MqttBrokerUri": "10.1.1.86",
+  "MqttBrokerUsername": "user",
+  "MqttBrokerPassword": "password",
   "Logos": [
     {
       "IpAddress": "10.1.1.230",
@@ -13,10 +15,11 @@
       "Mqtt": [
         {
           "ClientId": "logo",
+          "Status": {
+            "Topic": "logo/status"
+          },
           "LastWill": {
-            "Topic": "logo/status",
-            "Payload": "unexpected gone offline",
-            "QualityOfService": "ExactlyOnce"
+            "Topic": "logo/lastwill"
           },
           "Channels": [
             {

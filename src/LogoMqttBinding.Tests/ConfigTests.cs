@@ -210,7 +210,7 @@ namespace LogoMqttBinding.Tests
     }
 
     [Fact]
-    public void Validate_InvalidLastWillAction_ShouldThrow()
+    public void Validate_InvalidStatusAction_ShouldThrow()
     {
       using var configFile = new TempFile(@"
 {
@@ -218,11 +218,10 @@ namespace LogoMqttBinding.Tests
     {
       ""Mqtt"": [
         {
-          ""LastWill"": 
+          ""Status"": 
             {
-              ""Action"": ""pubsubsomething"",
               ""Topic"": ""any/valid/topic"",
-              ""Payload"": ""any payload message"",
+              ""Action"": ""Subscribe""
             },
         }
       ]
@@ -233,16 +232,16 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttClientConfig.LastWill) + "." + nameof(MqttClientConfig.LastWill.Action));
-      ex.ActualValue.Should().Be("pubsubsomething");
-      ex.Message.Should().Contain("LastWill should provide action publish");
+      ex.ParamName.Should().Be(nameof(MqttClientConfig.Status.Action));
+      ex.ActualValue.Should().Be("Subscribe");
+      ex.Message.Should().Contain("Allowed value is Publish (Parameter 'Action')");
     }
 
     [Theory]
     [InlineData("/a/invalid/topic")]
     [InlineData("a/ /topic")]
     [InlineData("a/#/topic")]
-    public void Validate_InvalidLastWillTopic_ShouldThrow(string topic)
+    public void Validate_InvalidStatusTopic_ShouldThrow(string topic)
     {
       using var configFile = new TempFile(@$"
 {{
@@ -250,7 +249,7 @@ namespace LogoMqttBinding.Tests
     {{
       ""Mqtt"": [
         {{
-          ""LastWill"": 
+          ""Status"": 
             {{
               ""Action"": ""publish"",
               ""Topic"": ""{topic}"",
@@ -265,42 +264,9 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttClientConfig.LastWill.Topic));
+      ex.ParamName.Should().Be("Topic");
       ex.ActualValue.Should().Be(topic);
     }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    public void Validate_InvalidLastWillPayload_ShouldThrow(string payload)
-    {
-      using var configFile = new TempFile(@$"
-{{
-  ""Logos"": [
-    {{
-      ""Mqtt"": [
-        {{
-          ""LastWill"": 
-            {{
-              ""Topic"": ""any/valid/topic"",
-              ""LogoAddress"": 0,
-              ""Payload"": ""{payload}"",
-            }},
-        }}
-      ]
-    }}
-  ]
-}}");
-      var config = new Config();
-      config.Read(configFile.Path);
-
-      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttClientConfig.LastWill) + "." + nameof(MqttClientConfig.LastWill.Payload));
-      ex.ActualValue.Should().Be(payload);
-      ex.Message.Should().Contain("LastWill should provide a payload");
-    }
-
-
 
     [Fact]
     public void Validate_PublishedLogoAddressAboveRange_ShouldThrow()
@@ -330,7 +296,7 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttChannelConfig.LogoAddress));
+      ex.ParamName.Should().Be(nameof(MqttLogoChannelConfig.LogoAddress));
       ex.ActualValue.Should().Be(851);
       ex.Message.Should().Contain("should be 0..850");
     }
@@ -363,7 +329,7 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttChannelConfig.LogoAddress));
+      ex.ParamName.Should().Be(nameof(MqttLogoChannelConfig.LogoAddress));
       ex.ActualValue.Should().Be(-1);
       ex.Message.Should().Contain("should be 0..850");
     }
@@ -394,7 +360,7 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttChannelConfig.LogoAddress));
+      ex.ParamName.Should().Be(nameof(MqttLogoChannelConfig.LogoAddress));
       ex.ActualValue.Should().Be(851);
       ex.Message.Should().Contain("should be 0..850");
     }
@@ -425,7 +391,7 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttChannelConfig.LogoAddress));
+      ex.ParamName.Should().Be(nameof(MqttLogoChannelConfig.LogoAddress));
       ex.ActualValue.Should().Be(-1);
       ex.Message.Should().Contain("should be 0..850");
     }
@@ -453,7 +419,7 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttChannelConfig.Action));
+      ex.ParamName.Should().Be(nameof(MqttLogoChannelConfig.Action));
       ex.ActualValue.Should().Be("someUndefinedValue");
       ex.Message.Should().Contain("Allowed values are Publish, Subscribe, SubscribePulse");
     }
@@ -481,7 +447,7 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttChannelConfig.Type));
+      ex.ParamName.Should().Be(nameof(MqttLogoChannelConfig.Type));
       ex.ActualValue.Should().Be("someUndefinedType");
       ex.Message.Should().Contain("Allowed values are Byte, Integer, Float");
     }
@@ -509,7 +475,7 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttChannelConfig.QualityOfService));
+      ex.ParamName.Should().Be(nameof(MqttLogoChannelConfig.QualityOfService));
       ex.ActualValue.Should().Be("someUndefinedQoS");
       ex.Message.Should().Contain("Allowed values are ");
     }
@@ -545,7 +511,7 @@ namespace LogoMqttBinding.Tests
       config.Read(configFile.Path);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => config.Validate());
-      ex.ParamName.Should().Be(nameof(MqttChannelConfig.Topic));
+      ex.ParamName.Should().Be(nameof(MqttLogoChannelConfig.Topic));
       ex.ActualValue.Should().Be(topic);
       ex.Message.Should().Contain(message);
     }
@@ -580,11 +546,9 @@ namespace LogoMqttBinding.Tests
         {
           ""ClientId"": ""mqtt-client-id"",
           ""CleanSession"": ""true"",
-          ""LastWill"": 
+          ""Status"": 
             {
               ""Topic"": ""clientId/status"",
-              ""Payload"": ""disconnected"",
-              ""Retain"": ""true"",
             },
           ""Channels"": [
             {
@@ -654,39 +618,39 @@ namespace LogoMqttBinding.Tests
 
       logo.Mqtt[0].ClientId.Should().Be("mqtt-client-id");
 
-      logo.Mqtt[0].LastWill!.GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Publish);
-      logo.Mqtt[0].LastWill!.Topic.Should().Be("clientId/status");
-      logo.Mqtt[0].LastWill!.Retain.Should().Be(true);
+      logo.Mqtt[0].Status!.Topic.Should().Be("clientId/status");
+      logo.Mqtt[0].Status!.Retain.Should().Be(true);
+      logo.Mqtt[0].Status!.GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Publish);
 
-      logo.Mqtt[0].Channels[0].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Subscribe);
+      logo.Mqtt[0].Channels[0].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Subscribe);
       logo.Mqtt[0].Channels[0].Topic.Should().Be("map/21/31/set");
       logo.Mqtt[0].Channels[0].LogoAddress.Should().Be(21);
-      logo.Mqtt[0].Channels[0].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Byte);
+      logo.Mqtt[0].Channels[0].GetTypeAsEnum().Should().Be(MqttChannelConfigBase.Types.Byte);
 
-      logo.Mqtt[0].Channels[1].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Subscribe);
+      logo.Mqtt[0].Channels[1].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Subscribe);
       logo.Mqtt[0].Channels[1].Topic.Should().Be("map/22/32/set");
       logo.Mqtt[0].Channels[1].LogoAddress.Should().Be(22);
-      logo.Mqtt[0].Channels[1].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Integer);
+      logo.Mqtt[0].Channels[1].GetTypeAsEnum().Should().Be(MqttChannelConfigBase.Types.Integer);
 
-      logo.Mqtt[0].Channels[2].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Subscribe);
+      logo.Mqtt[0].Channels[2].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Subscribe);
       logo.Mqtt[0].Channels[2].Topic.Should().Be("map/26/36/set");
       logo.Mqtt[0].Channels[2].LogoAddress.Should().Be(26);
-      logo.Mqtt[0].Channels[2].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Float);
+      logo.Mqtt[0].Channels[2].GetTypeAsEnum().Should().Be(MqttChannelConfigBase.Types.Float);
 
-      logo.Mqtt[0].Channels[3].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Publish);
+      logo.Mqtt[0].Channels[3].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Publish);
       logo.Mqtt[0].Channels[3].Topic.Should().Be("map/121/131/get");
       logo.Mqtt[0].Channels[3].LogoAddress.Should().Be(121);
-      logo.Mqtt[0].Channels[3].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Byte);
+      logo.Mqtt[0].Channels[3].GetTypeAsEnum().Should().Be(MqttChannelConfigBase.Types.Byte);
 
-      logo.Mqtt[0].Channels[4].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Publish);
+      logo.Mqtt[0].Channels[4].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Publish);
       logo.Mqtt[0].Channels[4].Topic.Should().Be("map/122/132/get");
       logo.Mqtt[0].Channels[4].LogoAddress.Should().Be(122);
-      logo.Mqtt[0].Channels[4].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Integer);
+      logo.Mqtt[0].Channels[4].GetTypeAsEnum().Should().Be(MqttChannelConfigBase.Types.Integer);
 
-      logo.Mqtt[0].Channels[5].GetActionAsEnum().Should().Be(MqttChannelConfig.Actions.Publish);
+      logo.Mqtt[0].Channels[5].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Publish);
       logo.Mqtt[0].Channels[5].Topic.Should().Be("map/126/136/get");
       logo.Mqtt[0].Channels[5].LogoAddress.Should().Be(126);
-      logo.Mqtt[0].Channels[5].GetTypeAsEnum().Should().Be(MqttChannelConfig.Types.Float);
+      logo.Mqtt[0].Channels[5].GetTypeAsEnum().Should().Be(MqttChannelConfigBase.Types.Float);
     }
   }
 

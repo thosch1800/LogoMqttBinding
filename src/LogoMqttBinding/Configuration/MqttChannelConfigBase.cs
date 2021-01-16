@@ -1,22 +1,17 @@
-﻿using System;
-using System.Diagnostics;
+using System;
 
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
 
 namespace LogoMqttBinding.Configuration
 {
-  [DebuggerDisplay("{Topic} -> {Type}@{LogoAddress}")]
-  public class MqttChannelConfig
+  public abstract class MqttChannelConfigBase
   {
     public string Topic { get; set; } = string.Empty;
-    public int LogoAddress { get; set; } = -1;
     public string Action { get; set; } = Actions.Publish.ToString();
     public string Type { get; set; } = Types.Byte.ToString();
     public string QualityOfService { get; set; } = QoS.AtMostOnce.ToString();
+
     public bool Retain { get; set; } = false;
-    public string Payload { get; set; } = string.Empty;
-    public int Duration { get; set; } = 250;
 
     public Actions GetActionAsEnum() => Enum.Parse<Actions>(Action, true);
     public Types GetTypeAsEnum() => Enum.Parse<Types>(Type, true);
@@ -34,6 +29,7 @@ namespace LogoMqttBinding.Configuration
       Byte,
       Integer,
       Float,
+      String
     }
 
     public enum QoS

@@ -80,88 +80,102 @@ namespace LogoMqttBinding.Configuration
           mqttClientConfig.ClientId,
           "ClientId should not be empty or whitespace");
 
-      var lastWill = mqttClientConfig.LastWill;
-      if (lastWill is not null)
-      {
-        if (!EnumIsDefined(typeof(MqttChannelConfig.Actions), lastWill.Action) ||
-            lastWill.GetActionAsEnum() != MqttChannelConfig.Actions.Publish)
-          throw new ArgumentOutOfRangeException(
-            nameof(mqttClientConfig.LastWill) + "." + nameof(lastWill.Action),
-            lastWill.Action,
-            "LastWill should provide action publish");
-
-        if (string.IsNullOrWhiteSpace(lastWill.Payload))
-          throw new ArgumentOutOfRangeException(
-            nameof(mqttClientConfig.LastWill) + "." + nameof(lastWill.Payload),
-            lastWill.Payload,
-            "LastWill should provide a payload");
-
-        ValidateTopic(lastWill);
-      }
+      var status = mqttClientConfig.Status;
+      if (status is not null)
+        ValidateStatusChannel(status);
 
       foreach (var mqttChannelConfig in mqttClientConfig.Channels)
-        ValidateChannel(mqttChannelConfig);
+        ValidateLogoChannel(mqttChannelConfig);
     }
 
-    private static void ValidateChannel(MqttChannelConfig mqttChannelConfig)
+    private static void ValidateLogoChannel(MqttLogoChannelConfig channelConfig)
     {
-      if (!EnumIsDefined(typeof(MqttChannelConfig.Actions), mqttChannelConfig.Action))
+      if (!EnumIsDefined(typeof(MqttChannelConfigBase.Actions), channelConfig.Action))
         throw new ArgumentOutOfRangeException(
-          nameof(mqttChannelConfig.Action),
-          mqttChannelConfig.Action,
-          $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfig.Actions)))}");
+          nameof(channelConfig.Action),
+          channelConfig.Action,
+          $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfigBase.Actions)))}");
 
-      if (!EnumIsDefined(typeof(MqttChannelConfig.Types), mqttChannelConfig.Type))
+      if (!EnumIsDefined(typeof(MqttChannelConfigBase.Types), channelConfig.Type))
         throw new ArgumentOutOfRangeException(
-          nameof(mqttChannelConfig.Type),
-          mqttChannelConfig.Type,
-          $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfig.Types)))}");
+          nameof(channelConfig.Type),
+          channelConfig.Type,
+          $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfigBase.Types)))}");
 
-      if (!EnumIsDefined(typeof(MqttChannelConfig.QoS), mqttChannelConfig.QualityOfService))
+      if (!EnumIsDefined(typeof(MqttChannelConfigBase.QoS), channelConfig.QualityOfService))
         throw new ArgumentOutOfRangeException(
-          nameof(mqttChannelConfig.QualityOfService),
-          mqttChannelConfig.QualityOfService,
-          $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfig.QoS)))}");
+          nameof(channelConfig.QualityOfService),
+          channelConfig.QualityOfService,
+          $"Allowed values are {string.Join(", ", Enum.GetNames(typeof(MqttChannelConfigBase.QoS)))}");
 
-      if (mqttChannelConfig.LogoAddress is < MemoryRangeMinimum or > MemoryRangeMaximum)
+      if (channelConfig.LogoAddress is < MemoryRangeMinimum or > MemoryRangeMaximum)
         throw new ArgumentOutOfRangeException(
-          nameof(mqttChannelConfig.LogoAddress),
-          mqttChannelConfig.LogoAddress,
+          nameof(channelConfig.LogoAddress),
+          channelConfig.LogoAddress,
           $"The range should be {MemoryRangeMinimum}..{MemoryRangeMaximum}");
 
-      ValidateTopic(mqttChannelConfig);
+      ValidateTopic(channelConfig.Topic, nameof(channelConfig.Topic));
     }
 
-    private static void ValidateTopic(MqttChannelConfig mqttChannelConfig)
+    private static void ValidateStatusChannel(MqttStatusChannelConfig channelConfig)
     {
-      if (string.IsNullOrWhiteSpace(mqttChannelConfig.Topic))
+      if (channelConfig.GetActionAsEnum() != MqttChannelConfigBase.Actions.Publish)
         throw new ArgumentOutOfRangeException(
-          nameof(mqttChannelConfig.Topic),
-          mqttChannelConfig.Topic,
+          nameof(channelConfig.Action),
+          channelConfig.Action,
+          $"Allowed value is {MqttChannelConfigBase.Actions.Publish}");
+
+      if (channelConfig.GetTypeAsEnum() != MqttChannelConfigBase.Types.String)
+        throw new ArgumentOutOfRangeException(
+          nameof(channelConfig.Type),
+          channelConfig.Type,
+          $"Allowed value is {MqttChannelConfigBase.Types.String}");
+
+      if (channelConfig.GetQualityOfServiceAsEnum() != MqttChannelConfigBase.QoS.ExactlyOnce)
+        throw new ArgumentOutOfRangeException(
+          nameof(channelConfig.QualityOfService),
+          channelConfig.QualityOfService,
+          $"Allowed value is {MqttChannelConfigBase.QoS.ExactlyOnce}");
+
+      if (channelConfig.Retain is false)
+        throw new ArgumentOutOfRangeException(
+          nameof(channelConfig.Retain),
+          channelConfig.Retain,
+          $"Allowed value is {true}");
+
+      ValidateTopic(channelConfig.Topic, nameof(channelConfig.Topic));
+    }
+
+    private static void ValidateTopic(string topic, string nameOfTopicProperty)
+    {
+      if (string.IsNullOrWhiteSpace(topic))
+        throw new ArgumentOutOfRangeException(
+          nameOfTopicProperty,
+          topic,
           "Topic should not be empty or whitespace");
 
-      if (mqttChannelConfig.Topic.Any(char.IsWhiteSpace))
+      if (topic.Any(char.IsWhiteSpace))
         throw new ArgumentOutOfRangeException(
-          nameof(mqttChannelConfig.Topic),
-          mqttChannelConfig.Topic,
+          nameOfTopicProperty,
+          topic,
           "Topic should not contain whitespace");
 
-      if (mqttChannelConfig.Topic.StartsWith('/'))
+      if (topic.StartsWith('/'))
         throw new ArgumentOutOfRangeException(
-          nameof(mqttChannelConfig.Topic),
-          mqttChannelConfig.Topic,
+          nameOfTopicProperty,
+          topic,
           "Topic should not start with /");
 
-      if (mqttChannelConfig.Topic.Contains('#') && !mqttChannelConfig.Topic.EndsWith('#'))
+      if (topic.Contains('#') && !topic.EndsWith('#'))
         throw new ArgumentOutOfRangeException(
-          nameof(mqttChannelConfig.Topic),
-          mqttChannelConfig.Topic,
+          nameOfTopicProperty,
+          topic,
           "Topic should contain # at the end only");
 
-      if (mqttChannelConfig.Topic.Contains("//"))
+      if (topic.Contains("//"))
         throw new ArgumentOutOfRangeException(
-          nameof(mqttChannelConfig.Topic),
-          mqttChannelConfig.Topic,
+          nameOfTopicProperty,
+          topic,
           "Topic should not define empty groups");
     }
 

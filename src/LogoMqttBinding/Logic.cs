@@ -41,7 +41,7 @@ namespace LogoMqttBinding
             mqttClientConfig.CleanSession,
             config.MqttBrokerUsername,
             config.MqttBrokerPassword,
-            mqttClientConfig.LastWill);
+            mqttClientConfig.Status);
           mqttClients.Add(mqttClient);
 
           var mapper = new Mapper(loggerFactory, logo, mqttClient);
@@ -54,7 +54,7 @@ namespace LogoMqttBinding
 
             switch (action)
             {
-              case MqttChannelConfig.Actions.Publish:
+              case MqttChannelConfigBase.Actions.Publish:
                 mapper.PublishOnChange(
                   channel.Topic,
                   channel.LogoAddress,
@@ -63,7 +63,7 @@ namespace LogoMqttBinding
                   channel.GetQualityOfServiceAsEnum().ToMqttNet());
                 break;
 
-              case MqttChannelConfig.Actions.Subscribe:
+              case MqttChannelConfigBase.Actions.Subscribe:
                 mapper.WriteLogoVariable(
                   mqttClient.Subscribe(
                     channel.Topic,
@@ -72,7 +72,7 @@ namespace LogoMqttBinding
                   channel.GetTypeAsEnum());
                 break;
 
-              case MqttChannelConfig.Actions.SubscribePulse:
+              case MqttChannelConfigBase.Actions.SubscribePulse:
                 mapper.PulseLogoVariable(
                   mqttClient.Subscribe(
                     channel.Topic,
