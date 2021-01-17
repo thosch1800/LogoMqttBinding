@@ -18,6 +18,8 @@ namespace LogoMqttBinding.Status
 
     public async ValueTask DisposeAsync() => await timer.DisposeAsync();
 
+
+
     public void Queue(string topic, string text)
     {
       messageQueue.Enqueue(new Message(topic, text));
@@ -29,9 +31,12 @@ namespace LogoMqttBinding.Status
       message = new Message("", "");
       return messageQueue.TryDequeue(out message!);
     }
-    
+
+
+
     private readonly Timer timer;
     private readonly ConcurrentQueue<Message> messageQueue = new();
+
     public record Message(string Topic, string Text);
   }
 }
