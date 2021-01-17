@@ -24,8 +24,8 @@ namespace LogoMqttBinding.Status
     public void Update(Connection connection) =>
       SendMessage(nameof(Connection), connection);
 
-    public void Update(LastNotification lastNotification) =>
-      SendMessage(nameof(LastNotification), lastNotification);
+    public void Error(string error) =>
+      SendMessage("Error", error);
 
 
 

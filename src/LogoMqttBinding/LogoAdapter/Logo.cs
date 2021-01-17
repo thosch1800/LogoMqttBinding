@@ -40,8 +40,7 @@ namespace LogoMqttBinding.LogoAdapter
           .DisposeAsync()
           .ConfigureAwait(false);
 
-      Execute(c => c.Disconnect());
-      StatusChannel.Update(Connection.Disconnected);
+      Disconnect();
 
       await StatusChannel.DisposeAsync();
     }
@@ -55,21 +54,38 @@ namespace LogoMqttBinding.LogoAdapter
 
     public bool Connect()
     {
-      lock (client)
+      var connected = false;
+      lock (clientLock)
       {
         if (client.Connected) return true;
 
         logger.LogMessage("connecting...", logLevel: LogLevel.Debug);
-        Execute(c => c.Connect());
-        logger.LogMessage($"connected:{client.Connected}", logLevel: LogLevel.Debug);
+        client.Connect();
+        connected = client.Connected;
+        logger.LogMessage($"connected:{connected}", logLevel: LogLevel.Debug);
         EnableUpdates(true);
+      }
 
+      if (connected)
         StatusChannel.Update(Connection.Connected);
 
-        return client.Connected;
-      }
+      return connected;
     }
 
+    private void Disconnect()
+    {
+      var wasConnected = false;
+      lock (clientLock)
+      {
+        wasConnected = client.Connected;
+        logger.LogMessage("disconnecting...", logLevel: LogLevel.Debug);
+        client.Disconnect();
+        logger.LogMessage($"disconnected", logLevel: LogLevel.Debug);
+      }
+
+      if (wasConnected)
+        StatusChannel.Update(Connection.Disconnected);
+    }
 
 
     /// <summary>
@@ -103,7 +119,7 @@ namespace LogoMqttBinding.LogoAdapter
 
     private void HandleError()
     { // try to solve error by reconnect...
-      client.Disconnect();
+      Disconnect();
       Connect();
     }
 

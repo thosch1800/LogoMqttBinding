@@ -67,7 +67,7 @@ namespace LogoMqttBinding.LogoAdapter
         if (!update) continue; // do nothing during initialization phase
 
         var hasErrors = logo.Execute(c => c.DBRead(1, Start, size, readBuffer));
-        if (hasErrors) await Task.Delay(TimeSpan.FromSeconds(3), cts.Token).ConfigureAwait(false);
+        if (hasErrors) await Task.Delay(TimeSpan.FromSeconds(1), cts.Token).ConfigureAwait(false);
         else
         {
           imageLock.EnterReadLock();
@@ -104,9 +104,6 @@ namespace LogoMqttBinding.LogoAdapter
 
       foreach (var context in changed)
         context.NotifyChanged();
-
-      if (changed.Any())
-        logo.StatusChannel.Update(new LastNotification());
     }
 
 
