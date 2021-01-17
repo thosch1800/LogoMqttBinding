@@ -1,0 +1,64 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using LogoMqttBinding.Configuration;
+using LogoMqttBinding.MqttAdapter;
+using MQTTnet;
+
+namespace LogoMqttBinding.Status
+{
+  internal class StatusChannel : IAsyncDisposable
+  {
+    private readonly string identifier;
+
+    public StatusChannel(string identifier)
+    {
+      this.identifier = identifier;
+      scheduler = new Scheduler(SendUpdates);
+    }
+
+    public async ValueTask DisposeAsync() => await scheduler.DisposeAsync();
+
+
+
+    public void Update(Connection connection) =>
+      scheduler.Queue(Identifier(nameof(Connection)), connection);
+
+    public void UpdateLastNotified() =>
+      scheduler.Queue(Identifier(nameof(LastNotification)), new LastNotification());
+
+
+
+    public void Add(Mqtt mqttClient, MqttStatusChannelConfig? statusConfig)
+    {
+      if (statusConfig is null) return;
+
+      var lastWill = BuildMessage(nameof(Connection), Connection.Interrupted, statusConfig);
+      mqttClient.AddLastWill(lastWill);
+
+      contexts.Add(new MqttContext(mqttClient, statusConfig));
+    }
+
+
+    private string Identifier(string topic) => $"{identifier}/{topic}";
+
+    private async Task SendUpdates()
+    {
+      if (scheduler.TryDequeue(out var message))
+        foreach (var (mqttClient, channelConfig) in contexts)
+          await mqttClient.PublishAsync(BuildMessage(message.Topic, message.Text, channelConfig));
+    }
+
+    private static MqttApplicationMessage BuildMessage(string subStatusTopic, string message, MqttStatusChannelConfig config) => new MqttApplicationMessageBuilder()
+      .WithPayload(message)
+      .WithTopic(config.Topic + $"/{subStatusTopic}")
+      .WithRetainFlag(config.Retain)
+      .WithQualityOfServiceLevel(config.GetQualityOfServiceAsEnum().ToMqttNet())
+      .Build();
+
+    private readonly Scheduler scheduler;
+    private readonly List<MqttContext> contexts = new();
+
+    internal record MqttContext(Mqtt Client, MqttStatusChannelConfig Config);
+  }
+}

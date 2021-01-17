@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
-using LogoMqttBinding.MqttAdapter;
+using LogoMqttBinding.Status;
 using Microsoft.Extensions.Logging;
 using Sharp7;
 
@@ -27,6 +26,8 @@ namespace LogoMqttBinding.LogoAdapter
         .Select(memoryRange => new LogoMemory(this, memoryRange))
         .ToArray());
 
+      StatusChannel = new StatusChannel(ipAddress);
+
       Execute(c => c.SetConnectionParams(ipAddress, 0x200, 0x200));
     }
 
@@ -45,7 +46,7 @@ namespace LogoMqttBinding.LogoAdapter
       await StatusChannel.DisposeAsync();
     }
 
-    public StatusChannel StatusChannel { get; } = new StatusChannel();
+    public StatusChannel StatusChannel { get; }
 
     public Int IntegerAt(int address) => new(this, address);
     public Float FloatAt(int address) => new(this, address);
