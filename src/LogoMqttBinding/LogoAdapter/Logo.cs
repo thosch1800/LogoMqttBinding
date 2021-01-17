@@ -70,8 +70,6 @@ namespace LogoMqttBinding.LogoAdapter
       }
     }
 
-    public override string ToString() => $"{GetType().Name} {ipAddress}";
-
 
 
     /// <summary>
@@ -94,7 +92,7 @@ namespace LogoMqttBinding.LogoAdapter
         var error = action(client);
         if (error == 0) return false;
 
-        var message = $"{ToString()} Error {error}/0x{error:X8} {client.ErrorText(error)}";
+        var message = $"{GetType().Name} {ipAddress} Error {error}/0x{error:X8} {client.ErrorText(error)}";
         logger.LogMessage(message, logLevel: LogLevel.Error, callerName: callerName, callerFile: callerFile, callerFileLine: callerFileLine);
 
         HandleError();
