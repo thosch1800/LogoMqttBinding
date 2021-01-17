@@ -193,17 +193,8 @@ namespace LogoMqttBinding.MqttAdapter
     private readonly MqttClientOptionsBuilder clientOptionsBuilder;
     private readonly Dictionary<string, Subscription> subscriptions = new();
 
-    public class Subscription
+    public record Subscription(string Topic, MqttQualityOfServiceLevel Qos)
     {
-      internal Subscription(string topic, MqttQualityOfServiceLevel qos)
-      {
-        Topic = topic;
-        Qos = qos;
-      }
-
-      public string Topic { get; }
-      public MqttQualityOfServiceLevel Qos { get; }
-
       internal void OnMessageReceived(MqttApplicationMessageReceivedEventArgs e) => MessageReceived?.Invoke(this, e);
       public event EventHandler<MqttApplicationMessageReceivedEventArgs>? MessageReceived;
     }

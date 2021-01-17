@@ -46,7 +46,9 @@ namespace LogoMqttBinding.Status
     {
       if (scheduler.TryDequeue(out var message))
         foreach (var (mqttClient, channelConfig) in contexts)
-          await mqttClient.PublishAsync(BuildMessage(message.Topic, message.Text, channelConfig));
+          await mqttClient
+            .PublishAsync(BuildMessage(message.Topic, message.Text, channelConfig))
+            .ConfigureAwait(false);
     }
 
     private static MqttApplicationMessage BuildMessage(string subStatusTopic, string message, MqttStatusChannelConfig config) => new MqttApplicationMessageBuilder()

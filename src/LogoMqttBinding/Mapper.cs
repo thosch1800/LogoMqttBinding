@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
 using LogoMqttBinding.LogoAdapter;
@@ -166,10 +164,11 @@ namespace LogoMqttBinding
       logoVariable.Set(value);
     }
 
-    private void PrintWarning<T>(ILogoVariable<T> logoVariable, IEnumerable<byte>? payload)
+    private void PrintWarning<T>(ILogoVariable<T> logoVariable, byte[]? payload)
     {
-      var payloadString = payload != null ? string.Join("-", payload.Select(b => b.ToString("X"))) : "null";
-      logger.LogWarning($"{logoVariable} failed to set payload '{payloadString}'");
+      var payloadString = MqttFormat.AsByteString(payload);
+      var payloadDecoded = MqttFormat.Decode(payload);
+      logger.LogWarning($"{logoVariable} failed to set payload:'{payloadDecoded}' raw:'{payloadString}'");
     }
 
 
