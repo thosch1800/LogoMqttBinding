@@ -132,11 +132,11 @@ namespace LogoMqttBinding.Configuration
 
     private static void ValidateStatusChannel(MqttStatusChannelConfig channelConfig)
     {
-      if (channelConfig.GetActionAsEnum() != MqttChannelConfigBase.Actions.Publish)
+      if (channelConfig.GetActionAsEnum() != MqttChannelConfigBase.Actions.Get)
         throw new ArgumentOutOfRangeException(
           nameof(channelConfig.Action),
           channelConfig.Action,
-          $"Allowed value is {MqttChannelConfigBase.Actions.Publish}");
+          $"Allowed value is {MqttChannelConfigBase.Actions.Get}");
 
       if (channelConfig.GetTypeAsEnum() != MqttChannelConfigBase.Types.String)
         throw new ArgumentOutOfRangeException(

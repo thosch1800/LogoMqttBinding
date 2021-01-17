@@ -78,7 +78,7 @@ namespace LogoMqttBinding
 
         switch (action)
         {
-          case MqttChannelConfigBase.Actions.Publish:
+          case MqttChannelConfigBase.Actions.Get:
             mapper.PublishOnChange(
               channel.Topic,
               channel.LogoAddress,
@@ -87,7 +87,7 @@ namespace LogoMqttBinding
               channel.GetQualityOfServiceAsEnum().ToMqttNet());
             break;
 
-          case MqttChannelConfigBase.Actions.Subscribe:
+          case MqttChannelConfigBase.Actions.Set:
             mapper.WriteLogoVariable(
               mqttClient.Subscribe(
                 channel.Topic,
@@ -96,7 +96,7 @@ namespace LogoMqttBinding
               channel.GetTypeAsEnum());
             break;
 
-          case MqttChannelConfigBase.Actions.SubscribePulse:
+          case MqttChannelConfigBase.Actions.Pulse:
             mapper.PulseLogoVariable(
               mqttClient.Subscribe(
                 channel.Topic,

@@ -623,34 +623,34 @@ namespace LogoMqttBinding.Tests
 
       logo.Mqtt[0].Status!.Topic.Should().Be("clientId/status");
       logo.Mqtt[0].Status!.Retain.Should().Be(true);
-      logo.Mqtt[0].Status!.GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Publish);
+      logo.Mqtt[0].Status!.GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Get);
 
-      logo.Mqtt[0].Channels[0].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Subscribe);
+      logo.Mqtt[0].Channels[0].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Set);
       logo.Mqtt[0].Channels[0].Topic.Should().Be("map/21/31/set");
       logo.Mqtt[0].Channels[0].LogoAddress.Should().Be(21);
       logo.Mqtt[0].Channels[0].GetTypeAsEnum().Should().Be(MqttChannelConfigBase.Types.Byte);
 
-      logo.Mqtt[0].Channels[1].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Subscribe);
+      logo.Mqtt[0].Channels[1].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Set);
       logo.Mqtt[0].Channels[1].Topic.Should().Be("map/22/32/set");
       logo.Mqtt[0].Channels[1].LogoAddress.Should().Be(22);
       logo.Mqtt[0].Channels[1].GetTypeAsEnum().Should().Be(MqttChannelConfigBase.Types.Integer);
 
-      logo.Mqtt[0].Channels[2].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Subscribe);
+      logo.Mqtt[0].Channels[2].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Set);
       logo.Mqtt[0].Channels[2].Topic.Should().Be("map/26/36/set");
       logo.Mqtt[0].Channels[2].LogoAddress.Should().Be(26);
       logo.Mqtt[0].Channels[2].GetTypeAsEnum().Should().Be(MqttChannelConfigBase.Types.Float);
 
-      logo.Mqtt[0].Channels[3].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Publish);
+      logo.Mqtt[0].Channels[3].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Get);
       logo.Mqtt[0].Channels[3].Topic.Should().Be("map/121/131/get");
       logo.Mqtt[0].Channels[3].LogoAddress.Should().Be(121);
       logo.Mqtt[0].Channels[3].GetTypeAsEnum().Should().Be(MqttChannelConfigBase.Types.Byte);
 
-      logo.Mqtt[0].Channels[4].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Publish);
+      logo.Mqtt[0].Channels[4].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Get);
       logo.Mqtt[0].Channels[4].Topic.Should().Be("map/122/132/get");
       logo.Mqtt[0].Channels[4].LogoAddress.Should().Be(122);
       logo.Mqtt[0].Channels[4].GetTypeAsEnum().Should().Be(MqttChannelConfigBase.Types.Integer);
 
-      logo.Mqtt[0].Channels[5].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Publish);
+      logo.Mqtt[0].Channels[5].GetActionAsEnum().Should().Be(MqttChannelConfigBase.Actions.Get);
       logo.Mqtt[0].Channels[5].Topic.Should().Be("map/126/136/get");
       logo.Mqtt[0].Channels[5].LogoAddress.Should().Be(126);
       logo.Mqtt[0].Channels[5].GetTypeAsEnum().Should().Be(MqttChannelConfigBase.Types.Float);

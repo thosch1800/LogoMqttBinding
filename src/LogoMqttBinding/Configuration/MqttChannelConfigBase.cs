@@ -7,7 +7,7 @@ namespace LogoMqttBinding.Configuration
   public abstract class MqttChannelConfigBase
   {
     public string Topic { get; set; } = string.Empty;
-    public string Action { get; set; } = Actions.Publish.ToString();
+    public string Action { get; set; } = Actions.Get.ToString();
     public string Type { get; set; } = Types.Byte.ToString();
     public string QualityOfService { get; set; } = QoS.AtMostOnce.ToString();
     public bool Retain { get; set; } = false;
@@ -18,9 +18,9 @@ namespace LogoMqttBinding.Configuration
 
     public enum Actions
     {
-      Publish,
-      Subscribe,
-      SubscribePulse,
+      Get,
+      Set,
+      Pulse,
     }
 
     public enum Types

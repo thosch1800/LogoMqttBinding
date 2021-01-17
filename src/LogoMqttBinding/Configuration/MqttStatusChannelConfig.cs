@@ -8,7 +8,7 @@ namespace LogoMqttBinding.Configuration
     public MqttStatusChannelConfig()
     {
       Retain = true;
-      Action = Actions.Publish.ToString();
+      Action = Actions.Get.ToString();
       Type = Types.String.ToString();
       QualityOfService = QoS.ExactlyOnce.ToString();
     }
