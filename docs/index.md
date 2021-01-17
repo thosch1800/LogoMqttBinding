@@ -1,15 +1,7 @@
 # LogoMqttBinding
 Read and write values from Siemens Logo PLC via MQTT.
 
-## This is still under development (MVP / minimum viable product)
-This software is currently under development. 
-Do not (yet) use for productive environment, but feel free to try it.
-I appreciate your feedback! The stable version is planned within Q4/2020.
-
 ## Planned features in future releases
-- MQTT last will
-- MQTT status channel
-- LOGO password
 - better documentation ;)
 
 
@@ -61,126 +53,167 @@ All operating systems that support docker and docker-compose are supported.
 ## logo-mqtt.json
 ```
 {
-     "MqttBrokerUri": "192.168.2.23",
-     "Logos": [
-       {
-         "IpAddress": "192.168.2.42",
-         "MemoryRanges": [
-           {
-             "LocalVariableMemoryPollingCycleMilliseconds": 100,
-             "LocalVariableMemoryStart": 0,
-             "LocalVariableMemoryEnd": 250
-           }
-         ],
-         "Mqtt": [
-           {
-             "ClientId": "logo",
-             "Channels": [
+  "MqttBrokerUri": "192.168.1.86",
+  "MqttBrokerUsername": "user",
+  "MqttBrokerPassword": "password",
+  "Logos": [
+    {
+      "IpAddress": "192.168.1.230",
+      "MemoryRanges": [
+        {
+          "LocalVariableMemoryPollingCycleMilliseconds": 100,
+          "LocalVariableMemoryStart": 0,
+          "LocalVariableMemoryEnd": 150
+        }
+      ],
+      "Mqtt": [
+        {
+          "ClientId": "switch",
+          "Status": {
+            "Topic": "switch/logo"
+          },
+          "Channels": [
+            {
+              "Topic": "switch/get",
+              "LogoAddress": 3,
+              "Type": "byte"
+            },
+            {
+              "Topic": "switch/set",
+              "LogoAddress": 13,
+              "Type": "byte",
+              "Action": "set"
+            },
+            {
+              "Topic": "switch/pulse",
+              "LogoAddress": 13,
+              "Type": "byte",
+              "Action": "pulse"
+            },
+            {
+              "Topic": "switch/power",
+              "LogoAddress": 101,
+              "Type": "byte"
+            }
+          ]
+        },
+        {
+          "ClientId": "logo",
+          "Status": {
+            "Topic": "logo"
+          },
+          "Channels": [
+            {
+              "Topic": "logo/q1/get",
+              "LogoAddress": 101,
+              "Type": "byte",
+              "Action": "get"
+            },
+            {
+              "Topic": "logo/q1/set",
+              "LogoAddress": 111,
+              "Type": "byte",
+              "Action": "set"
+            },
 
-               {
-                 "Action": "publish",
-                 "Topic": "logo/q1/get",
-                 "LogoAddress": 111,
-                 "Type": "byte",
-                 "QualityOfService": "ExactlyOnce"
-               },
-               {
-                 "Action": "subscribePulse",
-                 "Topic": "logo/q1/set",
-                 "LogoAddress": 11,
-                 "Type": "byte",
-                 "QualityOfService": "ExactlyOnce"
-               },
-   
-               {
-                 "Action": "publish",
-                 "Topic": "logo/q2/get",
-                 "LogoAddress": 112,
-                 "Type": "byte",
-                 "QualityOfService": "AtLeastOnce"
-               },
-               {
-                 "Action": "subscribe",
-                 "Topic": "logo/q2/set",
-                 "LogoAddress": 12,
-                 "Type": "byte",
-                 "QualityOfService": "AtLeastOnce"
-               },
-   
-               {
-                 "Action": "publish",
-                 "Topic": "logo/q3/get",
-                 "LogoAddress": 113,
-                 "Type": "byte"
-               },
-               {
-                 "Action": "subscribe",
-                 "Topic": "logo/q3/set",
-                 "LogoAddress": 13,
-                 "Type": "byte"
-               },
-   
-               {
-                 "Action": "publish",
-                 "Topic": "logo/q4/get",
-                 "LogoAddress": 114,
-                 "Type": "byte"
-               },
-               {
-                 "Action": "subscribe",
-                 "Topic": "logo/q4/set",
-                 "LogoAddress": 14,
-                 "Type": "byte"
-               },
-   			
-   			
-               {
-                 "Topic": "logo/i1/get",
-                 "LogoAddress": 1,
-                 "Type": "byte"
-               },
-               {
-                 "Topic": "logo/i2/get",
-                 "LogoAddress": 2,
-                 "Type": "byte"
-               },
-               {
-                 "Topic": "logo/i3/get",
-                 "LogoAddress": 3,
-                 "Type": "byte"
-               },
-               {
-                 "Topic": "logo/i4/get",
-                 "LogoAddress": 4,
-                 "Type": "byte"
-               },
-               {
-                 "Topic": "logo/i5/get",
-                 "LogoAddress": 5,
-                 "Type": "byte"
-               },
-               {
-                 "Topic": "logo/i6/get",
-                 "LogoAddress": 6,
-                 "Type": "byte"
-               },
-               {
-                 "Topic": "logo/i7/get",
-                 "LogoAddress": 7,
-                 "Type": "byte"
-               },
-               {
-                 "Topic": "logo/i8/get",
-                 "LogoAddress": 8,
-                 "Type": "byte"
-               }
-   			
-             ]
-           }
-         ]
-       }
-     ]
-   }
+            {
+              "Topic": "logo/q2/get",
+              "LogoAddress": 102,
+              "Type": "byte",
+              "Action": "get"
+            },
+            {
+              "Topic": "logo/q2/set",
+              "LogoAddress": 112,
+              "Type": "byte",
+              "Action": "set"
+            },
+
+            {
+              "Topic": "logo/q3/get",
+              "LogoAddress": 103,
+              "Type": "byte",
+              "Action": "get",
+              "QualityOfService": "ExactlyOnce"
+            },
+            {
+              "Topic": "logo/q3/set",
+              "LogoAddress": 113,
+              "Type": "byte",
+              "Action": "set",
+              "QualityOfService": "ExactlyOnce"
+            },
+
+            {
+              "Topic": "logo/q4/get",
+              "LogoAddress": 104,
+              "Type": "byte",
+              "Action": "get",
+              "QualityOfService": "AtLeastOnce"
+            },
+            {
+              "Topic": "logo/q4/set",
+              "LogoAddress": 114,
+              "Type": "byte",
+              "Action": "set",
+              "QualityOfService": "AtLeastOnce"
+            },
+
+
+            {
+              "Topic": "logo/i1/get",
+              "LogoAddress": 1,
+              "Type": "byte"
+            },
+            {
+              "Topic": "logo/i1/set",
+              "LogoAddress": 11,
+              "Type": "byte",
+              "Action": "set"
+            },
+
+            {
+              "Topic": "logo/i2/get",
+              "LogoAddress": 2,
+              "Type": "byte"
+            },
+            {
+              "Topic": "logo/i2/set",
+              "LogoAddress": 12,
+              "Type": "byte",
+              "Action": "set"
+            },
+            
+            {
+              "Topic": "logo/i3/get",
+              "LogoAddress": 3,
+              "Type": "byte"
+            },
+            {
+              "Topic": "logo/i3/set",
+              "LogoAddress": 13,
+              "Type": "byte",
+              "Action": "set"
+            },
+            
+            {
+              "Topic": "logo/i4/get",
+              "LogoAddress": 4,
+              "Type": "byte"
+            },
+            
+            {
+              "Topic": "logo/i5/get",
+              "LogoAddress": 5,
+              "Type": "byte"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
 ```
 
 
@@ -196,18 +229,14 @@ All operating systems that support docker and docker-compose are supported.
 - LogoMqttBinding configuration [logo-mqtt.json](https://raw.githubusercontent.com/thosch1800/LogoMqttBinding/main/docs/logo-mqtt.json)
 
 #### Manual test scenarios:
-- Cursor buttons (change value at PLC and MQTT received event): 
-  - subscribe to ```logo/up/get```, ```logo/down/get ```, ```logo/left/get ```, ```logo/right/get``` with your MQTT client
-  - navigate to the PLC page 9 and press a cursor button (Esc+C)
-  - MQTT client must show value update for corresponding channel
+- change value at PLC and MQTT received event: 
+  - subscribe to ```logo/#``` with your MQTT client
+  - toggle a input
+  - MQTT client must show value update for corresponding input
 - Set PLC value from MQTT 
-  - in MQTT client publish the value ```1``` to ```logo/q1/set```
+  - in MQTT client publish the value ```1``` to ```switch/pulse```
   - the logo output should be set for a short moment (you can hear the relay click or see it in the logo display)
-  - you can also subscribe to ```logo/q1/get``` and receive updates for this PLC output 
-- Change PLC backlight color
-  - in MQTT client publish the value ```1``` to ```logo/red/set```
-  - the logo display should turn red until a ```0``` is written to the channel
-  - you can also subscribe to ```logo/red/get``` and receive updates for PLC backlight changes
+  - you can also subscribe to ```switch/power``` and receive updates for this PLC output 
 - Robust connection to PLC
   - disconnect network cable from PLC
   - wait for a random time
