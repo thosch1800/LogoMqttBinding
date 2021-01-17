@@ -1,8 +1,10 @@
 ﻿{
-  "MqttBrokerUri": "10.1.1.86",
+  "MqttBrokerUri": "192.168.1.86",
+  "MqttBrokerUsername": "user",
+  "MqttBrokerPassword": "password",
   "Logos": [
     {
-      "IpAddress": "10.1.1.230",
+      "IpAddress": "192.168.1.230",
       "MemoryRanges": [
         {
           "LocalVariableMemoryPollingCycleMilliseconds": 100,
@@ -12,66 +14,124 @@
       ],
       "Mqtt": [
         {
-          "ClientId": "logo",
-          "LastWill": {
-            "Topic": "logo/status",
-            "Payload": "unexpected gone offline",
-            "QualityOfService": "ExactlyOnce"
+          "ClientId": "load",
+          "Status": {
+            "Topic": "load/logo"
           },
           "Channels": [
             {
-              "Action": "publish",
-              "Topic": "logo/q1/get",
-              "LogoAddress": 111,
+              "Topic": "load/get",
+              "LogoAddress": 5,
               "Type": "byte"
             },
             {
-              "Action": "subscribePulse",
-              "Topic": "logo/q1/set",
-              "LogoAddress": 11,
-              "Type": "byte"
-            },
-
-            {
-              "Action": "publish",
-              "Topic": "logo/q2/get",
-              "LogoAddress": 112,
-              "Type": "byte"
-            },
-            {
-              "Action": "subscribe",
-              "Topic": "logo/q2/set",
-              "LogoAddress": 12,
-              "Type": "byte"
-            },
-
-            {
-              "Action": "publish",
-              "Topic": "logo/q3/get",
-              "LogoAddress": 113,
+              "Topic": "load/set",
+              "LogoAddress": 15,
               "Type": "byte",
-              "QualityOfService": "ExactlyOnce"
+              "Action": "set"
             },
             {
-              "Action": "subscribe",
-              "Topic": "logo/q3/set",
+              "Topic": "load/pulse",
+              "LogoAddress": 15,
+              "Type": "byte",
+              "Action": "pulse"
+            },
+            {
+              "Topic": "load/power",
+              "LogoAddress": 105,
+              "Type": "byte"
+            }
+          ]
+        },
+        {
+          "ClientId": "switch",
+          "Status": {
+            "Topic": "switch/logo"
+          },
+          "Channels": [
+            {
+              "Topic": "switch/get",
+              "LogoAddress": 3,
+              "Type": "byte"
+            },
+            {
+              "Topic": "switch/set",
               "LogoAddress": 13,
               "Type": "byte",
+              "Action": "set"
+            },
+            {
+              "Topic": "switch/pulse",
+              "LogoAddress": 13,
+              "Type": "byte",
+              "Action": "pulse"
+            },
+            {
+              "Topic": "switch/power",
+              "LogoAddress": 101,
+              "Type": "byte"
+            }
+          ]
+        },
+        {
+          "ClientId": "logo",
+          "Status": {
+            "Topic": "logo"
+          },
+          "Channels": [
+            {
+              "Topic": "logo/q1/get",
+              "LogoAddress": 101,
+              "Type": "byte",
+              "Action": "get"
+            },
+            {
+              "Topic": "logo/q1/set",
+              "LogoAddress": 111,
+              "Type": "byte",
+              "Action": "set"
+            },
+
+            {
+              "Topic": "logo/q2/get",
+              "LogoAddress": 102,
+              "Type": "byte",
+              "Action": "get"
+            },
+            {
+              "Topic": "logo/q2/set",
+              "LogoAddress": 112,
+              "Type": "byte",
+              "Action": "set"
+            },
+
+            {
+              "Topic": "logo/q3/get",
+              "LogoAddress": 103,
+              "Type": "byte",
+              "Action": "get",
+              "QualityOfService": "ExactlyOnce"
+            },
+            {
+              "Topic": "logo/q3/set",
+              "LogoAddress": 113,
+              "Type": "byte",
+              "Action": "set",
               "QualityOfService": "ExactlyOnce"
             },
 
             {
-              "Action": "publish",
               "Topic": "logo/q4/get",
-              "LogoAddress": 114,
+              "LogoAddress": 104,
               "Type": "byte",
+              "Action": "get",
               "QualityOfService": "AtLeastOnce"
             },
             {
-              "Action": "subscribe",
               "Topic": "logo/q4/set",
-              "LogoAddress": 14,
+              "LogoAddress": 114,
               "Type": "byte",
+              "Action": "set",
               "QualityOfService": "AtLeastOnce"
             },
 
@@ -82,94 +142,45 @@
               "Type": "byte"
             },
             {
+              "Topic": "logo/i1/set",
+              "LogoAddress": 11,
+              "Type": "byte",
+              "Action": "set"
+            },
+
+            {
               "Topic": "logo/i2/get",
               "LogoAddress": 2,
               "Type": "byte"
             },
+            {
+              "Topic": "logo/i2/set",
+              "LogoAddress": 12,
+              "Type": "byte",
+              "Action": "set"
+            },
+
             {
               "Topic": "logo/i3/get",
               "LogoAddress": 3,
               "Type": "byte"
             },
             {
+              "Topic": "logo/i3/set",
+              "LogoAddress": 13,
+              "Type": "byte",
+              "Action": "set"
+            },
+
+            {
               "Topic": "logo/i4/get",
               "LogoAddress": 4,
               "Type": "byte"
             },
+
             {
               "Topic": "logo/i5/get",
               "LogoAddress": 5,
-              "Type": "byte"
-            },
-            {
-              "Topic": "logo/i6/get",
-              "LogoAddress": 6,
-              "Type": "byte"
-            },
-            {
-              "Topic": "logo/i7/get",
-              "LogoAddress": 7,
-              "Type": "byte"
-            },
-            {
-              "Topic": "logo/i8/get",
-              "LogoAddress": 8,
-              "Type": "byte"
-            },
-
-            
-            {
-              "Topic": "logo/up/get",
-              "LogoAddress": 101,
-              "Type": "byte"
-            },
-            {
-              "Topic": "logo/down/get",
-              "LogoAddress": 102,
-              "Type": "byte"
-            },
-            {
-              "Topic": "logo/left/get",
-              "LogoAddress": 103,
-              "Type": "byte"
-            },
-            {
-              "Topic": "logo/right/get",
-              "LogoAddress": 104,
-              "Type": "byte"
-            },
-
-            {
-              "Action": "Subscribe",
-              "Topic": "logo/white/set",
-              "LogoAddress": 105,
-              "Type": "byte"
-            },
-            {
-              "Topic": "logo/white/get",
-              "LogoAddress": 108,
-              "Type": "byte"
-            },
-            {
-              "Action": "Subscribe",
-              "Topic": "logo/orange/set",
-              "LogoAddress": 106,
-              "Type": "byte"
-            },
-            {
-              "Topic": "logo/orange/get",
-              "LogoAddress": 109,
-              "Type": "byte"
-            },
-            {
-              "Action": "Subscribe",
-              "Topic": "logo/red/set",
-              "LogoAddress": 107,
-              "Type": "byte"
-            },
-            {
-              "Topic": "logo/red/get",
-              "LogoAddress": 110,
               "Type": "byte"
             }
           ]
