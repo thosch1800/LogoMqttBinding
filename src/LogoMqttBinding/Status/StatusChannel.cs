@@ -55,9 +55,9 @@ namespace LogoMqttBinding.Status
 
       var asm = typeof(StatusChannel).Assembly.GetName();
       var version = asm.Version?.ToString() ?? "";
-      var software = $"{asm.Name ?? ""} {version}";
+      var name = asm.Name ?? "";
 
-      SendMessage("Software", software);
+      SendMessage("Software", name);
       SendMessage("Version", version);
     }
 
