@@ -54,7 +54,7 @@ namespace LogoMqttBinding
             config.MqttBrokerUsername,
             config.MqttBrokerPassword);
 
-          logo.StatusChannel.AddMqtt(mqttClient, mqttConfig.Status);
+          logo.StatusChannel.Add(mqttClient, mqttConfig.Status);
 
           InitializeChannels(
             mqttConfig,

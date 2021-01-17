@@ -40,7 +40,7 @@ namespace LogoMqttBinding.LogoAdapter
           .ConfigureAwait(false);
 
       Execute(c => c.Disconnect());
-      StatusChannel.UpdateConnection(StatusChannel.ConnectionState.Disconnected);
+      StatusChannel.Update(Connection.Disconnected);
 
       await StatusChannel.DisposeAsync();
     }
@@ -63,7 +63,7 @@ namespace LogoMqttBinding.LogoAdapter
         logger.LogMessage($"connected:{client.Connected}", logLevel: LogLevel.Debug);
         EnableUpdates(true);
 
-        StatusChannel.UpdateConnection(StatusChannel.ConnectionState.Connected);
+        StatusChannel.Update(Connection.Connected);
 
         return client.Connected;
       }

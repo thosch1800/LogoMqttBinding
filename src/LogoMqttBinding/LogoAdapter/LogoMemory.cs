@@ -105,7 +105,7 @@ namespace LogoMqttBinding.LogoAdapter
         context.NotifyChanged();
 
       if (changed.Any())
-        logo.StatusChannel.UpdateNotificationTime();
+        logo.StatusChannel.UpdateLastNotified();
     }
 
 
