@@ -22,10 +22,10 @@ namespace LogoMqttBinding.Status
 
 
     public void Update(Connection connection) =>
-      scheduler.Queue(Identifier(nameof(Connection)), connection);
+      SendMessage(nameof(Connection), connection);
 
-    public void UpdateLastNotified() =>
-      scheduler.Queue(Identifier(nameof(LastNotification)), new LastNotification());
+    public void Update(LastNotification lastNotification) =>
+      SendMessage(nameof(LastNotification), lastNotification);
 
 
 
@@ -40,15 +40,38 @@ namespace LogoMqttBinding.Status
     }
 
 
+
+    private void SendMessage(string topic, string text)
+    {
+      ProvideDefaultChannels();
+      scheduler.Queue(Identifier(topic), text);
+    }
+
+
+    private void ProvideDefaultChannels()
+    {
+      if (!isFirstMessage) return;
+      isFirstMessage = false;
+
+      var asm = typeof(StatusChannel).Assembly.GetName();
+      var version = asm.Version?.ToString() ?? "";
+      var software = $"{asm.Name ?? ""} {version}";
+
+      SendMessage("Software", software);
+      SendMessage("Version", version);
+    }
+
+
+
     private string Identifier(string topic) => $"{identifier}/{topic}";
 
     private async Task SendUpdates()
     {
-      if (scheduler.TryDequeue(out var message))
-        foreach (var (mqttClient, channelConfig) in contexts)
-          await mqttClient
-            .PublishAsync(BuildMessage(message.Topic, message.Text, channelConfig))
-            .ConfigureAwait(false);
+      foreach (var (topic, text) in scheduler.Messages())
+      foreach (var (mqttClient, channelConfig) in contexts)
+        await mqttClient
+          .PublishAsync(BuildMessage(topic, text, channelConfig))
+          .ConfigureAwait(false);
     }
 
     private static MqttApplicationMessage BuildMessage(string subStatusTopic, string message, MqttStatusChannelConfig config) => new MqttApplicationMessageBuilder()
@@ -58,6 +81,8 @@ namespace LogoMqttBinding.Status
       .WithQualityOfServiceLevel(config.GetQualityOfServiceAsEnum().ToMqttNet())
       .Build();
 
+
+    private bool isFirstMessage = true;
     private readonly Scheduler scheduler;
     private readonly List<MqttContext> contexts = new();
 

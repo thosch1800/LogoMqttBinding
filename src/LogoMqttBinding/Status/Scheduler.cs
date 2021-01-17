@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,10 +27,10 @@ namespace LogoMqttBinding.Status
       timer.Change(TimeSpan.Zero, TimeSpan.FromMilliseconds(-1));
     }
 
-    public bool TryDequeue(out Message message)
+    public IEnumerable<Message> Messages()
     {
-      message = new Message("", "");
-      return messageQueue.TryDequeue(out message!);
+      while (messageQueue.TryDequeue(out var message))
+        yield return message;
     }
 
 

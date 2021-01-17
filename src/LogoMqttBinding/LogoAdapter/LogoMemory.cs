@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LogoMqttBinding.Configuration;
+using LogoMqttBinding.Status;
 
 namespace LogoMqttBinding.LogoAdapter
 {
@@ -105,7 +106,7 @@ namespace LogoMqttBinding.LogoAdapter
         context.NotifyChanged();
 
       if (changed.Any())
-        logo.StatusChannel.UpdateLastNotified();
+        logo.StatusChannel.Update(new LastNotification());
     }
 
 
