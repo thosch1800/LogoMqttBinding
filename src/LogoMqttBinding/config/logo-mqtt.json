@@ -14,9 +14,39 @@
       ],
       "Mqtt": [
         {
+          "ClientId": "load",
+          "Status": {
+            "Topic": "load/logo"
+          },
+          "Channels": [
+            {
+              "Topic": "load/get",
+              "LogoAddress": 5,
+              "Type": "byte"
+            },
+            {
+              "Topic": "load/set",
+              "LogoAddress": 15,
+              "Type": "byte",
+              "Action": "set"
+            },
+            {
+              "Topic": "load/pulse",
+              "LogoAddress": 15,
+              "Type": "byte",
+              "Action": "pulse"
+            },
+            {
+              "Topic": "load/power",
+              "LogoAddress": 105,
+              "Type": "byte"
+            }
+          ]
+        },
+        {
           "ClientId": "switch",
           "Status": {
-            "Topic": "switch/status"
+            "Topic": "switch/logo"
           },
           "Channels": [
             {
@@ -46,7 +76,7 @@
         {
           "ClientId": "logo",
           "Status": {
-            "Topic": "logo/status"
+            "Topic": "logo"
           },
           "Channels": [
             {
