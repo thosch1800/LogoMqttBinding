@@ -29,13 +29,13 @@ namespace LogoProgramInfo
 
         var variables = new List<NetworkVariable>();
         foreach (var input in inputs)
-          variables.Add(FindVirtualMemory(text, input));
+          variables.Add(FindVirtualMemory(text, input, true));
         foreach (var output in outputs)
-          variables.Add(FindVirtualMemory(text, output));
+          variables.Add(FindVirtualMemory(text, output, false));
 
         foreach (var variable in variables)
-          //Console.WriteLine($"{variable.Name} {variable.VB}");
-          Console.WriteLine(variable);
+          Console.WriteLine($"{variable.VB}\t{variable.Name}");
+          //Console.WriteLine(variable);
       }
     }
 
@@ -49,11 +49,14 @@ namespace LogoProgramInfo
         yield return new NetworkVariable(match.Groups["Name"].Value, string.Empty, match.Value, match.Index);
     }
 
-    private static NetworkVariable FindVirtualMemory(string text, NetworkVariable variable)
+    private static NetworkVariable FindVirtualMemory(string text, NetworkVariable variable, bool forInput)
     {
       var modified = variable with { Source = variable };
 
-      var match = Regex.Match(text.Substring(variable.Index), "(?<VB>V\\d+\\.\\d)ppq");
+      var pattern = forInput
+        ? "(?<VB>V\\d+\\.\\d)ppq"
+        : "(?<VB>V\\d+\\.\\d)ppt";
+      var match = Regex.Match(text.Substring(variable.Index), pattern);
       if (match.Success)
         modified = modified with
         {
