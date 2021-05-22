@@ -1,4 +1,5 @@
-﻿FROM ghcr.io/thosch1800/dotnet-sdk:latest AS build-env
+FROM ghcr.io/thosch1800/dotnet-sdk:latest AS build-env
+
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
@@ -8,6 +9,8 @@ RUN dotnet restore -r linux-arm
 # Copy everything else and build
 COPY ./src/LogoMqttBinding/. ./
 RUN dotnet publish -c Release -o out -r linux-arm 
+
+
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
