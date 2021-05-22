@@ -1,4 +1,4 @@
-FROM ghcr.io/thosch1800/dotnet-sdk:latest AS build-env
+FROM ghcr.io/thosch1800/dotnet-sdk:2105.22.0 AS build-env
 
 WORKDIR /app
 
