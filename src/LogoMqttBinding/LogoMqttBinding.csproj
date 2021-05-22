@@ -41,8 +41,8 @@
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
         <PackageReference Include="thosch.Logging" Version="1.2.0" />
-        <PackageReference Include="MQTTnet" Version="3.0.13" />
-        <PackageReference Include="Sharp7" Version="1.1.75" />
+        <PackageReference Include="MQTTnet" Version="3.0.15" />
+        <PackageReference Include="Sharp7" Version="1.1.79" />
     </ItemGroup>
 
 </Project>

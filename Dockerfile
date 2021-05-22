@@ -3,11 +3,11 @@ WORKDIR /app
 
 # Copy csproj and restore as distinct layers
 COPY ./src/LogoMqttBinding/*.csproj ./
-RUN dotnet restore
+RUN dotnet restore -r linux-arm
 
 # Copy everything else and build
 COPY ./src/LogoMqttBinding/. ./
-RUN dotnet publish -c Release -o out 
+RUN dotnet publish -c Release -o out -r linux-arm 
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
