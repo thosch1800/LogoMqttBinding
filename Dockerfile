@@ -8,7 +8,8 @@ RUN dotnet restore
 
 # Copy everything else and build
 COPY ./src/LogoMqttBinding/. ./
-RUN dotnet publish -c Release -o out 
+#RUN dotnet publish -c Release -o out 
+RUN dotnet publish -c Release -r linux-arm --self-contained -o out
 
 
 

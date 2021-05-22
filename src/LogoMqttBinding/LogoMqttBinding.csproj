@@ -12,6 +12,12 @@
         <!-- Console app -->
         <OutputType>Exe</OutputType>
         <IsPackable>false</IsPackable>
+        
+        <!-- raspi compatibility -->
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <PublishTrimmed>true</PublishTrimmed>
+        <TrimMode>link</TrimMode>
+        <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
 
         <Authors>thosch1800</Authors>
         <PackageDescription>Makes Siemens LOGO PLC Variables accessible via MQTT</PackageDescription>
