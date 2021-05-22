@@ -10,6 +10,8 @@ RUN dotnet restore
 COPY ./src/LogoMqttBinding/. ./
 RUN dotnet publish -c Release -o out 
 
+
+
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
 WORKDIR /app
