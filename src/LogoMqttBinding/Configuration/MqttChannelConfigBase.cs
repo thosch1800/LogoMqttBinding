@@ -10,7 +10,7 @@ namespace LogoMqttBinding.Configuration
     public string Action { get; set; } = Actions.Get.ToString();
     public string Type { get; set; } = Types.Byte.ToString();
     public string QualityOfService { get; set; } = QoS.AtMostOnce.ToString();
-    public bool Retain { get; set; } = false;
+    public bool Retain { get; set; } = true;
 
     public Actions GetActionAsEnum() => Enum.Parse<Actions>(Action, true);
     public Types GetTypeAsEnum() => Enum.Parse<Types>(Type, true);
