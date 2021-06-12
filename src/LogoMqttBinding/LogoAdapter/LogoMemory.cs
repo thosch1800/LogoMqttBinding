@@ -29,7 +29,11 @@ namespace LogoMqttBinding.LogoAdapter
       await pollingLogicTask.ConfigureAwait(false);
     }
 
-    public void EnableUpdate(bool active) => update = active;
+    public void EnableUpdate(bool active)
+    {
+      initialPublish = true;
+      update = active;
+    }
 
     public int Start { get; }
     public int End { get; }
@@ -93,7 +97,7 @@ namespace LogoMqttBinding.LogoAdapter
           imageLock.EnterReadLock();
 
           for (var address = notificationContext.Address; address < notificationContext.Address + notificationContext.Length; address++)
-            if (image[address - Start] != imageOfLastCycle[address - Start])
+            if (initialPublish || image[address - Start] != imageOfLastCycle[address - Start])
             {
               changed.Add(notificationContext);
               break;
@@ -101,6 +105,8 @@ namespace LogoMqttBinding.LogoAdapter
 
           imageLock.ExitReadLock();
         }
+
+      initialPublish = false;
 
       foreach (var context in changed)
         context.NotifyChanged();
@@ -110,6 +116,7 @@ namespace LogoMqttBinding.LogoAdapter
     private readonly int size;
     private readonly Logo logo;
     private volatile bool update;
+    private volatile bool initialPublish = true;
     private readonly byte[] image;
     private readonly byte[] imageOfLastCycle;
     private readonly ReaderWriterLockSlim imageLock = new();
